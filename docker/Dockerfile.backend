@@ -1,0 +1,2 @@
+RUN ${PANDA_UI_VIRTUALENV_PATH}/bin/pip install Django, rest_framework, python-dotenv, oracledb, social-auth-core, social-auth-app-django,
+ django-cors-headers

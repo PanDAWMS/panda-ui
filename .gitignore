@@ -1,0 +1,35 @@
+# Node.js
+frontend/node_modules/
+frontend/npm-debug.log
+frontend/yarn-error.log
+
+# Compiled output
+frontend/tmp
+frontend/out-tsc
+frontend/bazel-out
+frontend/dist/
+
+# Angular development server
+frontend/.angular/
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
