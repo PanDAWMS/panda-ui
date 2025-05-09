@@ -22,23 +22,22 @@
 """Utils for OAuth2."""
 
 import logging
-from http.client import HTTPResponse
 
 from django.contrib.auth.models import User, Group
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 _logger = logging.getLogger('oauth')
 
 
-def preserve_cookies(request: HttpRequest, response: HTTPResponse) -> HTTPResponse:
+def preserve_cookies(request: HttpRequest, response: HttpResponse) -> HttpResponse:
     """
     Copy cookies from the request to the response for redirect to frontend.
 
     Args:
         request (HttpRequest): The HTTP request object.
-        response (HTTPResponse): The HTTP response object.
+        response (HttpResponse): The HTTP response object.
     Returns:
-        HTTPResponse: The modified response object with copied cookies.
+        HttpResponse: The modified response object with copied cookies.
     """
     # Copy cookies from the request to the response
     for cookie in request.COOKIES:
