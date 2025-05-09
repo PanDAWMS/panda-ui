@@ -88,7 +88,6 @@ class IamBackend(OpenIdConnectAuth):
         user_data = super().user_data(access_token, *args, **kwargs)
         _logger.debug(f'User data: {user_data}')
 
-        # if 'wlcg.groups' in user_data and ['wlcg.groups'] and len(user_data['wlcg.groups']) > 0:
         if 'wlcg.groups' in user_data and len(user_data['wlcg.groups']) > 0:
             is_success = update_user_groups(user_data['email'], user_data['wlcg.groups'])
             _logger.debug(f"User groups update status: {is_success}, user: {user_data['email']}, groups: {user_data['wlcg.groups']}")
