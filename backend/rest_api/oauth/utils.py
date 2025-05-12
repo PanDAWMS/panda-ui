@@ -1,31 +1,65 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+# Authors:
+# Tatiana Korchuganova <tatiana.korchuganova@cern.ch>
+# Paul Nilsson <paul.nilsson@cern.ch>
+
+"""Utils for OAuth2."""
+
 import logging
+
 from django.contrib.auth.models import User, Group
+from django.http import HttpRequest, HttpResponse
+
 _logger = logging.getLogger('oauth')
 
 
-def preserve_cookies(request, response):
+def preserve_cookies(request: HttpRequest, response: HttpResponse) -> HttpResponse:
     """
     Copy cookies from the request to the response for redirect to frontend.
-    :param request: The HTTP request object.
-    :param response: The HTTP response object.
-    return: The modified response object with copied cookies.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        response (HttpResponse): The HTTP response object.
+    Returns:
+        HttpResponse: The modified response object with copied cookies.
     """
     # Copy cookies from the request to the response
     for cookie in request.COOKIES:
-        if cookie in ["csrftoken", "sessionid"]:
+        if cookie in {"csrftoken", "sessionid"}:
             response.set_cookie(cookie, request.COOKIES[cookie], httponly=False, secure=False, samesite='Lax')
+
     # Set the token in cookies
     if request.user.is_authenticated and 'pandauitoken' not in response.cookies:
         response.set_cookie('pandauitoken', request.user.auth_token.key, httponly=True, secure=False, samesite='Strict')
+
     return response
 
 
-def update_user_groups(email, user_groups):
+def update_user_groups(email: str, user_groups: list[str]) -> bool:
     """
     Add user groups to the user in Django based on the email and user groups from IAM.
-    :param email: str
-    :param user_groups: list of str, user groups set in IAM
-    :return: bool
+
+    Args:
+        email (str): The email of the user.
+        user_groups (list[str]): The user groups set in IAM.
+    Returns:
+        bool: True if the user groups were successfully updated, False otherwise.
     """
     # get user objects by email
     users = User.objects.filter(email=email)
@@ -42,5 +76,6 @@ def update_user_groups(email, user_groups):
             if not user.groups.filter(name=group).exists():
                 user.groups.add(Group.objects.get(name=group))
                 user.save()
+
     return True
 
