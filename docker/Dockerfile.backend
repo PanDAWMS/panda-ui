@@ -1,2 +1,77 @@
-RUN ${PANDA_UI_VIRTUALENV_PATH}/bin/pip install Django, rest_framework, python-dotenv, oracledb, social-auth-core, social-auth-app-django,
- django-cors-headers
+ARG PYTHON_VERSION=3.13.0
+
+FROM docker.io/almalinux:9
+ARG PYTHON_VERSION
+LABEL maintainer="PanDA team"
+
+# Update and install dependencies
+RUN yum install -y epel-release && \
+    yum install -y nano httpd mod_ssl psmisc procps httpd-devel gcc supervisor logrotate fetch-crl less which git libaio glibc \
+        wget net-tools sudo openssl-devel readline-devel bzip2-devel libffi-devel zlib-devel systemd-udev nginx
+
+# install Oracle Instant Client and tnsnames.ora
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/2380000/oracle-instantclient-basic-23.8.0.25.04-1.el9.x86_64.rpm -P /tmp/ && \
+    yum install /tmp/oracle-instantclient-basic-23.8.0.25.04-1.el9.x86_64.rpm -y && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/2380000/oracle-instantclient-sqlplus-23.8.0.25.04-1.el9.x86_64.rpm -P /tmp/ && \
+    yum install /tmp/oracle-instantclient-sqlplus-23.8.0.25.04-1.el9.x86_64.rpm -y && \
+    yum clean all && rm -rf /var/cache/yum
+
+# Python 3.13 installation
+RUN mkdir /tmp/python && cd /tmp/python && \
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar -xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-shared --enable-optimizations --with-lto && \
+    make altinstall && \
+    echo /usr/local/lib > /etc/ld.so.conf.d/local.conf && ldconfig && \
+    cd / && rm -rf /tmp/python
+
+# Python toolchain symlinks
+RUN ln -s /usr/local/bin/python3.13 /usr/bin/python && \
+    ln -s /usr/local/bin/pip3.13 /usr/bin/pip
+
+# Add user/group
+RUN adduser --home /home/atlpan atlpan && \
+    groupadd zp && \
+    usermod -a -G zp atlpan
+
+# ENV and directory structure
+ENV APP_PATH=/opt/pandaui
+ENV VENV_PATH=$APP_PATH/venv
+ENV CONFIG_PATH=$APP_PATH/config
+
+# Create working dirs and adjust permissions
+RUN mkdir -p $APP_PATH $CONFIG_PATH $APP_PATH/logs && \
+    chown -R atlpan:zp $APP_PATH $CONFIG_PATH && \
+    chmod -R 770 $APP_PATH $CONFIG_PATH
+
+WORKDIR $APP_PATH
+
+# Set up Python venv & install dependencies
+COPY docker/requirements.txt $APP_PATH/requirements.txt
+RUN python -m venv $VENV_PATH && \
+    $VENV_PATH/bin/pip install --upgrade pip && \
+    $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt
+
+COPY backend $APP_PATH/pandaui/backend
+COPY docker/start.sh /usr/local/bin/
+COPY docker/systemd/daphne.service /etc/systemd/system/daphne.service
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+
+## Symlinks
+#RUN ln -fs $CONFIG_PATH/tnsnames.ora /etc/tnsnames.ora
+
+# Permissions
+RUN mkdir -p /var/lib/nginx/tmp/client_body && \
+    chown -R atlpan:zp /var/lib/nginx /etc/nginx /var/log/nginx /var/run && \
+    chmod -R 770 /etc/nginx /var/log/nginx && \
+    chmod +x /usr/local/bin/start.sh
+
+USER atlpan
+
+ENTRYPOINT ["start.sh"]
+
+STOPSIGNAL SIGINT
+
+EXPOSE 8080 8000 8443
+CMD ["all"]

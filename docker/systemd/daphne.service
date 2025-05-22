@@ -1,0 +1,15 @@
+[Unit]
+Description=Daphne ASGI server for PanDA UI
+After=network.target
+
+[Service]
+User=atlpan
+Group=zp
+WorkingDirectory=/opt/pandaui
+ExecStart=/opt/pandaui/venv/bin/daphne -u /tmp/daphne.sock backend.rest_api.asgi:application
+Restart=always
+Environment="DJANGO_SETTINGS_MODULE=backend.rest_api.settings"
+EnvironmentFile=/opt/pandaui/config/.env
+
+[Install]
+WantedBy=multi-user.target
