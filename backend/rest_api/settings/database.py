@@ -8,6 +8,7 @@ import os
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Default schema for the database
 DATABASE_SCHEMA_PANDA_UI = os.getenv('PANDAUI_DATABASE_SCHEMA_PANDAUI')
+DATABASE_SCHEMA_PANDA = os.getenv('PANDAUI_DATABASE_SCHEMA_PANDA')
 
 # Database
 DATABASES = {
