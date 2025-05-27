@@ -7,15 +7,15 @@ import os
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Default schema for the database
-DATABASE_SCHEMA_PANDA_UI = os.getenv('PANDAUI_DATABASE_SCHEMA_PANDAUI')
-DATABASE_SCHEMA_PANDA = os.getenv('PANDAUI_DATABASE_SCHEMA_PANDA')
+DATABASE_SCHEMA_PANDAUI = os.getenv('DATABASE_SCHEMA_PANDAUI')
+DATABASE_SCHEMA_PANDA = os.getenv('DATABASE_SCHEMA_PANDA')
 
 # Database
 DATABASES = {
     'default': {},
 }
 # Connection config dict
-DATABASE_PANDA_UI = json.loads(os.getenv('PANDAUI_DATABASE_CONNECTION_PANDAUI'))
+DATABASE_PANDA_UI = json.loads(os.getenv('DATABASE_CONNECTION_PANDAUI'))
 if DATABASE_PANDA_UI["VENDOR"] == 'oracle':
     DATABASES["default"] = DATABASE_PANDA_UI
     DATABASES["default"]["ENGINE"] = 'django.db.backends.oracle'
