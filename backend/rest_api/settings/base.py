@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # apps
     'rest_api.oauth',
+    'rest_api.job',
 ]
 
 MIDDLEWARE = [

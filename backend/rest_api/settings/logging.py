@@ -23,8 +23,20 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
+        "general_error": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": f"{LOG_PATH}general_error.log",
+            "formatter": "verbose",
+        }
     },
-    "loggers": {},
+    "loggers": {
+        "general_error" : {
+            "handlers": ["general_error"],
+            "level": "WARNING",
+            "propagate": True,
+        }
+    },
 }
 
 # create a separate log file for each app
