@@ -17,5 +17,5 @@ class ErrorDescription(models.Model):
     class Meta:
         managed = False
         app_label = 'job'
-        db_table = f'"{settings.DATABASE_SCHEMA_PANDAUI}"."error_descriptions"'
+        db_table = f'"{settings.DATABASE_SCHEMA_PANDA if settings.ENVIRONMENT != 'development' else settings.DATABASE_SCHEMA_PANDAUI}"."error_descriptions"'
         unique_together = (('component', 'code'),)
