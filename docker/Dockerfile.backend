@@ -36,14 +36,17 @@ RUN adduser --home /home/atlpan atlpan && \
     usermod -a -G zp atlpan
 
 # ENV and directory structure
-ENV APP_PATH=/opt/pandaui
+ENV PYTHONPATH=/opt/prod/pandaui/backend
+ENV DJANGO_SETTINGS_MODULE=rest_api.settings
+ENV APP_PATH=/opt/prod
 ENV VENV_PATH=$APP_PATH/venv
 ENV CONFIG_PATH=$APP_PATH/config
+ENV LOGS_PATH=$APP_PATH/logs
 
 # Create working dirs and adjust permissions
-RUN mkdir -p $APP_PATH $CONFIG_PATH $APP_PATH/logs && \
-    chown -R atlpan:zp $APP_PATH $CONFIG_PATH && \
-    chmod -R 770 $APP_PATH $CONFIG_PATH
+RUN mkdir -p $APP_PATH $CONFIG_PATH $LOGS_PATH && \
+    chown -R atlpan:zp $LOGS_PATH $CONFIG_PATH && \
+    chmod -R 770 $LOGS_PATH $CONFIG_PATH
 
 WORKDIR $APP_PATH
 
@@ -51,21 +54,26 @@ WORKDIR $APP_PATH
 COPY docker/requirements.txt $APP_PATH/requirements.txt
 RUN python -m venv $VENV_PATH && \
     $VENV_PATH/bin/pip install --upgrade pip && \
-    $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt
+    $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt && \
+    chown -R atlpan:zp $VENV_PATH && \
+    chmod -R 755 $VENV_PATH/bin
 
+# Copy backend code and set permissions
 COPY backend $APP_PATH/pandaui/backend
+RUN chown -R atlpan:zp $APP_PATH/pandaui && \
+    chmod -R 770 $APP_PATH/pandaui
+
+# Config files and permissions
 COPY docker/start.sh /usr/local/bin/
 COPY docker/systemd/daphne.service /etc/systemd/system/daphne.service
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-
-## Symlinks
-#RUN ln -fs $CONFIG_PATH/tnsnames.ora /etc/tnsnames.ora
-
-# Permissions
 RUN mkdir -p /var/lib/nginx/tmp/client_body && \
     chown -R atlpan:zp /var/lib/nginx /etc/nginx /var/log/nginx /var/run && \
     chmod -R 770 /etc/nginx /var/log/nginx && \
     chmod +x /usr/local/bin/start.sh
+
+## Symlinks
+#RUN ln -fs $CONFIG_PATH/tnsnames.ora /etc/tnsnames.ora
 
 USER atlpan
 

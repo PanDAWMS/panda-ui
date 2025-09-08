@@ -5,7 +5,7 @@ import os
 from .base import INSTALLED_APPS
 
 LOG_LEVEL = os.getenv('PANDAUI_LOG_LEVEL', 'INFO')
-LOG_PATH = os.getenv('PANDAUI_LOG_PATH', '/tmp/')
+LOG_PATH = os.getenv('PANDAUI_LOG_PATH', '/tmp') + '/'
 
 # base logging configuration
 LOGGING = {
