@@ -11,7 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
-  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
+#  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
 
 jobs:
   build:
@@ -52,9 +52,9 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
 
-      - name: Build and push frontend Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
+#      - name: Build and push frontend Docker image
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: ./frontend
+#          push: true
+#          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}

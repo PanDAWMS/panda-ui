@@ -1,7 +1,6 @@
 """
 Authentication settings for the REST API.
 """
-import json
 import os
 
 AUTHENTICATION_BACKENDS = [
