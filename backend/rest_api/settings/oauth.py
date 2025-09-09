@@ -1,7 +1,6 @@
 """
 Authentication settings for the REST API.
 """
-import json
 import os
 
 AUTHENTICATION_BACKENDS = [
@@ -20,10 +19,20 @@ REST_FRAMEWORK = {
 }
 
 # get the IAM configuration from the environment
-INDIGO_IAM_CONFIG = json.loads(os.getenv('PANDAUI_AUTH_INDIGO_IAM'))
-SOCIAL_AUTH_OIDC_OIDC_ENDPOINT = INDIGO_IAM_CONFIG['ENDPOINT']
-SOCIAL_AUTH_IAM_KEY = INDIGO_IAM_CONFIG['CLIENT_ID']
-SOCIAL_AUTH_IAM_SECRET = INDIGO_IAM_CONFIG['CLIENT_SECRET']
+SOCIAL_AUTH_OIDC_OIDC_ENDPOINT = os.getenv("AUTH_IAM_ENDPOINT")
+SOCIAL_AUTH_IAM_KEY = os.getenv("AUTH_IAM_CLIENT_ID")
+SOCIAL_AUTH_IAM_SECRET = os.getenv("AUTH_IAM_CLIENT_SECRET")
+# Validate all required IAM env vars
+_missing = [
+    _name for _name, _value in [
+        ("AUTH_IAM_ENDPOINT", SOCIAL_AUTH_OIDC_OIDC_ENDPOINT),
+        ("AUTH_IAM_CLIENT_ID", SOCIAL_AUTH_IAM_KEY),
+        ("AUTH_IAM_CLIENT_SECRET", SOCIAL_AUTH_IAM_SECRET),
+    ] if not _value
+]
+if _missing:
+    raise RuntimeError(f"Missing required IAM environment variables: {', '.join(_missing)}")
+
 SOCIAL_AUTH_IAM_SCOPE = ['wlcg.groups']
 SOCIAL_AUTH_IAM_EXTRA_DATA = ['id_token']
 
