@@ -1,0 +1,42 @@
+## This workflow is triggered on pull requests to the 'next' branch.
+## It sets a unique temporary version for the PR, updates version files, builds a Docker image
+##
+
+name: PR Build Next
+
+on:
+  pull_request:
+    branches: [next]
+  workflow_dispatch:  # optional manual trigger
+
+jobs:
+  build-pr-next:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump minor version and tag
+        run: bash .github/scripts/bump-version-minor.sh
+
+      - name: Read version
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Build Docker image (backend)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.backend
+          push: false
+          tags: ghcr.io/${{ github.repository }}-backend:${{ env.VERSION }}
+
+#      - name: Build Docker image (frontend)
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: .
+#          file: ./docker/Dockerfile.frontend
+#          push: false
+#          tags: ghcr.io/${{ github.repository }}-frontend:${{ env.VERSION }}
