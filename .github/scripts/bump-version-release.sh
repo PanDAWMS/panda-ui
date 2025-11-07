@@ -23,6 +23,9 @@ git config user.email "github-actions[bot]@users.noreply.github.com"
 
 git add "$VERSION_FILE"
 git commit -m "Bump version to $new_version"
-git tag "v$new_version"
+# create tag only if it doesn't exist
+if ! git rev-parse "v$new_version" >/dev/null 2>&1; then
+    git tag "v$new_version"
+fi
 git push origin HEAD:refs/heads/$BRANCH
 git push origin --tags
