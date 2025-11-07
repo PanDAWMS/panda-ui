@@ -26,6 +26,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
 
+      - name: Lowercase repository in image names
+        run: |
+          echo "IMAGE_NAME_BACKEND=$(echo '${{ env.IMAGE_NAME_BACKEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+#          echo "IMAGE_NAME_FRONTEND=$(echo '${{ env.IMAGE_NAME_FRONTEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Bump version and tag
         run: bash .github/scripts/bump-version-release.sh
 
@@ -50,7 +55,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
 
       - name: Build and push backend Docker image
         uses: docker/build-push-action@v5

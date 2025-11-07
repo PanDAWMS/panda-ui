@@ -7,6 +7,7 @@ name: PR Build Next
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
+#  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
 
 on:
   pull_request:
@@ -25,6 +26,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
 
+      - name: Lowercase repository in image names
+        run: |
+          echo "IMAGE_NAME_BACKEND=$(echo '${{ env.IMAGE_NAME_BACKEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+#          echo "IMAGE_NAME_FRONTEND=$(echo '${{ env.IMAGE_NAME_FRONTEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Bump minor version and tag
         run: bash .github/scripts/bump-version-minor.sh
 
@@ -37,7 +43,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile.backend
           push: false
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
 
 #      - name: Build Docker image (frontend)
 #        uses: docker/build-push-action@v5
@@ -45,4 +51,4 @@ jobs:
 #          context: .
 #          file: ./docker/Dockerfile.frontend
 #          push: false
-#          tags: ghcr.io/${{ github.repository }}-frontend:${{ env.VERSION }}
+#          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
