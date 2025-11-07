@@ -4,6 +4,10 @@
 
 name: PR Build Next
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
+
 on:
   pull_request:
     branches: [next]
@@ -33,7 +37,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile.backend
           push: false
-          tags: ghcr.io/${{ github.repository }}-backend:${{ env.VERSION }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
 
 #      - name: Build Docker image (frontend)
 #        uses: docker/build-push-action@v5
