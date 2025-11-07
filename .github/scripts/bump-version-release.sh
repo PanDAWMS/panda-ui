@@ -22,4 +22,5 @@ git config user.email "github-actions[bot]@users.noreply.github.com"
 git add "$VERSION_FILE"
 git commit -m "Bump version to $new_version"
 git tag "v$new_version"
-git push origin main --tags
+git push
+git push --tags
