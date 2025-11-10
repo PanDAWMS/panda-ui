@@ -1,8 +1,6 @@
-from http.client import HTTPResponse
-
 from django.db import IntegrityError, transaction
-from django.http import HttpRequest, HttpResponse
 from rest_framework import viewsets, status
+from rest_framework.request import Request
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +19,7 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsExperimentMember]
 
     @action(detail=False, methods=['post'], url_path='bulk')
-    def bulk_create(self, request: HttpRequest) -> HttpResponse:
+    def bulk_create(self, request: Request) -> Response:
         """
         Bulk-create or upsert ``ErrorDescription`` entries.
 
@@ -34,11 +32,12 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
           (``component``, ``code``) are updated; new rows are inserted.
 
         Example:
-            >>> POST /api/error_description/bulk/?overwrite=true
-            >>> [
-            ...   {"component": "pilot", "code": 1000, "acronym": "SOMEACRONYM", "description": "This error ..."},
-            ...   {"component": "jobdispatcher",  "code": 99, "acronym": "SOMEACRONYM", "message": "This error ..."}
-            ... ]
+        .. code-block:: http
+            POST /api/error_description/bulk/?overwrite=true
+            [
+               {"component": "pilot", "code": 1000, "acronym": "SOMEACRONYM", "description": "This error ..."},
+               {"component": "jobdispatcher",  "code": 99, "acronym": "SOMEACRONYM", "message": "This error ..."}
+            ]
 
         Args:
             request (HttpRequest):
@@ -101,7 +100,7 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                 if to_create:
                     serializer = self.get_serializer(data=to_create, many=True)
                     serializer.is_valid(raise_exception=True)
-                    self.perform_bulk_create(serializer)
+                    serializer.save()
                     created = serializer.instance
 
                 all_objs = updated + created
@@ -112,7 +111,3 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Database integrity error.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': 'Failed to add new records to DB.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-    def perform_bulk_create(self, serializer):
-        serializer.save()
