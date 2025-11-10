@@ -30,6 +30,9 @@ import re
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Default schema for the database
+DATABASE_SCHEMA_PANDAUI = os.getenv('DATABASE_SCHEMA_PANDAUI')
+DATABASE_SCHEMA_PANDA = os.getenv('DATABASE_SCHEMA_PANDA')
 
 # Database
 DATABASES = {}

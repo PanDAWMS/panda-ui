@@ -14,9 +14,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 
-urlpatterns = [
-    path('api/oauth/', include('rest_api.oauth.urls')),
-]
+from rest_framework.schemas import get_schema_view
+from rest_framework.renderers import JSONOpenAPIRenderer
+
+schema_view = get_schema_view(
+    title="Server Monitoring API",
+    url="https://bigpanda.cern.ch/api/",
+    renderer_classes=[JSONOpenAPIRenderer],
+)
+
+urlpatterns = [path("schema.json", schema_view),]
+
+for app in settings.INSTALLED_APPS:
+    if app.startswith("rest_api."):
+        urlpatterns.append(path(f"api/{app.replace('rest_api.', '')}/", include(f'{app}.urls')))

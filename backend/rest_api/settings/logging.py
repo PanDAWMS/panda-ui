@@ -44,6 +44,12 @@ LOGGING = {
             "filename": f"{LOG_PATH}request.log",
             "formatter": "verbose",
         },
+        "general_error": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": f"{LOG_PATH}general_error.log",
+            "formatter": "verbose",
+        }
     },
     "loggers": {
         "django": {

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # apps
     'rest_api.oauth',
+    'rest_api.job',
 ]
 
 MIDDLEWARE = [
@@ -72,4 +73,7 @@ USE_TZ = False
 # static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 
-
+# PanDA API URL
+PANDA_SERVER_API_URL = os.getenv('PANDA_SERVER_API_URL', None)
+if not PANDA_SERVER_API_URL:
+    raise ValueError("PANDA_API_URL environment variable is not set")

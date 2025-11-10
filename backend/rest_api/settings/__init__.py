@@ -1,12 +1,12 @@
 import os
 from dotenv import load_dotenv
 
-PATH_ENV_FILE = os.getenv('PATH_ENV_FILE', '/data_aipanda163/tk/private/.env')
+ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
 
 # Load environment variables from .env file
-load_dotenv(PATH_ENV_FILE)
-
-ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
+if ENVIRONMENT == 'development':
+    PATH_ENV_FILE = os.getenv('PATH_ENV_FILE', '/tmp/.env')
+    load_dotenv(PATH_ENV_FILE)
 
 from .base import *
 from .database import *

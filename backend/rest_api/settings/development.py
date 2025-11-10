@@ -34,3 +34,6 @@ SESSION_COOKIE_SAMESITE = "Lax"
 for logger in LOGGING["loggers"]:
     LOGGING["loggers"][logger]["level"] = "DEBUG"
     LOGGING["loggers"][logger]["handlers"].append("console")
+
+from .oauth import REST_FRAMEWORK
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += ('rest_framework.renderers.BrowsableAPIRenderer',)
