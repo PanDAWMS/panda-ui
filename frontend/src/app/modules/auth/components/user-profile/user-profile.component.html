@@ -1,0 +1,60 @@
+@if (user$ | async; as user) {
+  <ng-container>
+    <p-table [value]="[user]" stripedRows >
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+          <td>Username</td>
+          <td>{{ rowData.username }}</td>
+        </tr>
+        <tr>
+          <td>First name</td>
+          <td>{{ rowData.first_name }}</td>
+        </tr>
+        <tr>
+          <td>Family name</td>
+          <td>{{ rowData.last_name }}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ rowData.email }}</td>
+        </tr>
+        <tr>
+          <td>Groups</td>
+          <td>
+            @if (rowData.groups.length) {
+              <ng-container>{{ rowData.groups.join(', ') }}</ng-container>
+            } @else {
+              <ng-template #noGroups>&mdash;</ng-template>
+            }
+          </td>
+        </tr>
+        <tr>
+          <td>Permissions</td>
+          <td>
+            @if (rowData.permissions.length) {
+              <ng-container>{{ rowData.permissions.join(', ') }}</ng-container>
+            } @else {
+              <ng-template pTemplate="noPermissions">&mdash;</ng-template>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-button
+      label="Get Token"
+      icon="pi pi-key"
+      (click)="loadToken()"
+      [disabled]="loadingToken"
+      [loading]="loadingToken"
+      class="p-mt-3">
+    </p-button>
+
+    @if (token$ | async; as token) {
+      <div  class="p-mt-3">
+        <strong>Your token: </strong>
+        <code>{{ token }}</code>
+      </div>
+    }
+  </ng-container>
+}
