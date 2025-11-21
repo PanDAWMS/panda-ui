@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import { ButtonModule} from 'primeng/button';
 import {TableModule} from 'primeng/table';
@@ -18,11 +18,12 @@ import {InputTextModule} from 'primeng/inputtext';
   styleUrl: './job-error-description-list.component.scss'
 })
 export class JobErrorDescriptionListComponent implements OnInit{
+  private api = inject(ApiService);
+
   jobErrorDescriptions$!: Observable<ErrorDescription[]> | null;
   components: {label: string, value: string}[] = [];
-  selectedComponents: string[] = [];
 
-  constructor(private api: ApiService) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.jobErrorDescriptions$ = this.getJobErrorDescriptions();

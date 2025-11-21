@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -10,6 +10,9 @@ import {Router} from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
   private authUrl = `${environment.apiUrl}/oauth/`; // DRF endpoint returns the IAM login URL
   private tokenSubject = new BehaviorSubject<string | null>(null);
   private userSubject = new BehaviorSubject<UserProfile | null>(null);
@@ -25,7 +28,7 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor() {}
 
   login() {
     // Redirect to IAM login page keeping session in the same tab

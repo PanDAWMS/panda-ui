@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {AuthService} from '../../../../core/services/auth.service';
 
 @Component({
@@ -8,7 +8,9 @@ import {AuthService} from '../../../../core/services/auth.service';
   styleUrl: './logout.component.scss'
 })
 export class LogoutComponent implements OnInit {
-  constructor(private authService: AuthService) {}
+  private authService = inject(AuthService);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.authService.logout();

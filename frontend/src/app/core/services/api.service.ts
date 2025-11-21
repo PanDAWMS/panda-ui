@@ -1,5 +1,5 @@
 // src/app/core/services/api.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -9,9 +9,10 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class ApiService {
+  private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   // Generic GET
   get<T>(endpoint: string, params?: Record<string, any>): Observable<T> {

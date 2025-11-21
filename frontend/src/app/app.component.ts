@@ -1,9 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNG } from 'primeng/config';
 import {HeaderComponent} from "./core/layout/header/header.component";
 import {FooterComponent} from "./core/layout/footer/footer.component";
-import {AuthService} from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +12,10 @@ import {AuthService} from './core/services/auth.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit{
+  private primeng = inject(PrimeNG);
   title = 'frontend';
 
-  constructor(
-    private authService: AuthService,
-    private primeng: PrimeNG
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     // enable PrimeNG ripple effect

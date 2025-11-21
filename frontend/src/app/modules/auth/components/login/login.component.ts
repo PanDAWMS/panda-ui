@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {AvatarModule} from 'primeng/avatar';
 import {MenuModule} from 'primeng/menu';
@@ -16,10 +16,12 @@ import {Observable} from 'rxjs';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  auth = inject(AuthService);
+
   user$!: Observable<UserProfile | null>;
   userMenu: MenuItem[] = [];
 
-  constructor(public auth: AuthService) {
+  constructor() {
     this.user$ = this.auth.user$;
     this.user$.subscribe(user => {
       if (user) {

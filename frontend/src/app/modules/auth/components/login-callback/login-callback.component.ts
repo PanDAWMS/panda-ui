@@ -1,7 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {AuthService} from '../../../../core/services/auth.service';
 import {Router} from '@angular/router';
-import {UserProfile} from '../../../../core/models/user.model';
 
 
 @Component({
@@ -12,8 +11,10 @@ import {UserProfile} from '../../../../core/models/user.model';
   styleUrl: './login-callback.component.scss'
 })
 export class LoginCallbackComponent implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.authService.checkAuth().subscribe({
