@@ -22,32 +22,27 @@ export class ApiService {
         httpParams = httpParams.set(key, params[key]);
       }
     }
-    return this.http.get<T>(`${this.baseUrl}/${endpoint}/`, { params: httpParams })
-      .pipe(catchError(this.handleError));
+    return this.http.get<T>(`${this.baseUrl}/${endpoint}/`, { params: httpParams }).pipe(catchError(this.handleError));
   }
 
   // Generic POST
   post<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}/${endpoint}/`, data)
-      .pipe(catchError(this.handleError));
+    return this.http.post<T>(`${this.baseUrl}/${endpoint}/`, data).pipe(catchError(this.handleError));
   }
 
   // Generic PUT
   put<T>(endpoint: string, id: number | string, data: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}/${endpoint}/${id}/`, data)
-      .pipe(catchError(this.handleError));
+    return this.http.put<T>(`${this.baseUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
   }
 
   // Generic PATCH
   patch<T>(endpoint: string, id: number | string, data: any): Observable<T> {
-    return this.http.patch<T>(`${this.baseUrl}/${endpoint}/${id}/`, data)
-      .pipe(catchError(this.handleError));
+    return this.http.patch<T>(`${this.baseUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
   }
 
   // Generic DELETE
   delete<T>(endpoint: string, id: number | string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}/${endpoint}/${id}/`)
-      .pipe(catchError(this.handleError));
+    return this.http.delete<T>(`${this.baseUrl}/${endpoint}/${id}/`).pipe(catchError(this.handleError));
   }
 
   // Common error handler

@@ -1,39 +1,42 @@
-
-<p-table #dt1
-         [value]="(jobErrorDescriptions$ | async) ?? []"
-         dataKey="id"
-         [tableStyle]="{'width':'100%', 'table-layout':'fixed'}"
-         [paginator]="true"
-         [rows]="10"
-         [rowsPerPageOptions]="[10, 25, 50, 0]"
-         [showCurrentPageReport]="true"
-         currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
-         [globalFilterFields]="['component', 'code', 'diagnostics', 'description']"
->
+<p-table
+  #dt1
+  [value]="(jobErrorDescriptions$ | async) ?? []"
+  dataKey="id"
+  [tableStyle]="{ width: '100%', 'table-layout': 'fixed' }"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 25, 50, 0]"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+  [globalFilterFields]="['component', 'code', 'diagnostics', 'description']">
   <ng-template pTemplate="caption">
     <div class="flex justify-content-end">
       <p-iconfield>
         <p-inputicon class="pi pi-search"></p-inputicon>
-        <input pInputText type="text" placeholder="Search keyword" (input)="dt1.filterGlobal($event.target.value, 'contains')" />
+        <input
+          pInputText
+          type="text"
+          placeholder="Search keyword"
+          (input)="dt1.filterGlobal($event.target.value, 'contains')" />
       </p-iconfield>
     </div>
   </ng-template>
   <ng-template pTemplate="header">
     <tr>
-      <th pSortableColumn="component" style="width: 10%;">
+      <th pSortableColumn="component" style="width: 10%">
         <div class="flex items-center">
           <span>Component</span>
           <p-sortIcon field="component"></p-sortIcon>
         </div>
       </th>
-      <th pSortableColumn="code" style="width: 10%;">
-        <div class="flex items-center" style="max-width:10rem">
+      <th pSortableColumn="code" style="width: 10%">
+        <div class="flex items-center" style="max-width: 10rem">
           <span>Code</span>
           <p-sortIcon field="code"></p-sortIcon>
         </div>
       </th>
-      <th style="width: 20%;">Diagnostics</th>
-      <th style="width: 60%;">Description</th>
+      <th style="width: 20%">Diagnostics</th>
+      <th style="width: 60%">Description</th>
     </tr>
     <tr>
       <th>
@@ -46,8 +49,7 @@
               [maxSelectedLabels]="2"
               placeholder="Any"
               optionLabel="label"
-              showClear="true"
-            >
+              showClear="true">
               <ng-template let-option pTemplate="item">
                 <span>{{ option.label }}</span>
               </ng-template>
@@ -55,16 +57,15 @@
           </ng-template>
         </p-columnFilter>
       </th>
-      <th style="width: 10%;">
-        <p-columnFilter type="numeric" field="code"  ariaLabel="Filter code" filterOn="input">
+      <th style="width: 10%">
+        <p-columnFilter type="numeric" field="code" ariaLabel="Filter code" filterOn="input">
           <ng-template pTemplate="filter" let-value let-filter="filterCallback">
             <input
               pInputText
               type="number"
               placeholder="Type code"
               [ngModel]="value"
-              (ngModelChange)="filter($event)"
-            />
+              (ngModelChange)="filter($event)" />
           </ng-template>
         </p-columnFilter>
       </th>
@@ -81,6 +82,8 @@
     </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage">
-    <tr><td colspan="7">No error descriptions found.</td></tr>
+    <tr>
+      <td colspan="7">No error descriptions found.</td>
+    </tr>
   </ng-template>
 </p-table>

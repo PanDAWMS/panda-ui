@@ -1,5 +1,5 @@
 export interface ErrorDescription {
-  id: bigint,
+  id: bigint;
   component: string;
   code: number;
   acronym?: string;

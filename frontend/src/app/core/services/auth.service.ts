@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {UserProfile} from '../models/user.model';
-import { map, tap, catchError, finalize } from "rxjs/operators";
-import {Router} from '@angular/router';
+import { UserProfile } from '../models/user.model';
+import { map, tap, catchError, finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,7 @@ export class AuthService {
 
   login() {
     // Redirect to IAM login page keeping session in the same tab
-    window.open(`${this.authUrl}login/iam/`, "_self");
+    window.open(`${this.authUrl}login/iam/`, '_self');
   }
 
   checkAuth(): Observable<UserProfile | null> {
@@ -46,7 +46,7 @@ export class AuthService {
     // Check if the user is authenticated by calling the userinfo endpoint
     console.debug('[AuthService] checkAuth: calling userinfo ');
     return this.http.get<UserProfile>(`${this.authUrl}userinfo/`).pipe(
-      map(response => ({
+      map((response) => ({
         username: response.username,
         first_name: response.first_name,
         last_name: response.last_name,
@@ -55,7 +55,7 @@ export class AuthService {
         groups: response.groups,
         permissions: response.permissions,
       })),
-      tap(user => {
+      tap((user) => {
         console.debug('[AuthService] checkAuth: got user from API', user);
         this.setUser(user);
       }),
@@ -63,7 +63,7 @@ export class AuthService {
         console.debug('[AuthService] checkAuth: error', err && err.status, err && err.message);
         this.setUser(null);
         return of(null);
-      })
+      }),
     );
   }
 
@@ -72,17 +72,17 @@ export class AuthService {
     this.userSubject.next(user);
   }
 
-  getUser(): Observable<UserProfile|null> {
+  getUser(): Observable<UserProfile | null> {
     return this.userSubject.asObservable();
   }
 
   getUserToken(): Observable<string> {
     return this.http.get<{ token: string }>(`${this.authUrl}usertoken/`).pipe(
-      map(response => {
+      map((response) => {
         this.setToken(response.token);
         return response.token;
       }),
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
@@ -99,19 +99,22 @@ export class AuthService {
     this.clearSession();
 
     // notify backend to clear server session cookie, include credentials
-    this.http.get(`${this.authUrl}logout/`, { withCredentials: true }).pipe(
-      catchError(err => {
-        // ignore error but log
-        console.error('Logout API error', err);
-        return of(null);
-      })
-    ).subscribe(() => {
-      try {
-        this.router.navigate(['/']);
-      } catch (e) {
-        // ignore navigation errors
-      }
-    });
+    this.http
+      .get(`${this.authUrl}logout/`, { withCredentials: true })
+      .pipe(
+        catchError((err) => {
+          // ignore error but log
+          console.error('Logout API error', err);
+          return of(null);
+        }),
+      )
+      .subscribe(() => {
+        try {
+          this.router.navigate(['/']);
+        } catch (e) {
+          // ignore navigation errors
+        }
+      });
   }
 
   clearSession(): void {
@@ -120,5 +123,4 @@ export class AuthService {
     this.tokenSubject.next(null);
     this.userSubject.next(null);
   }
-
 }

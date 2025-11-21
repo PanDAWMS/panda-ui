@@ -1,6 +1,6 @@
 @if (user$ | async; as user) {
   <ng-container>
-    <p-table [value]="[user]" stripedRows >
+    <p-table [value]="[user]" stripedRows>
       <ng-template pTemplate="body" let-rowData>
         <tr>
           <td>Username</td>
@@ -51,7 +51,7 @@
     </p-button>
 
     @if (token$ | async; as token) {
-      <div  class="p-mt-3">
+      <div class="p-mt-3">
         <strong>Your token: </strong>
         <code>{{ token }}</code>
       </div>

@@ -1,12 +1,12 @@
-import {Component, inject} from '@angular/core';
-import {Router} from '@angular/router';
-import {AuthService} from '../../../../core/services/auth.service';
-import {Observable} from 'rxjs';
-import {UserProfile} from '../../../../core/models/user.model';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Observable } from 'rxjs';
+import { UserProfile } from '../../../../core/models/user.model';
 import { CommonModule } from '@angular/common';
-import {tap} from 'rxjs/operators';
-import { TableModule} from 'primeng/table';
-import { ButtonModule} from 'primeng/button';
+import { tap } from 'rxjs/operators';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
@@ -14,7 +14,7 @@ import { SkeletonModule } from 'primeng/skeleton';
   imports: [CommonModule, ButtonModule, TableModule, SkeletonModule],
   templateUrl: './user-profile.component.html',
   standalone: true,
-  styleUrl: './user-profile.component.scss'
+  styleUrl: './user-profile.component.scss',
 })
 // export class UserProfileComponent {
 //   user$!: Observable<UserProfile | null>;
@@ -52,11 +52,14 @@ export class UserProfileComponent {
   // Trigger token load
   loadToken() {
     this.loadingToken = true;
-    this.authService.getUserToken().pipe(
-      tap({
-        next: () => this.loadingToken = false,
-        error: () => this.loadingToken = false
-      })
-    ).subscribe();
+    this.authService
+      .getUserToken()
+      .pipe(
+        tap({
+          next: () => (this.loadingToken = false),
+          error: () => (this.loadingToken = false),
+        }),
+      )
+      .subscribe();
   }
 }

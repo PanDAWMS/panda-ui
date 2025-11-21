@@ -1,14 +1,12 @@
-
 :host ::ng-deep .p-menubar-start {
-	>a {
-		color: var(--pui-surface-50);
-		font-weight: bold;
-		text-decoration: none;
+  > a {
+    color: var(--pui-surface-50);
+    font-weight: bold;
+    text-decoration: none;
     margin: auto 0.75rem;
-	}
+  }
 }
 
 :host ::ng-deep .p-menubar {
   border: none;
 }
-

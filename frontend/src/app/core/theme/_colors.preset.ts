@@ -1,4 +1,4 @@
-import {palette} from '@primeuix/themes';
+import { palette } from '@primeuix/themes';
 
 export const colorSchemePreset = {
   // primary: {
@@ -14,16 +14,16 @@ export const colorSchemePreset = {
   //   900: '#314d60',
   //   950: '#29404f'
   // },
-  primary: palette("#5e829a"),
+  primary: palette('#5e829a'),
   colorScheme: {
     light: {
       primary: {
-        color: "{primary.500}",
-        contrastColor: "#ffffff",
-        hoverColor: "{primary.600}",
-        activeColor: "{primary.700}"
+        color: '{primary.500}',
+        contrastColor: '#ffffff',
+        hoverColor: '{primary.600}',
+        activeColor: '{primary.700}',
       },
-      surface: palette("#7f7f7f"),
+      surface: palette('#7f7f7f'),
     },
-  }
+  },
 };

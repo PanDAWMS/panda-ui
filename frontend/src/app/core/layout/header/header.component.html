@@ -9,7 +9,9 @@
         <p-badge [ngClass]="{ 'ml-auto': !root, 'ml-2': root }" [value]="item.badge" />
       }
       @if (item.shortcut) {
-        <span class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{ item.shortcut }}</span>
+        <span class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{
+          item.shortcut
+        }}</span>
       }
       @if (item.items) {
         <i [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i>
@@ -18,7 +20,7 @@
   </ng-template>
   <ng-template pTemplate="end">
     <div class="flex items-center gap-1">
-<!--      <app-search></app-search>-->
+      <!--      <app-search></app-search>-->
       <app-login></app-login>
     </div>
   </ng-template>

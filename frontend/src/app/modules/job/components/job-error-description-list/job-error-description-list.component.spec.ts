@@ -8,9 +8,8 @@ describe('JobErrorDescriptionListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobErrorDescriptionListComponent]
-    })
-    .compileComponents();
+      imports: [JobErrorDescriptionListComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(JobErrorDescriptionListComponent);
     component = fixture.componentInstance;
