@@ -1,10 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import include, path
 from rest_api.job.views import ErrorDescriptionViewSet
+from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'error_description', ErrorDescriptionViewSet, basename='error_description')
+router.register(r"error-description", ErrorDescriptionViewSet, basename="error-description")
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]

@@ -50,6 +50,9 @@ def associate_by_email(backend, details, user=None, *args, **kwargs):
         if len(users) == 0:
             return None
         if len(users) > 1:
-            return {"user": sorted(users, key=lambda x: x.date_joined)[0], "is_new": False}
+            return {
+                "user": sorted(users, key=lambda x: x.date_joined)[0],
+                "is_new": False,
+            }
         return {"user": users[0], "is_new": False}
     return None

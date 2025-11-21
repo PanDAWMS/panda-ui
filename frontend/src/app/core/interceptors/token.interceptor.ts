@@ -1,11 +1,11 @@
-import {inject, Injectable} from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import {Observable, switchMap, take} from 'rxjs';
-import {AuthService} from '../services/auth.service';
+import { Observable, switchMap, take } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  private authService = inject(AuthService)
+  private authService = inject(AuthService);
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // get the latest token value once for this request
@@ -21,7 +21,7 @@ export class TokenInterceptor implements HttpInterceptor {
         console.debug('[TokenInterceptor] Token: ', token);
         console.debug('[TokenInterceptor] Request: ', cloned);
         return next.handle(cloned);
-      })
+      }),
     );
   }
 }

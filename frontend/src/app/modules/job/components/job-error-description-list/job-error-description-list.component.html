@@ -8,12 +8,11 @@
   [rowsPerPageOptions]="[10, 25, 50, 0]"
   [showCurrentPageReport]="true"
   [tableStyle]="{ width: '100%', 'table-layout': 'fixed' }"
-  [value]="(jobErrorDescriptions$ | async) ?? []"
->
+  [value]="(jobErrorDescriptions$ | async) ?? []">
   <ng-template pTemplate="caption">
     <div class="flex justify-content-end">
       <p-iconfield>
-        <p-inputicon class="pi pi-search"/>
+        <p-inputicon class="pi pi-search" />
         <input
           pInputText
           placeholder="Search keyword"
@@ -27,13 +26,13 @@
       <th pSortableColumn="component" style="width: 10%">
         <div class="flex items-center">
           <span>Component</span>
-          <p-sortIcon field="component"/>
+          <p-sortIcon field="component" />
         </div>
       </th>
       <th pSortableColumn="code" style="width: 10%">
         <div class="flex items-center" style="max-width: 10rem">
           <span>Code</span>
-          <p-sortIcon field="code"/>
+          <p-sortIcon field="code" />
         </div>
       </th>
       <th style="width: 20%">Diagnostics</th>
@@ -50,8 +49,7 @@
               [maxSelectedLabels]="2"
               [ngModel]="value"
               [options]="components"
-              (ngModelChange)="onComponentFilterChange($event, filter)"
-            >
+              (ngModelChange)="onComponentFilterChange($event, filter)">
               <ng-template let-option pTemplate="item">
                 <span>{{ option.label }}</span>
               </ng-template>

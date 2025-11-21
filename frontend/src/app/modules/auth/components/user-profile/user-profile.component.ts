@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Observable } from 'rxjs';
@@ -15,9 +15,8 @@ import { SkeletonModule } from 'primeng/skeleton';
   templateUrl: './user-profile.component.html',
   standalone: true,
   styleUrl: './user-profile.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class UserProfileComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -29,7 +28,7 @@ export class UserProfileComponent {
   loadingToken = false;
 
   // trigger token load
-  loadToken():void {
+  loadToken(): void {
     this.loadingToken = true;
     this.authService
       .getUserToken()

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarModule } from 'primeng/avatar';
 import { MenuModule } from 'primeng/menu';
@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
   imports: [CommonModule, AvatarModule, MenuModule, ButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   auth = inject(AuthService);

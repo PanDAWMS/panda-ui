@@ -1,60 +1,59 @@
 @if (user$ | async; as user) {
-  <ng-container>
-    <p-table stripedRows [value]="[user]">
-      <ng-template let-row pTemplate="body">
-        <tr>
-          <td>Username</td>
-          <td>{{ row.username }}</td>
-        </tr>
-        <tr>
-          <td>First name</td>
-          <td>{{ row.first_name }}</td>
-        </tr>
-        <tr>
-          <td>Family name</td>
-          <td>{{ row.last_name }}</td>
-        </tr>
-        <tr>
-          <td>Email</td>
-          <td>{{ row.email }}</td>
-        </tr>
-        <tr>
-          <td>Groups</td>
-          <td>
-            @if (row.groups.length) {
-              <ng-container>{{ row.groups.join(', ') }}</ng-container>
-            } @else {
-              <ng-template #noGroups>&mdash;</ng-template>
-            }
-          </td>
-        </tr>
-        <tr>
-          <td>Permissions</td>
-          <td>
-            @if (row.permissions.length) {
-              <ng-container>{{ row.permissions.join(', ') }}</ng-container>
-            } @else {
-              <ng-template pTemplate="noPermissions">&mdash;</ng-template>
-            }
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+<ng-container>
+  <p-table stripedRows [value]="[user]">
+    <ng-template let-row pTemplate="body">
+      <tr>
+        <td>Username</td>
+        <td>{{ row.username }}</td>
+      </tr>
+      <tr>
+        <td>First name</td>
+        <td>{{ row.first_name }}</td>
+      </tr>
+      <tr>
+        <td>Family name</td>
+        <td>{{ row.last_name }}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{ row.email }}</td>
+      </tr>
+      <tr>
+        <td>Groups</td>
+        <td>
+          @if (row.groups.length) {
+          <ng-container>{{ row.groups.join(', ') }}</ng-container>
+          } @else {
+          <ng-template #noGroups>&mdash;</ng-template>
+          }
+        </td>
+      </tr>
+      <tr>
+        <td>Permissions</td>
+        <td>
+          @if (row.permissions.length) {
+          <ng-container>{{ row.permissions.join(', ') }}</ng-container>
+          } @else {
+          <ng-template pTemplate="noPermissions">&mdash;</ng-template>
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 
-    <p-button
-      class="p-mt-3"
-      icon="pi pi-key"
-      label="Get Token"
-      [disabled]="loadingToken"
-      [loading]="loadingToken"
-      (click)="loadToken()"
-    />
+  <p-button
+    class="p-mt-3"
+    icon="pi pi-key"
+    label="Get Token"
+    [disabled]="loadingToken"
+    [loading]="loadingToken"
+    (click)="loadToken()" />
 
-    @if (token$ | async; as token) {
-      <div class="p-mt-3">
-        <strong>Your token: </strong>
-        <code>{{ token }}</code>
-      </div>
-    }
-  </ng-container>
+  @if (token$ | async; as token) {
+  <div class="p-mt-3">
+    <strong>Your token: </strong>
+    <code>{{ token }}</code>
+  </div>
+  }
+</ng-container>
 }

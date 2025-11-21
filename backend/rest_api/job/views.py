@@ -1,14 +1,14 @@
 from django.db import IntegrityError, transaction
-from rest_framework import viewsets, status
-from rest_framework.request import Request
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 from rest_api.job.models import ErrorDescription
 from rest_api.job.serializers import ErrorDescriptionSerializer
 from rest_api.oauth.permissions import IsExperimentMember
+from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):
@@ -18,7 +18,7 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsExperimentMember]
 
-    @action(detail=False, methods=['post'], url_path='bulk')
+    @action(detail=False, methods=["post"], url_path="bulk")
     def bulk_create(self, request: Request) -> Response:
         """
         Bulk-create or upsert ``ErrorDescription`` entries.
@@ -58,7 +58,10 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
         """
         data = request.data
         if not isinstance(data, list):
-            return Response({'error': 'Expected a list of items.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Expected a list of items."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         is_overwrite = request.query_params.get("overwrite", "false").lower() == "true"
 
@@ -78,10 +81,13 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                     to_update.append(obj)
                 else:
                     # conflict and overwrite not allowed
-                    return Response({
-                        'error': 'Some items already exist in DB.',
-                        'conflicts': [item for k, item in input_constraints.items() if k in existing_constraints]
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        {
+                            "error": "Some items already exist in DB.",
+                            "conflicts": [item for k, item in input_constraints.items() if k in existing_constraints],
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
             else:
                 to_create.append(item)
 
@@ -93,7 +99,7 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                 if to_update:
                     ErrorDescription.objects.bulk_update(
                         to_update,
-                        fields=[f for f in data[0].keys() if f not in ('component', 'code')]
+                        fields=[f for f in data[0].keys() if f not in ("component", "code")],
                     )
                     updated = to_update
 
@@ -105,9 +111,18 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
 
                 all_objs = updated + created
                 response_data = self.get_serializer(all_objs, many=True).data
-                return Response(response_data, status=status.HTTP_200_OK if is_overwrite else status.HTTP_201_CREATED)
+                return Response(
+                    response_data,
+                    status=(status.HTTP_200_OK if is_overwrite else status.HTTP_201_CREATED),
+                )
 
         except IntegrityError as e:
-            return Response({'error': 'Database integrity error.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Database integrity error.", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except Exception as e:
-            return Response({'error': 'Failed to add new records to DB.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Failed to add new records to DB.", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

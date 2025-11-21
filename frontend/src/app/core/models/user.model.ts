@@ -6,4 +6,4 @@ export type UserProfile = {
   email: string;
   groups: string[];
   permissions: string[];
-}
+};

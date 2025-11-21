@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class IsExperimentMember(permissions.BasePermission):
     """
     Custom permission to check if the authenticated user is a member of the specified experiment.

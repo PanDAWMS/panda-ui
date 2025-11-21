@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   imports: [],
   templateUrl: './login-callback.component.html',
   styleUrl: './login-callback.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginCallbackComponent implements OnInit {
   private authService = inject(AuthService);

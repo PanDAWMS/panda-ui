@@ -27,6 +27,5 @@ from django.apps import AppConfig
 class JobConfig(AppConfig):
     """Django AppConfig for the Job application."""
 
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'rest_api.job'
-
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "rest_api.job"

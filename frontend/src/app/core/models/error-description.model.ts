@@ -6,4 +6,4 @@ export type ErrorDescription = {
   diagnostics?: string;
   description?: string;
   category?: number;
-}
+};
