@@ -1,4 +1,4 @@
-export interface ErrorDescription {
+export type ErrorDescription = {
   id: bigint;
   component: string;
   code: number;

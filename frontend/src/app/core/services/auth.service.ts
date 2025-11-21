@@ -1,9 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { UserProfile } from '../models/user.model';
-import { map, tap, catchError, finalize } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class AuthService {
   readonly user$ = this.userSubject.asObservable();
   readonly token$ = this.tokenSubject.asObservable();
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unexpected error occurred.';
     if (error.status === 403) {
       errorMessage = 'You are not authorized to perform this action.';
@@ -28,22 +28,20 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
-  constructor() {}
-
-  login() {
-    // Redirect to IAM login page keeping session in the same tab
+  login(): void {
+    // redirect to IAM login page keeping session in the same tab
     window.open(`${this.authUrl}login/iam/`, '_self');
   }
 
   checkAuth(): Observable<UserProfile | null> {
-    // Check if the user is already authenticated to avoid unnecessary calls
+    // check if the user is already authenticated to avoid unnecessary calls
     const currentUser = this.userSubject.value;
     if (currentUser) {
       // we already know the user — ensure loading is false
       console.debug('[AuthService] checkAuth: returning cached user', currentUser);
       return of(currentUser);
     }
-    // Check if the user is authenticated by calling the userinfo endpoint
+    // check if the user is authenticated by calling the userinfo endpoint
     console.debug('[AuthService] checkAuth: calling userinfo ');
     return this.http.get<UserProfile>(`${this.authUrl}userinfo/`).pipe(
       map((response) => ({
@@ -73,7 +71,7 @@ export class AuthService {
   }
 
   getUser(): Observable<UserProfile | null> {
-    return this.userSubject.asObservable();
+    return this.user$;
   }
 
   getUserToken(): Observable<string> {
@@ -87,11 +85,11 @@ export class AuthService {
   }
 
   setToken(token: string): void {
-    return this.tokenSubject.next(token);
+    this.tokenSubject.next(token);
   }
 
-  getToken(): string | null {
-    return this.tokenSubject.value;
+  getToken(): Observable<string | null> {
+    return this.token$;
   }
 
   logout(): void {
@@ -113,6 +111,7 @@ export class AuthService {
           this.router.navigate(['/']);
         } catch (e) {
           // ignore navigation errors
+          console.debug('Navigation error after logout', e);
         }
       });
   }

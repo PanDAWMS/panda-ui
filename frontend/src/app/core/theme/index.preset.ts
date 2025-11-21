@@ -1,4 +1,4 @@
-import { definePreset, palette } from '@primeuix/themes';
+import { definePreset } from '@primeuix/themes';
 import Nora from '@primeuix/themes/nora';
 import { componentsPreset } from './_components.preset';
 import { colorSchemePreset } from './_colors.preset';

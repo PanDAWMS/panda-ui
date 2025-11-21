@@ -1,9 +1,9 @@
 <p-menubar [model]="items">
   <ng-template pTemplate="start">
-    <a routerLink="/" class="">PanDA UI</a>
+    <a routerLink="/">PanDA UI</a>
   </ng-template>
-  <ng-template pTemplate="item" let-item let-root="root">
-    <a pRipple class="flex items-center p-menubar-item-link">
+  <ng-template let-item let-root="root" pTemplate="item">
+    <a class="flex items-center p-menubar-item-link" pRipple>
       <span>{{ item.label }}</span>
       @if (item.badge) {
         <p-badge [ngClass]="{ 'ml-auto': !root, 'ml-2': root }" [value]="item.badge" />
@@ -21,7 +21,7 @@
   <ng-template pTemplate="end">
     <div class="flex items-center gap-1">
       <!--      <app-search></app-search>-->
-      <app-login></app-login>
+      <app-login/>
     </div>
   </ng-template>
 </p-menubar>

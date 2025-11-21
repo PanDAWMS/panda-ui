@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Observable } from 'rxjs';
@@ -15,42 +15,21 @@ import { SkeletonModule } from 'primeng/skeleton';
   templateUrl: './user-profile.component.html',
   standalone: true,
   styleUrl: './user-profile.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-// export class UserProfileComponent {
-//   user$!: Observable<UserProfile | null>;
-//   token$: Observable<string | null>;
-//   loadingToken: boolean = false;
-//
-//   constructor(private router: Router, private authService: AuthService) {
-//     this.user$ = this.authService.getUser();
-//     this.token$ = this.authService.token$;
-//   }
-//
-//   loadToken() {
-//     this.loadingToken = true;
-//     this.authService.getUserToken().subscribe({
-//       next: () => {
-//         this.loadingToken = false;
-//       },
-//       error: (err) => {
-//         console.error("Failed to load token", err);
-//         this.loadingToken = false;
-//       }
-//     });
-//   }
-// }
+
 export class UserProfileComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Expose reactive streams
+  // expose reactive streams
   user$: Observable<UserProfile | null> = this.authService.user$;
   token$: Observable<string | null> = this.authService.token$;
 
   loadingToken = false;
 
-  // Trigger token load
-  loadToken() {
+  // trigger token load
+  loadToken():void {
     this.loadingToken = true;
     this.authService
       .getUserToken()

@@ -2,7 +2,7 @@ import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } 
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, HTTP_INTERCEPTORS, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import { FilterMatchMode } from 'primeng/api';
 import { routes } from './app.routes';

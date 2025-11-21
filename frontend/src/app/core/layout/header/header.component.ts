@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
@@ -14,12 +14,13 @@ import { LoginComponent } from '../../../modules/auth/components/login/login.com
   imports: [RouterModule, Menubar, BadgeModule, InputTextModule, Ripple, CommonModule, LoginComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent implements OnInit {
   items: MenuItem[] | undefined;
 
   // keep header thin; LoginComponent handles auth UI
-  ngOnInit() {
+  ngOnInit(): void {
     this.items = [
       {
         label: 'Tasks',

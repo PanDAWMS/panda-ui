@@ -1,11 +1,13 @@
 @if (user$ | async; as user) {
   <a
-    pRipple
+    class="p-menubar-item-link flex items-center gap-2 cursor-pointer login-avatar-link"
+    pRipple role="button" tabindex="0"
     (click)="menu.toggle($event)"
-    class="p-menubar-item-link flex items-center gap-2 cursor-pointer login-avatar-link">
-    <p-avatar class="login-avatar" label="{{ user.initials }}" shape="circle"></p-avatar>
+    (keydown.enter)="menu.toggle($event)"
+  >
+    <p-avatar class="login-avatar" label="{{ user.initials }}" shape="circle"/>
   </a>
-  <p-menu #menu [model]="userMenu" [popup]="true" class="login-avatar-menu"></p-menu>
+  <p-menu #menu class="login-avatar-menu" [model]="userMenu" [popup]="true"/>
 } @else {
-  <p-button class="login-button" label="Login" (click)="login()"></p-button>
+  <p-button class="login-button" label="Login" (click)="login()"/>
 }

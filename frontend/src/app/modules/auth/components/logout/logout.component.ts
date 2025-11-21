@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -6,11 +6,10 @@ import { AuthService } from '../../../../core/services/auth.service';
   imports: [],
   templateUrl: './logout.component.html',
   styleUrl: './logout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LogoutComponent implements OnInit {
   private authService = inject(AuthService);
-
-  constructor() {}
 
   ngOnInit(): void {
     this.authService.logout();
