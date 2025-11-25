@@ -37,8 +37,7 @@ def associate_by_email(backend, details, user=None, *args, **kwargs):
 
     Notes:
         This function is not fully secure unless the authentication provider enforces email verification.
-        Without verification, a user could potentially take over another account by using the same
-        (unvalidated) email address. This pipeline entry is disabled by default.
+        The Indigo IAM backend we are using ensures email verification. Other backends may need additional checks.
     """
     if user:
         return None
