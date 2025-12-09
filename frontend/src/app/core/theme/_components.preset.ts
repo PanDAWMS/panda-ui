@@ -10,6 +10,12 @@ export const componentsPreset = {
       },
     },
   },
+  checkbox: {
+    root: {
+      width: '1.25rem',
+      height: '1.25rem',
+    },
+  },
   datatable: {
     header: {
       borderWidth: '0 0 0 0',
@@ -49,7 +55,7 @@ export const componentsPreset = {
       color: '{surface.50}',
       focusColor: '{surface.50}',
       activeColor: '{surface.50}',
-      padding: '0.75rem',
+      padding: '0.5rem 0.75rem',
       borderRadius: '0',
       gap: '0.25rem',
       // icon: {

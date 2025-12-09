@@ -18,8 +18,7 @@ export class TokenInterceptor implements HttpInterceptor {
           headers,
           withCredentials: true,
         });
-        console.debug('[TokenInterceptor] Token: ', token);
-        console.debug('[TokenInterceptor] Request: ', cloned);
+        console.debug('[TokenInterceptor] Token: ', token ? 'ok' : 'null');
         return next.handle(cloned);
       }),
     );

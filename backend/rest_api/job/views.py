@@ -1,3 +1,4 @@
+import rest_api.job.constants as job_const
 from django.db import IntegrityError, transaction
 from rest_api.job.models import ErrorDescription
 from rest_api.job.serializers import ErrorDescriptionSerializer
@@ -9,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):
@@ -126,3 +128,25 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                 {"error": "Failed to add new records to DB.", "details": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class JobErrorCategoryListView(APIView):
+    """
+    API view to retrieve the list of job error categories and their labels.
+    Authentication: Token or Session
+    Permission: Authenticated users only
+    """
+
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            categories_dict = dict(job_const.JOB_ERROR_CATEGORIES)
+        except Exception as e:
+            return Response(
+                {"error": "Failed to retrieve job error categories.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        categories_list = [{"id": int(i), "name": name} for i, name in categories_dict.items()]
+        return Response(categories_list)

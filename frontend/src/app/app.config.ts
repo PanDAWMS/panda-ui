@@ -1,18 +1,19 @@
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
-import { FilterMatchMode } from 'primeng/api';
+import { FilterMatchMode, MessageService } from 'primeng/api';
 import { routes } from './app.routes';
+import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { IndexPreset } from './core/theme/index.preset';
 import { authInitializer } from './core/init/auth.initializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideNoopAnimations(),
+    provideAnimations(), // about to be deprecated in Angular 22, but still needed for PrimeNG as of now
     providePrimeNG({
       ripple: true,
       theme: {
@@ -40,12 +41,12 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    MessageService,
+    // http clint and interceptors, interceptors must be provided before the http client
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     provideHttpClient(withInterceptorsFromDi()),
+    // initialize authentication on app startup, must be last
     provideAppInitializer(authInitializer),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true,
-    },
   ],
 };

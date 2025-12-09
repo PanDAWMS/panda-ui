@@ -38,11 +38,10 @@ export class AuthService {
     const currentUser = this.userSubject.value;
     if (currentUser) {
       // we already know the user — ensure loading is false
-      console.debug('[AuthService] checkAuth: returning cached user', currentUser);
+      console.debug('[AuthService] checkAuth: returning cached user');
       return of(currentUser);
     }
     // check if the user is authenticated by calling the userinfo endpoint
-    console.debug('[AuthService] checkAuth: calling userinfo ');
     return this.http.get<UserProfile>(`${this.authUrl}userinfo/`).pipe(
       map((response) => ({
         username: response.username,
@@ -54,7 +53,7 @@ export class AuthService {
         permissions: response.permissions,
       })),
       tap((user) => {
-        console.debug('[AuthService] checkAuth: got user from API', user);
+        console.debug('[AuthService] checkAuth: got user from userinfo API');
         this.setUser(user);
       }),
       catchError((err) => {
@@ -66,12 +65,7 @@ export class AuthService {
   }
 
   setUser(user: UserProfile | null): void {
-    console.debug('[AuthService] setUser ->', user);
     this.userSubject.next(user);
-  }
-
-  getUser(): Observable<UserProfile | null> {
-    return this.user$;
   }
 
   getUserToken(): Observable<string> {
