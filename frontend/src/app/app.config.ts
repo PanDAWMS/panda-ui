@@ -1,7 +1,6 @@
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import { FilterMatchMode, MessageService } from 'primeng/api';
@@ -13,7 +12,6 @@ import { authInitializer } from './core/init/auth.initializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(), // about to be deprecated in Angular 22, but still needed for PrimeNG as of now
     providePrimeNG({
       ripple: true,
       theme: {
@@ -38,10 +36,10 @@ export const appConfig: ApplicationConfig = {
         date: [FilterMatchMode.DATE_IS, FilterMatchMode.DATE_BEFORE, FilterMatchMode.DATE_AFTER],
       },
     }),
+    MessageService,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    MessageService,
     // http clint and interceptors, interceptors must be provided before the http client
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },

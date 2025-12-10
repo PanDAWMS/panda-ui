@@ -20,6 +20,8 @@ export class AuthService {
   readonly user$ = this.userSubject.asObservable();
   readonly token$ = this.tokenSubject.asObservable();
 
+  readonly isAuthenticated$ = this.userSubject.pipe(map((user) => !!user));
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unexpected error occurred.';
     if (error.status === 403) {

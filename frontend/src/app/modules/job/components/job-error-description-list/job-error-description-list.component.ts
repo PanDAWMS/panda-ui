@@ -5,7 +5,7 @@ import { TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { ErrorDescription } from '../../../../core/models/error-description.model';
 import { ApiService } from '../../../../core/services/api.service';
 import { FormsModule } from '@angular/forms';
@@ -56,11 +56,13 @@ export class JobErrorDescriptionListComponent implements OnInit {
   selectedItem: ErrorDescription | null = null;
 
   ngOnInit(): void {
-    this.jobErrorCategoriesService.getJobErrorCategories().subscribe((data) => {
-      this.categories = data;
-      this.categoryOptions = data.map((cat: JobErrorCategory) => ({ label: cat.name, value: cat.id }));
-    });
-    this.getJobErrorDescriptions().subscribe((descriptions) => {
+    forkJoin({
+      categories: this.jobErrorCategoriesService.getJobErrorCategories(),
+      descriptions: this.getJobErrorDescriptions(),
+    }).subscribe(({ categories, descriptions }) => {
+      this.categories = categories;
+      this.categoryOptions = categories.map((cat: JobErrorCategory) => ({ label: cat.name, value: cat.id }));
+
       // add category names to descriptions
       descriptions.forEach((desc) => {
         desc.categoryName = this.getJobErrorCategoryName(desc.category);
