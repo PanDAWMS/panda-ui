@@ -1,7 +1,7 @@
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import { FilterMatchMode, MessageService } from 'primeng/api';
 import { routes } from './app.routes';
@@ -43,7 +43,7 @@ export const appConfig: ApplicationConfig = {
     // http clint and interceptors, interceptors must be provided before the http client
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi(), withFetch()),
     // initialize authentication on app startup, must be last
     provideAppInitializer(authInitializer),
   ],

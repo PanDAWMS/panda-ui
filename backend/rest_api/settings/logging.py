@@ -78,6 +78,7 @@ LOGGING = {
         "django.utils.autoreload": {
             "level": "CRITICAL",  # suppress autoreload logging
             "handlers": ["null"],
+            "propagate": False,
         },
     },
 }

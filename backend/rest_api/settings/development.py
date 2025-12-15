@@ -23,7 +23,6 @@ CORS_ALLOW_HEADERS = [
     "content-type",
     "x-csrftoken",
 ]
-CORS_ALLOW_ALL_ORIGINS = True
 
 # Make auth work with HTTP in development
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False

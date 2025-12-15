@@ -1,9 +1,12 @@
-from django.http import HttpRequest
-from rest_framework import authentication, generics, permissions
-from rest_framework.response import Response
+from rest_api.common.mixins.task_filter import TaskFilterMixin
+from rest_api.common.mixins.time_range_filter import TimeRangeFilterMixin
+from rest_api.task.models import JediTask
+from rest_api.task.serializers import TaskFullSerializer
+from rest_framework import authentication, permissions
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 
-class TaskView(generics.ListAPIView):
+class TaskListView(ListAPIView, TimeRangeFilterMixin, TaskFilterMixin):
     """
     View to handle task-related requests.
     """
@@ -14,9 +17,25 @@ class TaskView(generics.ListAPIView):
     ]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self, request: HttpRequest):
+    def get_queryset(self):
         """
-        Handle GET requests for task information.
+        Process GET params into filter queryset.
         """
-        # Implement your logic here
-        return Response({"message": "GET request received"})
+        qs = JediTask.objects.values()
+        qs = self.filter_by_time(qs)
+        return qs
+
+
+class TaskInfoView(RetrieveAPIView):
+    """
+    View to handle detailed info of a single task requests.
+    """
+
+    authentication_classes = [
+        authentication.TokenAuthentication,
+        authentication.SessionAuthentication,
+    ]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = JediTask.objects.all()
+    serializer_class = TaskFullSerializer
+    lookup_field = "jeditaskid"

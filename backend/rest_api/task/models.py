@@ -72,7 +72,7 @@ class JediTask(models.Model):
 
     class Meta:
         managed = False
-        db_table = f"{settings.DATABASE_SCHEMA_PANDA}.jedi_tasks"
+        db_table = f'"{settings.DB_SCHEMAS['panda']}"."jedi_tasks"'
         verbose_name = "JediTask"
         verbose_name_plural = "JediTasks"
 
@@ -122,6 +122,6 @@ class JediDataset(models.Model):
 
     class Meta:
         managed = False
-        db_table = f"{settings.DATABASE_SCHEMA_PANDA}.jedi_datasets"
+        db_table = f'"{settings.DB_SCHEMAS['panda']}"."jedi_datasets"'
         verbose_name = "JediDataset"
         verbose_name_plural = "JediDatasets"

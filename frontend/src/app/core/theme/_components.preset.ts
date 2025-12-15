@@ -36,6 +36,13 @@ export const componentsPreset = {
     filter: {
       inlineGap: '0.25rem',
     },
+    colorScheme: {
+      light: {
+        row: {
+          stripedBackground: '{gray.100}',
+        },
+      },
+    },
   },
   menubar: {
     root: {

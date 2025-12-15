@@ -15,15 +15,17 @@ export class LoginCallbackComponent implements OnInit {
   private router = inject(Router);
 
   ngOnInit(): void {
-    this.authService.checkAuth().subscribe({
-      next: (user) => {
-        console.debug('User info loaded:', user);
-        this.router.navigate(['/']);
-      },
-      error: (error) => {
-        console.error('Failed to fetch user info:', error);
-        this.router.navigate(['/']);
-      },
-    });
+    setTimeout(() => {
+      this.authService
+        .init()
+        .then((user) => {
+          console.debug('[LoginCallback] User info loaded:', user);
+          this.router.navigate(['/']);
+        })
+        .catch((error) => {
+          console.error('[LoginCallback] Failed to fetch user info:', error);
+          this.router.navigate(['/']);
+        });
+    }, 50);
   }
 }
