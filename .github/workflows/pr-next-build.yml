@@ -1,6 +1,5 @@
 ## This workflow is triggered on pull requests to the 'next' branch.
-## It sets a unique temporary version for the PR, updates version files, builds a Docker image
-##
+## It calculates a unique temporary version for the PR and builds a Docker images
 
 name: PR Build Next
 
