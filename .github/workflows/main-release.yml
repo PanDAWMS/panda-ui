@@ -1,20 +1,16 @@
-name: CI/CD
+name: Release Latest
 
 on:
   push:
-    branches: [main]
-    tags:
-      - "v*"
-  pull_request:
     branches: [main]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
-#  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,12 +20,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Lowercase repository in image names
         run: |
           echo "IMAGE_NAME_BACKEND=$(echo '${{ env.IMAGE_NAME_BACKEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-#          echo "IMAGE_NAME_FRONTEND=$(echo '${{ env.IMAGE_NAME_FRONTEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "IMAGE_NAME_FRONTEND=$(echo '${{ env.IMAGE_NAME_FRONTEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Bump version and tag
         run: bash .github/scripts/bump-version-release.sh
@@ -37,7 +32,7 @@ jobs:
       - name: Set version from Git tag or SHA
         id: version
         run: |
-          VERSION=$(git describe --tags --always)
+          VERSION=$(cat VERSION)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -62,13 +57,26 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile.backend
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:latest
 
-#      - name: Build and push frontend Docker image
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: ./frontend
-#          push: true
-#          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
+      - name: Build and push frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.frontend
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
+            
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

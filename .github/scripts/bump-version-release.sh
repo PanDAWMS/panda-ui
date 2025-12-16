@@ -3,7 +3,7 @@ set -e
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 VERSION_FILE="${REPO_ROOT}/VERSION"
-BRANCH="${GITHUB_REF_NAME:-next}"
+BRANCH="${GITHUB_REF_NAME:-main}"
 echo "On branch: $BRANCH"
 
 cd "$REPO_ROOT"
