@@ -1,0 +1,146 @@
+<p-confirmdialog />
+<p-table
+  #dtErrorDescriptions
+  currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+  dataKey="id"
+  [globalFilterFields]="['component', 'code', 'diagnostics', 'description']"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  [showCurrentPageReport]="true"
+  [tableStyle]="{ width: '100%', 'table-layout': 'fixed' }"
+  [value]="(jobErrorDescriptions$ | async) ?? []">
+  <ng-template pTemplate="caption">
+    <div class="flex justify-between items-center w-full">
+      <p-button icon="pi pi-plus" label="Add new" severity="success" (click)="onCreate()" />
+      <p-iconfield>
+        <p-inputicon class="pi pi-search" />
+        <input
+          pInputText
+          placeholder="Search keyword"
+          type="text"
+          (input)="dtErrorDescriptions.filterGlobal($event.target.value, 'contains')" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="w-auto" pSortableColumn="component">
+        <div class="flex items-center gap-1">
+          <span>Component</span>
+          <p-sortIcon field="component" />
+        </div>
+      </th>
+      <th class="w-auto" pSortableColumn="code">
+        <div class="flex items-center gap-1">
+          <span>Code</span>
+          <p-sortIcon field="code" />
+        </div>
+      </th>
+      <th class="w-1/6">Diagnostics</th>
+      <th class="w-3/6">Description</th>
+      <th class="w-auto" pSortableColumn="category">
+        <div class="flex items-center gap-1">
+          <span>Category</span>
+          <p-sortIcon field="code" />
+        </div>
+      </th>
+      <th class="w-auto">Actions</th>
+    </tr>
+    <tr>
+      <th class="w-auto">
+        <p-columnFilter field="component" matchMode="in" [showMenu]="false">
+          <ng-template let-filter="filterCallback" let-value="value" pTemplate="filter">
+            <p-multiselect
+              appendTo="body"
+              optionLabel="label"
+              placeholder="All"
+              showClear="true"
+              [maxSelectedLabels]="1"
+              [ngModel]="value"
+              [options]="componentOptions"
+              (ngModelChange)="onMultiSelectFilterChange($event, filter)">
+              <ng-template let-option pTemplate="item">
+                <span>{{ option.label }}</span>
+              </ng-template>
+            </p-multiselect>
+          </ng-template>
+        </p-columnFilter>
+      </th>
+      <th class="w-auto">
+        <p-columnFilter ariaLabel="Filter code" field="code" filterOn="input" type="numeric">
+          <ng-template let-filter="filterCallback" let-value pTemplate="filter">
+            <input
+              class="w-full"
+              pInputText
+              placeholder="Type code"
+              type="text"
+              [ngModel]="value"
+              (ngModelChange)="filter($event)" />
+          </ng-template>
+        </p-columnFilter>
+      </th>
+      <th class="w-1/6"></th>
+      <th class="w-3/6"></th>
+      <th class="w-auto">
+        <p-columnFilter field="category" matchMode="in" [showMenu]="false">
+          <ng-template let-filter="filterCallback" let-value="value" pTemplate="filter">
+            <p-multiselect
+              appendTo="body"
+              optionLabel="label"
+              placeholder="All"
+              showClear="true"
+              [maxSelectedLabels]="1"
+              [ngModel]="value"
+              [options]="categoryOptions"
+              (ngModelChange)="onMultiSelectFilterChange($event, filter)">
+              <ng-template let-option>
+                <span>{{ option.label }}</span>
+              </ng-template>
+            </p-multiselect>
+          </ng-template>
+        </p-columnFilter>
+      </th>
+      <th class="w-auto"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-item>
+    <tr>
+      <td class="w-auto">{{ item.component }}</td>
+      <td class="w-auto">{{ item.code }}</td>
+      <td class="w-1/6">{{ item.diagnostics }}</td>
+      <td class="w-3/6">{{ item.description }}</td>
+      <td class="w-auto">
+        <p-tag [rounded]="true" [style]="{ 'background-color': item.categoryColor }" [value]="item.categoryName" />
+      </td>
+      <td class="w-auto">
+        <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (click)="onEdit(item)" />
+        <p-button
+          icon="pi pi-eraser"
+          severity="danger"
+          [rounded]="true"
+          [text]="true"
+          (click)="confirmDelete($event, item)" />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">No error descriptions found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  header="{{ selectedItem ? 'Edit Error Description' : 'Create new Error Description' }}"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+  [(visible)]="isDialogOpen">
+  <app-job-error-description-form
+    [categories]="categoryOptions"
+    [componentCodesMap]="componentCodeMap"
+    [components]="componentOptions"
+    [selectedItem]="selectedItem"
+    (cancelEdit)="isDialogOpen = false"
+    (save)="onSave($event)" />
+</p-dialog>

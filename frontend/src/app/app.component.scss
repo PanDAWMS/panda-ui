@@ -1,0 +1,10 @@
+:host ::ng-deep .app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  .app-content {
+    flex: 1 0 auto;
+    padding: 0 0.5rem;
+  }
+}

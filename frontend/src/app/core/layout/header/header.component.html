@@ -1,25 +1,25 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/">PanDA UI</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Tasks
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">All</a></li>
-            <li><a class="dropdown-item" href="#">Production</a></li>
-            <li><a class="dropdown-item" href="#">Analysis</a></li>
-          </ul>
-        </li>
-      </ul>
-      <ul class="navbar-nav">
-        <app-login></app-login>
-      </ul>
+<p-menubar [model]="items">
+  <ng-template pTemplate="start">
+    <a routerLink="/">PanDA UI</a>
+  </ng-template>
+  <ng-template let-item let-root="root" pTemplate="item">
+    <a class="flex items-center p-menubar-item-link" pRipple>
+      <span>{{ item.label }}</span>
+      @if (item.badge) {
+      <p-badge [ngClass]="{ 'ml-auto': !root, 'ml-2': root }" [value]="item.badge" />
+      } @if (item.shortcut) {
+      <span class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{
+        item.shortcut
+      }}</span>
+      } @if (item.items) {
+      <i [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i>
+      }
+    </a>
+  </ng-template>
+  <ng-template pTemplate="end">
+    <div class="flex items-center gap-1">
+      <!--      <app-search></app-search>-->
+      <app-login />
     </div>
-  </div>
-</nav>
+  </ng-template>
+</p-menubar>

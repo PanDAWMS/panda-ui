@@ -1,16 +1,16 @@
-from http.client import HTTPResponse
-
+import rest_api.job.constants as job_const
 from django.db import IntegrityError, transaction
-from django.http import HttpRequest, HttpResponse
-from rest_framework import viewsets, status
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 from rest_api.job.models import ErrorDescription
 from rest_api.job.serializers import ErrorDescriptionSerializer
 from rest_api.oauth.permissions import IsExperimentMember
+from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):
@@ -20,8 +20,8 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsExperimentMember]
 
-    @action(detail=False, methods=['post'], url_path='bulk')
-    def bulk_create(self, request: HttpRequest) -> HttpResponse:
+    @action(detail=False, methods=["post"], url_path="bulk")
+    def bulk_create(self, request: Request) -> Response:
         """
         Bulk-create or upsert ``ErrorDescription`` entries.
 
@@ -34,11 +34,12 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
           (``component``, ``code``) are updated; new rows are inserted.
 
         Example:
-            >>> POST /api/error_description/bulk/?overwrite=true
-            >>> [
-            ...   {"component": "pilot", "code": 1000, "acronym": "SOMEACRONYM", "description": "This error ..."},
-            ...   {"component": "jobdispatcher",  "code": 99, "acronym": "SOMEACRONYM", "message": "This error ..."}
-            ... ]
+        .. code-block:: http
+            POST /api/error_description/bulk/?overwrite=true
+            [
+               {"component": "pilot", "code": 1000, "acronym": "SOMEACRONYM", "description": "This error ..."},
+               {"component": "jobdispatcher",  "code": 99, "acronym": "SOMEACRONYM", "message": "This error ..."}
+            ]
 
         Args:
             request (HttpRequest):
@@ -59,7 +60,10 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
         """
         data = request.data
         if not isinstance(data, list):
-            return Response({'error': 'Expected a list of items.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Expected a list of items."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         is_overwrite = request.query_params.get("overwrite", "false").lower() == "true"
 
@@ -79,10 +83,13 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                     to_update.append(obj)
                 else:
                     # conflict and overwrite not allowed
-                    return Response({
-                        'error': 'Some items already exist in DB.',
-                        'conflicts': [item for k, item in input_constraints.items() if k in existing_constraints]
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        {
+                            "error": "Some items already exist in DB.",
+                            "conflicts": [item for k, item in input_constraints.items() if k in existing_constraints],
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
             else:
                 to_create.append(item)
 
@@ -94,25 +101,52 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                 if to_update:
                     ErrorDescription.objects.bulk_update(
                         to_update,
-                        fields=[f for f in data[0].keys() if f not in ('component', 'code')]
+                        fields=[f for f in data[0].keys() if f not in ("component", "code")],
                     )
                     updated = to_update
 
                 if to_create:
                     serializer = self.get_serializer(data=to_create, many=True)
                     serializer.is_valid(raise_exception=True)
-                    self.perform_bulk_create(serializer)
+                    serializer.save()
                     created = serializer.instance
 
                 all_objs = updated + created
                 response_data = self.get_serializer(all_objs, many=True).data
-                return Response(response_data, status=status.HTTP_200_OK if is_overwrite else status.HTTP_201_CREATED)
+                return Response(
+                    response_data,
+                    status=(status.HTTP_200_OK if is_overwrite else status.HTTP_201_CREATED),
+                )
 
         except IntegrityError as e:
-            return Response({'error': 'Database integrity error.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Database integrity error.", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except Exception as e:
-            return Response({'error': 'Failed to add new records to DB.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Failed to add new records to DB.", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
-    def perform_bulk_create(self, serializer):
-        serializer.save()
+class JobErrorCategoryListView(APIView):
+    """
+    API view to retrieve the list of job error categories and their labels.
+    Authentication: Token or Session
+    Permission: Authenticated users only
+    """
+
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            categories_dict = dict(job_const.JOB_ERROR_CATEGORIES)
+        except Exception as e:
+            return Response(
+                {"error": "Failed to retrieve job error categories.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        categories_list = [{"id": int(i), "name": name} for i, name in categories_dict.items()]
+        return Response(categories_list)

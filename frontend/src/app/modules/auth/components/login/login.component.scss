@@ -1,0 +1,54 @@
+:host ::ng-deep .login-button > button.p-button {
+  background-color: var(--pui-surface-900);
+  border: none;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover,
+  &:focus {
+    background-color: var(--pui-surface-800);
+  }
+}
+
+:host ::ng-deep .login-avatar-link {
+  padding: 0.25rem 0.5rem;
+
+  > .login-avatar {
+    font-size: 0.875rem;
+    height: 2rem;
+    width: 2rem;
+    background-color: var(--pui-surface-50);
+
+    &:hover,
+    &:focus {
+      font-weight: bold;
+      background-color: var(--pui-emerald-200);
+    }
+  }
+}
+
+:host ::ng-deep .login-avatar-menu {
+  div.p-menu {
+    background-color: var(--pui-surface-900);
+    border-color: var(--pui-surface-900);
+    border-radius: 0;
+
+    ul.p-menu-list {
+      background-color: var(--pui-surface-900);
+      padding: 0;
+
+      li.p-menu-item {
+        div.p-menu-item-content {
+          color: var(--pui-surface-100);
+
+          &:hover,
+          &:focus {
+            background-color: var(--pui-surface-800);
+          }
+        }
+      }
+    }
+  }
+}

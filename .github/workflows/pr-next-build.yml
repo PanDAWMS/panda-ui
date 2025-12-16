@@ -1,0 +1,56 @@
+## This workflow is triggered on pull requests to the 'next' branch.
+## It sets a unique temporary version for the PR, updates version files, builds a Docker image
+##
+
+name: PR Build Next
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
+#  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
+
+on:
+  pull_request:
+    branches: [next]
+  workflow_dispatch:  # optional manual trigger
+
+jobs:
+  build-pr-next:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Lowercase repository in image names
+        run: |
+          echo "IMAGE_NAME_BACKEND=$(echo '${{ env.IMAGE_NAME_BACKEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+#          echo "IMAGE_NAME_FRONTEND=$(echo '${{ env.IMAGE_NAME_FRONTEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Compute PR-next version
+        run: |
+          BASE_VERSION=$(cat VERSION 2>/dev/null || echo "0.0")
+          PR_VERSION="${BASE_VERSION}-pr${{ github.event.pull_request.number }}.${{ github.run_number }}"
+          echo "VERSION=$PR_VERSION" >> $GITHUB_ENV
+
+      - name: Build Docker image (backend)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.backend
+          push: false
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:pr-next-${{ github.event.pull_request.number }}
+
+#      - name: Build Docker image (frontend)
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: .
+#          file: ./docker/Dockerfile.frontend
+#          push: false
+#          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}

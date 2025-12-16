@@ -1,0 +1,21 @@
+@let task = taskInfo(); @if (task) {
+<p-card header="Task Parameters">
+  <p-table stripedRows [value]="toKeyValueList(task)">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Field</th>
+        <th>Value</th>
+      </tr>
+    </ng-template>
+
+    <ng-template let-row pTemplate="body">
+      <tr>
+        <td>{{ row.key }}</td>
+        <td>@if (row.value) { {{ row.value }} } @else {-}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+} @else {
+<p>Loading task parameters...</p>
+}

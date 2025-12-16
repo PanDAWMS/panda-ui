@@ -23,17 +23,17 @@
 
 import logging
 
-from django.shortcuts import redirect
-from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect
 from rest_api.oauth.utils import preserve_cookies
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-_logger = logging.getLogger('oauth')
+_logger = logging.getLogger("oauth")
 
 
 @login_required
@@ -63,8 +63,8 @@ def logout_view(request: HttpRequest) -> JsonResponse:
         JsonResponse: The JSON response indicating successful logout.
     """
     logout(request)
-    response = JsonResponse({'message': 'Logged out successfully'})
-    response.delete_cookie('sessionid')
+    response = JsonResponse({"message": "Logged out successfully"})
+    response.delete_cookie("sessionid")
 
     return response
 
@@ -94,7 +94,7 @@ class UserInfo(APIView):
             "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "groups": list(user.groups.values_list('name', flat=True)),
+            "groups": list(user.groups.values_list("name", flat=True)),
             "permissions": list(user.get_all_permissions()),
         }
 
