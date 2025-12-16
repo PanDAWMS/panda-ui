@@ -14,5 +14,9 @@ jobs:
       contents: write
       packages: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Bump minor version and tag
         run: bash .github/scripts/bump-version-minor.sh
