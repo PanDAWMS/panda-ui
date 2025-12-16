@@ -8,11 +8,6 @@ echo "On branch: $BRANCH"
 
 cd "$REPO_ROOT"
 
-# fetch the latest branch and attach HEAD
-git fetch origin "$BRANCH"
-git checkout "$BRANCH"
-git reset --hard origin/"$BRANCH"   # ensure we match remote
-
 # read current version (default 0.0 if empty) -> increment minor only
 current=$(cat "$VERSION_FILE" 2>/dev/null || echo "0.0")
 IFS='.' read -r major minor <<< "$current"

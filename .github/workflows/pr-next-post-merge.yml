@@ -1,0 +1,13 @@
+on:
+  push:
+    branches: [next]
+
+jobs:
+  build-pr-next:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Bump minor version and tag
+        run: bash .github/scripts/bump-version-minor.sh
