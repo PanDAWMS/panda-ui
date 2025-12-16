@@ -1,3 +1,8 @@
+## This workflow runs after a pull request is merged into the 'next' branch.
+## It bumps the minor version and creates a new Git tag.
+
+name: PR Next Post-Merge Minor Version Bump
+
 on:
   push:
     branches: [next]
