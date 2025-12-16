@@ -1,16 +1,12 @@
-@import "../../../../../node_modules/bootstrap/scss/functions";
-@import '../../../../../node_modules/bootstrap/scss/_variables.scss';
-@import '../../../../../node_modules/bootstrap/scss/_variables-dark.scss';
-@import '../../../../../node_modules/bootstrap/scss/_mixins.scss';
-
-.nav-item.dropdown .dropdown-menu {
-  border-color: transparent;
-  background-color: $body-tertiary-bg-dark;
-  padding: 0;
-  margin-top: 0.4rem;
+:host ::ng-deep .p-menubar-start {
+  > a {
+    color: var(--pui-surface-50);
+    font-weight: bold;
+    text-decoration: none;
+    margin: auto 0.75rem;
+  }
 }
 
-.nav-item.dropdown .dropdown-menu li a.dropdown-item:hover {
-  background-color: $body-bg-dark;
+:host ::ng-deep .p-menubar {
+  border: none;
 }
-

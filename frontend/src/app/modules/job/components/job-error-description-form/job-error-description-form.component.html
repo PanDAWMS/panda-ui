@@ -1,0 +1,78 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="flex flex-col md:flex-row gap-2 mb-2">
+    <div class="flex flex-col w-full md:w-3/4 lg:w-2/4">
+      <label for="label">Component</label>
+      <p-select
+        formControlName="component"
+        optionLabel="label"
+        placeholder="Select a component"
+        required
+        [options]="components()" />
+      @if (form.get('component')?.invalid && (form.get('component')?.touched || submitted)) {
+      <p-message severity="error" size="small" variant="simple">Component is required.</p-message>
+      }
+    </div>
+    <div class="flex flex-col w-full md:w-1/4 lg:w-2/4">
+      <label for="code">Code</label>
+      <p-inputnumber formControlName="code" inputId="code" required [max]="10000" [min]="0" />
+      @if (form.get('code')?.invalid && (form.get('code')?.touched || submitted)) {
+      <p-message severity="error" size="small" variant="simple"
+        >Code is required, it must be integer and in range from 0 to 10000</p-message
+      >
+      } @if (form.get('code')?.touched && form.errors?.['duplicate']) {
+      <p-message severity="error" size="small" variant="simple">Duplicate</p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-2 mb-2">
+    <div class="flex flex-col w-full md:w-2/4">
+      <label for="category">Category</label>
+      <p-select
+        formControlName="category"
+        optionLabel="label"
+        placeholder="Select a category"
+        [options]="categories()" />
+    </div>
+    <div class="flex flex-col w-full md:w-2/4">
+      <label for="acronym">Acronym</label>
+      <input formControlName="acronym" pInputText />
+      @if (form.get('acronym')?.invalid && (form.get('acronym')?.touched || submitted)) {
+      <p-message severity="error" size="small" variant="simple"
+        >Acronym must be a one word in upper case without any special symbols</p-message
+      >
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col w-full mb-2">
+    <label for="diagnostics">Diagnostics</label>
+    <textarea
+      formControlName="diagnostics"
+      pTextarea
+      placeholder="Short diagnostic message defining error..."
+      required
+      rows="2"></textarea>
+    @if (form.get('diagnostics')?.invalid && (form.get('diagnostics')?.touched || submitted)) {
+    <p-message severity="error" size="small" variant="simple">Length must be between 20 and 200 symbols</p-message>
+    }
+  </div>
+
+  <div class="flex flex-col w-full mb-2">
+    <label for="description">Description</label>
+    <textarea
+      formControlName="description"
+      pTextarea
+      placeholder="Longer explanation of the error cause and clues on how to fix it"
+      required
+      rows="4"></textarea>
+    @if (form.get('description')?.invalid && (form.get('description')?.touched || submitted)) {
+    <p-message severity="error" size="small" variant="simple">Length must be between 50 and 500 symbols</p-message>
+    }
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <p-button label="Cancel" severity="secondary" type="button" (click)="onCancel()" />
+    <p-button label="Save" severity="success" type="submit" [disabled]="form.invalid" />
+  </div>
+</form>

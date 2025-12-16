@@ -27,5 +27,9 @@ from django.apps import AppConfig
 class OauthConfig(AppConfig):
     """Django AppConfig for the OAuth application."""
 
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'rest_api.oauth'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "rest_api.oauth"
+
+    def ready(self):
+        # import signals so that they are registered
+        import rest_api.signals  # noqa: F401

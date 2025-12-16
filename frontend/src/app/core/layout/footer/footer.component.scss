@@ -1,0 +1,38 @@
+:host ::ng-deep .footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--pui-surface-900);
+  color: var(--pui-surface-200);
+  padding: 0.75rem;
+  font-size: 0.875rem;
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .footer-right {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+
+    .footer-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1rem;
+      height: 1rem;
+      color: var(--pui-surface-200);
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        color: var(--pui-surface-50);
+      }
+    }
+  }
+}

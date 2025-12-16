@@ -23,4 +23,18 @@
 
 from django.test import TestCase
 
-# Create your tests here.
+
+class AuthAppTestCase(TestCase):
+    """Basic test case for the auth app."""
+
+    def setUp(self):
+        # setup code runs before each test
+        pass
+
+    def tearDown(self):
+        # cleanup code runs after each test
+        pass
+
+    def test_placeholder(self):
+        """A placeholder test to ensure tests run."""
+        self.assertTrue(True)

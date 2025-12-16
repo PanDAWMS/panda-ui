@@ -29,7 +29,7 @@ import os
 import re
 
 # Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Database
 DATABASES = {}
@@ -44,7 +44,7 @@ REQUIRED_FIELDS = {
 
 # Collect schema names from env
 schema_env_vars = {k: v for k, v in os.environ.items() if k.startswith("DB_SCHEMA_")}
-DB_SCHEMAS = {k[len("DB_SCHEMA_"):].lower(): v for k, v in schema_env_vars.items()}
+DB_SCHEMAS = {k[10:].lower(): v for k, v in schema_env_vars.items()}
 
 # Get DB related config from env
 db_env_vars = {k: v for k, v in os.environ.items() if k.startswith("DB_CONN_")}
@@ -62,7 +62,8 @@ for key, value in db_env_vars.items():
 if any(cfg.get("VENDOR", "").lower() == "oracle" for cfg in db_configs.values()):
     try:
         import oracledb
-        oracledb.init_oracle_client(config_dir='/etc/tnsnames.ora')
+
+        oracledb.init_oracle_client(config_dir="/etc/tnsnames.ora")
     except Exception as e:
         raise RuntimeError(f"Failed to initialize thick Oracle client: {e}") from e
 
@@ -89,12 +90,8 @@ for conn_name, cfg in db_configs.items():
     DATABASES[django_conn_name] = {**cfg, "ENGINE": engine}
 
 # Throw error if no default PANDAUI DB configured
-if not 'default' in DATABASES or not DATABASES['default']:
+if "default" not in DATABASES or not DATABASES["default"]:
     raise RuntimeError("PANDAUI database connection is required but not found in environment variables.")
 
 # List of variables for export
-__all__ = [
-    'DATABASES',
-    'DB_SCHEMAS',
-    'DEFAULT_AUTO_FIELD'
-]
+__all__ = ["DATABASES", "DB_SCHEMAS", "DEFAULT_AUTO_FIELD"]

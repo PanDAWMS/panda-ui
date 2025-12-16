@@ -14,9 +14,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
 
-urlpatterns = [
-    path('api/oauth/', include('rest_api.oauth.urls')),
-]
+from django.conf import settings
+from django.urls import include, path
+
+urlpatterns = []
+for app in settings.INSTALLED_APPS:
+    if app.startswith("rest_api."):
+        urlpatterns.append(path(f"api/{app.replace('rest_api.', '')}/", include(f"{app}.urls")))

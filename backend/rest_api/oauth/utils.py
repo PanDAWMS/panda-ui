@@ -23,10 +23,10 @@
 
 import logging
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group, User
 from django.http import HttpRequest, HttpResponse
 
-_logger = logging.getLogger('oauth')
+_logger = logging.getLogger("oauth")
 
 
 def preserve_cookies(request: HttpRequest, response: HttpResponse) -> HttpResponse:
@@ -42,11 +42,23 @@ def preserve_cookies(request: HttpRequest, response: HttpResponse) -> HttpRespon
     # Copy cookies from the request to the response
     for cookie in request.COOKIES:
         if cookie in {"csrftoken", "sessionid"}:
-            response.set_cookie(cookie, request.COOKIES[cookie], httponly=False, secure=False, samesite='Lax')
+            response.set_cookie(
+                cookie,
+                request.COOKIES[cookie],
+                httponly=False,
+                secure=False,
+                samesite="Lax",
+            )
 
     # Set the token in cookies
-    if request.user.is_authenticated and 'pandauitoken' not in response.cookies:
-        response.set_cookie('pandauitoken', request.user.auth_token.key, httponly=True, secure=False, samesite='Strict')
+    if request.user.is_authenticated and "pandauitoken" not in response.cookies:
+        response.set_cookie(
+            "pandauitoken",
+            request.user.auth_token.key,
+            httponly=True,
+            secure=False,
+            samesite="Strict",
+        )
 
     return response
 
@@ -64,7 +76,7 @@ def update_user_groups(email: str, user_groups: list[str]) -> bool:
     # get user objects by email
     users = User.objects.filter(email=email)
     if not users.exists() or len(users) == 0:
-        _logger.error(f'There is no user with this email {email}')
+        _logger.error(f"There is no user with this email {email}")
         return False
 
     # add new groups to users
@@ -78,4 +90,3 @@ def update_user_groups(email: str, user_groups: list[str]) -> bool:
                 user.save()
 
     return True
-

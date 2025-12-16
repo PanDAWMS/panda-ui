@@ -1,0 +1,22 @@
+## This workflow runs after a pull request is merged into the 'next' branch.
+## It bumps the minor version and creates a new Git tag.
+
+name: PR Next Post-Merge Minor Version Bump
+
+on:
+  push:
+    branches: [next]
+
+jobs:
+  bump-minor-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump minor version and tag
+        run: bash .github/scripts/bump-version-minor.sh
