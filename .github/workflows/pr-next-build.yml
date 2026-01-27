@@ -36,22 +36,29 @@ jobs:
           PR_VERSION="${BASE_VERSION}-pr${{ github.event.pull_request.number }}.${{ github.run_number }}"
           echo "VERSION=$PR_VERSION" >> $GITHUB_ENV
 
-      - name: Build Backend
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./docker/Dockerfile.backend
-          push: false
+          push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:pr-next-${{ github.event.pull_request.number }}
 
-      - name: Build Frontend
+      - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./docker/Dockerfile.frontend
-          push: false
+          push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:pr-next-${{ github.event.pull_request.number }}
