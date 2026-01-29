@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, Observable, of, switchMap, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { AppConfigService } from './app-config.service';
 import { UserProfile } from '../models/user.model';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -10,11 +10,12 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly apiUrl = inject(AppConfigService).apiUrl;
   private http = inject(HttpClient);
   private router = inject(Router);
 
   private initialized = false;
-  private authUrl = `${environment.apiUrl}/oauth/`; // DRF endpoint returns the IAM login URL
+  private authUrl = `${this.apiUrl}/oauth/`; // DRF endpoint returns the IAM login URL
   private tokenSubject = new BehaviorSubject<string | null>(null);
   private userSubject = new BehaviorSubject<UserProfile | null>(null);
 
