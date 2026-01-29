@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://panda-ui.cern.ch/api/',
+  apiUrl: '__API_URL__',
 };

@@ -1,4 +1,3 @@
-// src/app/core/services/api.service.ts
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
