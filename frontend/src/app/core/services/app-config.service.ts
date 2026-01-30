@@ -15,6 +15,10 @@ export class AppConfigService {
     this.config = { ...this.config, ...config };
   }
 
+  getConfig(): AppConfig | undefined {
+    return this.config;
+  }
+
   // read-only access to API URL
   get apiUrl(): string {
     return this.config.apiUrl;

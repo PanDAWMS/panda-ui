@@ -8,8 +8,7 @@ import { routes } from './app.routes';
 import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { IndexPreset } from './core/theme/index.preset';
-import { authInitializer } from './core/init/auth.initializer';
-import { appConfigInitializer } from './core/init/app-config.initializer';
+import { appInitializer } from './core/init/app.initializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -45,9 +44,7 @@ export const appConfig: ApplicationConfig = {
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
-    // init app configuration
-    provideAppInitializer(appConfigInitializer),
-    // initialize authentication on app startup, must be last
-    provideAppInitializer(authInitializer),
+    // init app configuration and authentication on app startup, must be last
+    provideAppInitializer(appInitializer),
   ],
 };
