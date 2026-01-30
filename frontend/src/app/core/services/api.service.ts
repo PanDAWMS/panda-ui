@@ -9,35 +9,45 @@ import { AppConfigService } from './app-config.service';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private readonly apiUrl = inject(AppConfigService).apiUrl;
+  private config = inject(AppConfigService);
+
+  private apiUrl?: string;
+  private get apiBaseUrl(): string {
+    if (!this.apiUrl) {
+      this.apiUrl = this.config.apiUrl;
+    }
+    return this.apiUrl;
+  }
 
   // generic GET
   get<T>(endpoint: string, params?: Record<string, unknown>): Observable<T> {
     const httpParams = this.makeParams(params || {});
-    return this.http.get<T>(`${this.apiUrl}/${endpoint}/`, { params: httpParams }).pipe(catchError(this.handleError));
+    return this.http
+      .get<T>(`${this.apiBaseUrl}/${endpoint}/`, { params: httpParams })
+      .pipe(catchError(this.handleError));
   }
 
   // generic POST
   post<T>(endpoint: string, data: unknown, params?: Record<string, unknown>): Observable<T> {
     const httpParams = this.makeParams(params || {});
     return this.http
-      .post<T>(`${this.apiUrl}/${endpoint}/`, data, { params: httpParams })
+      .post<T>(`${this.apiBaseUrl}/${endpoint}/`, data, { params: httpParams })
       .pipe(catchError(this.handleError));
   }
 
   // generic PUT
   put<T>(endpoint: string, id: number | bigint | string, data: unknown): Observable<T> {
-    return this.http.put<T>(`${this.apiUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
+    return this.http.put<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
   }
 
   // generic PATCH
   patch<T>(endpoint: string, id: number | bigint | string, data: unknown): Observable<T> {
-    return this.http.patch<T>(`${this.apiUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
+    return this.http.patch<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
   }
 
   // generic DELETE
   delete<T>(endpoint: string, id: number | bigint | string): Observable<T> {
-    return this.http.delete<T>(`${this.apiUrl}/${endpoint}/${id}/`).pipe(catchError(this.handleError));
+    return this.http.delete<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`).pipe(catchError(this.handleError));
   }
 
   // common error handler

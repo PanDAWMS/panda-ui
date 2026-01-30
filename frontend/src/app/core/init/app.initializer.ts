@@ -12,21 +12,6 @@ import { environment } from '../../../environments/environment';
 
 let initialized = false;
 
-// let initialized = false;
-//
-// export function authInitializer(): Promise<UserProfile | null> {
-//   const auth = inject(AuthService);
-//   const id = Math.random().toString(36).slice(2);
-//
-//   if (initialized) {
-//     console.debug(`[AuthInitializer:${id}] Already initialized, skipping`);
-//     return Promise.resolve(auth['userSubject'].value);
-//   }
-//   initialized = true;
-//   console.debug(`[AuthInitializer:${id}] Initializing authentication status`);
-//   return auth.init();
-// }
-
 export function appInitializer(): Promise<UserProfile | null> {
   const http = inject(HttpClient);
   const configService = inject(AppConfigService);

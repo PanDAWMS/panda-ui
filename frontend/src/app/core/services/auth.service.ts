@@ -10,12 +10,11 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = inject(AppConfigService).apiUrl;
+  private readonly config = inject(AppConfigService);
   private http = inject(HttpClient);
   private router = inject(Router);
 
   private initialized = false;
-  private authUrl = `${this.apiUrl}/oauth/`; // DRF endpoint returns the IAM login URL
   private tokenSubject = new BehaviorSubject<string | null>(null);
   private userSubject = new BehaviorSubject<UserProfile | null>(null);
 
@@ -23,6 +22,11 @@ export class AuthService {
   readonly token$ = this.tokenSubject.asObservable();
 
   readonly isAuthenticated$ = this.userSubject.pipe(map((user) => !!user));
+
+  private get authUrl(): string {
+    // DRF endpoint that redirects to the IAM login URL
+    return `${this.config.apiUrl}/oauth/`;
+  }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unexpected error occurred.';
