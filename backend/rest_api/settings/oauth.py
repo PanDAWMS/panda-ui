@@ -54,11 +54,14 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.user.user_details",
 )
 LOGIN_REDIRECT_URL = "/api/oauth/redirect_after_login/"
-FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", "localhost")
+FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
+if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND_BASE_URL.startswith("http")):
+    raise ValueError("PANDAUI_FRONTEND_BASE_URL environment variable is not set or does not start with http(s)")
 
 # cookie settings
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 
-# make sure https is used
+# make sure https is used and redirects use correct host
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
