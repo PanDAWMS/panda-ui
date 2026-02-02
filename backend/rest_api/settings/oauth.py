@@ -59,3 +59,6 @@ FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", "localhost")
 # cookie settings
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
+
+# make sure https is used
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
