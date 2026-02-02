@@ -17,6 +17,10 @@ RUN npm run build --output-path=dist --configuration=production --aot --build-op
 # Stage 2: serve
 FROM nginx:alpine
 
+# remove default nginx config and add custom one
+RUN rm /etc/nginx/conf.d/default.conf
+COPY docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy built Angular app to NGINX html folder
 COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 
