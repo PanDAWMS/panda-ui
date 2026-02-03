@@ -1,6 +1,6 @@
 <p-menubar [model]="items">
   <ng-template pTemplate="start">
-    <a routerLink="/">PanDA UI</a>
+    <a routerLink="/">{{ name }}</a>
   </ng-template>
   <ng-template let-item let-root="root" pTemplate="item">
     <a class="flex items-center p-menubar-item-link" pRipple>

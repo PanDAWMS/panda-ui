@@ -8,6 +8,8 @@ import { environment } from '../../../environments/environment';
 export class AppConfigService {
   private config: AppConfig = {
     apiUrl: environment.apiUrl,
+    production: environment.production,
+    vo: environment.vo,
   };
 
   // merge runtime config with defaults
