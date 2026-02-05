@@ -5,8 +5,8 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
 import { LogoutComponent } from './components/logout/logout.component';
 
 export const authRoutes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'login/callback', component: LoginCallbackComponent },
-  { path: 'logout', component: LogoutComponent },
-  { path: 'user/profile', component: UserProfileComponent },
+  { path: 'login', component: LoginComponent, title: 'Login' },
+  { path: 'login/callback', component: LoginCallbackComponent, title: 'Login' },
+  { path: 'logout', component: LogoutComponent, title: 'Logout' },
+  { path: 'user/profile', component: UserProfileComponent, title: 'User Profile' },
 ];

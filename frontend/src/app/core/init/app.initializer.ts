@@ -5,16 +5,19 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AppConfigService } from '../services/app-config.service';
+import { VersionService } from '../services/version.service';
 import { AuthService } from '../services/auth.service';
 import { UserProfile } from '../models/user.model';
 import { AppConfig } from '../models/app-config.model';
 import { environment } from '../../../environments/environment';
 
 let initialized = false;
+export const resetInitializedForTesting = (): boolean => (initialized = false);
 
 export function appInitializer(): Promise<UserProfile | null> {
   const http = inject(HttpClient);
   const configService = inject(AppConfigService);
+  const versionService = inject(VersionService);
   const auth = inject(AuthService);
   const id = Math.random().toString(36).slice(2);
 
@@ -39,8 +42,18 @@ export function appInitializer(): Promise<UserProfile | null> {
         })
     : Promise.resolve(); // dev: use environment.ts defaults
 
+  // load version from assets
+  const versionLoad = firstValueFrom(http.get<{ version: string }>('/assets/version.json'))
+    .then((v) => {
+      versionService.setVersion(v.version);
+      console.debug(`[AppInitializer:${id}] Loaded version ${v.version}`);
+    })
+    .catch(() => {
+      console.warn(`[AppInitializer:${id}] Failed to load version, using default`);
+    });
+
   // initialize auth
-  return configLoad
+  return Promise.all([configLoad, versionLoad])
     .then(() => {
       console.debug(`[AppInitializer:${id}] Initializing AuthService`);
       return auth.init();

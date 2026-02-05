@@ -59,6 +59,8 @@ jobs:
           context: .
           file: ./docker/frontend/Dockerfile.frontend
           push: true
+          build-args: |
+            APP_VERSION=${{ env.VERSION }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:pr-next-${{ github.event.pull_request.number }}
