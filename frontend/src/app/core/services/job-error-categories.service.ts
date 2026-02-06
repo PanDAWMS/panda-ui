@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { Observable, of } from 'rxjs';
 import { JobErrorCategory } from '../models/job-error-category.model';
 import { tap } from 'rxjs/operators';
+import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { tap } from 'rxjs/operators';
 export class JobErrorCategoriesService {
   private categories?: JobErrorCategory[];
   private apiService = inject(ApiService);
+  private log = inject(LoggingService).forContext('JobErrorCategoriesService');
   private palette = [
     '#57534e',
     '#475569',
@@ -44,7 +46,7 @@ export class JobErrorCategoriesService {
         this.categories.forEach((category, index) => {
           category.color = this.palette[index];
         });
-        console.debug('[JobErrorCategoriesService] Fetched job error categories');
+        this.log.debug('[JobErrorCategoriesService] Fetched job error categories');
       }),
     );
   }

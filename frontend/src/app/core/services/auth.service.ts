@@ -5,6 +5,7 @@ import { AppConfigService } from './app-config.service';
 import { UserProfile } from '../models/user.model';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private readonly config = inject(AppConfigService);
   private http = inject(HttpClient);
+  private log = inject(LoggingService).forContext('AuthService');
   private router = inject(Router);
 
   private initialized = false;
@@ -38,11 +40,11 @@ export class AuthService {
 
   init(): Promise<UserProfile | null> {
     if (this.initialized) {
-      console.debug('[AuthService] init: already initialized');
+      this.log.debug('init: already initialized');
       return Promise.resolve(this.userSubject.value);
     }
     this.initialized = true;
-    console.debug('[AuthService] init: calling userinfo API to check auth status');
+    this.log.debug('init: calling userinfo API to check auth status');
     // check if the user is authenticated by calling the userinfo endpoint
     return firstValueFrom(
       this.http.get<UserProfile>(`${this.authUrl}userinfo/`).pipe(
@@ -56,23 +58,23 @@ export class AuthService {
           permissions: response.permissions,
         })),
         tap((user) => {
-          console.debug('[AuthService] checkAuth: got user from userinfo API');
+          this.log.debug('checkAuth: got user from userinfo API');
           this.setUser(user);
         }),
         switchMap((user) =>
           this.getUserToken().pipe(
             map((token) => {
-              console.debug('[AuthService] checkAuth: got user token');
+              this.log.debug('checkAuth: got user token');
               return user;
             }),
             catchError((err) => {
-              console.debug('[AuthService] checkAuth: error getting user token', err && err.status, err && err.message);
+              this.log.debug('checkAuth: error getting user token', err && err.status, err && err.message);
               return of(user);
             }),
           ),
         ),
         catchError((err) => {
-          console.debug('[AuthService] checkAuth: error', err && err.status, err && err.message);
+          this.log.debug('checkAuth: error', err && err.status, err && err.message);
           this.setUser(null);
           return of(null);
         }),
@@ -86,7 +88,7 @@ export class AuthService {
   }
 
   checkAuth(): Observable<UserProfile | null> {
-    console.debug('[AuthService] checkAuth: returning value from userSubject');
+    this.log.debug('checkAuth: returning value from userSubject');
     return of(this.userSubject.value);
   }
 
@@ -122,7 +124,7 @@ export class AuthService {
       .pipe(
         catchError((err) => {
           // ignore error but log
-          console.error('Logout API error', err);
+          this.log.error('Logout API error', err);
           return of(null);
         }),
       )
@@ -131,14 +133,14 @@ export class AuthService {
           this.router.navigate(['/']);
         } catch (e) {
           // ignore navigation errors
-          console.debug('Navigation error after logout', e);
+          this.log.debug('Navigation error after logout', e);
         }
       });
   }
 
   clearSession(): void {
     // Clear the user and the token in the subject
-    console.debug('[AuthService] clearSession -> clearing client state');
+    this.log.debug('clearSession -> clearing client state');
     this.tokenSubject.next(null);
     this.userSubject.next(null);
   }

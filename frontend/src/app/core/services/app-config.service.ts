@@ -6,11 +6,12 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class AppConfigService {
-  private config: AppConfig = {
-    apiUrl: environment.apiUrl,
-    production: environment.production,
-    vo: environment.vo,
-  };
+  private config: AppConfig;
+
+  constructor() {
+    // get defaults from local environment
+    this.config = { ...environment };
+  }
 
   // merge runtime config with defaults
   setConfig(config: Partial<AppConfig>): void {

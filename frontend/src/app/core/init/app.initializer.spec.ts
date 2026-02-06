@@ -49,6 +49,7 @@ describe('appInitializer', () => {
 
     const mockConfig: AppConfig = {
       apiUrl: 'https://mock-api.local/api',
+      logLevel: 'WARN',
       production: true,
       vo: '',
     };

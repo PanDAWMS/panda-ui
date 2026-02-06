@@ -3,12 +3,14 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
+import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   private http = inject(HttpClient);
+  private log = inject(LoggingService).forContext('ApiService');
   private config = inject(AppConfigService);
 
   private apiUrl?: string;
@@ -52,15 +54,15 @@ export class ApiService {
 
   // common error handler
   private handleError(error: HttpErrorResponse): Observable<never> {
-    console.debug('[ApiService] Handling error:', error, 'type', error.type);
+    this.log.debug('Handling error:', error, 'type', error.type);
     if (error.status === 0) {
       // Network or CORS error
-      console.error('Network error:', error);
+      this.log.error('Network error:', error);
     } else if (error.status === 401) {
       // Authentication error
-      console.warn('Unauthorized request:', error.url);
+      this.log.warn('Unauthorized request:', error.url);
     } else {
-      console.error('API error:', error);
+      this.log.error('API error:', error);
     }
     return throwError(() => new Error(error.message || 'Server error'));
   }

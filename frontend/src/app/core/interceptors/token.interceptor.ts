@@ -2,10 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable, switchMap, take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { LoggingService } from '../services/logging.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
+  private log = inject(LoggingService).forContext('TokenInterceptor');
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // get the latest token value once for this request
@@ -18,7 +20,7 @@ export class TokenInterceptor implements HttpInterceptor {
           headers,
           withCredentials: true,
         });
-        console.debug('[TokenInterceptor] Token: ', token ? 'ok' : 'null');
+        this.log.debug('Token: ', token ? 'ok' : 'null');
         return next.handle(cloned);
       }),
     );

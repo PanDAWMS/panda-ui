@@ -3,9 +3,11 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { MessageService } from 'primeng/api';
+import { LoggingService } from '../services/logging.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
+  private log = inject(LoggingService).forContext('HttpErrorInterceptor');
   private messageService = inject(MessageService);
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -20,8 +22,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
             sticky: true,
             closable: false,
           });
-          console.debug('[HttpErrorInterceptor] Caught error: ', error);
-          console.log('[HttpErrorInterceptor] MessageService instance:', this.messageService);
+          this.log.error('Caught error: ', error);
+          this.log.debug('MessageService instance:', this.messageService);
         }
 
         return throwError(() => error);

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-login-callback',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class LoginCallbackComponent implements OnInit {
   private authService = inject(AuthService);
+  private log = inject(LoggingService).forContext('LoginCallback');
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -19,11 +21,11 @@ export class LoginCallbackComponent implements OnInit {
       this.authService
         .init()
         .then((user) => {
-          console.debug('[LoginCallback] User info loaded:', user);
+          this.log.debug('User info loaded:', user);
           this.router.navigate(['/']);
         })
         .catch((error) => {
-          console.error('[LoginCallback] Failed to fetch user info:', error);
+          this.log.error('Failed to fetch user info:', error);
           this.router.navigate(['/']);
         });
     }, 50);
