@@ -1,4 +1,4 @@
-:host .login-button > button.p-button {
+:host ::ng-deep .login-button > button.p-button {
   background-color: var(--pui-surface-900);
   border: none;
   padding: 0.75rem;

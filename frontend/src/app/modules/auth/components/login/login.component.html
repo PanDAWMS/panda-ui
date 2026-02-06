@@ -1,3 +1,4 @@
+<p-menu #menu appendTo="body" styleClass="login-avatar-menu" [autoZIndex]="true" [model]="userMenu" [popup]="true" />
 @if (user$ | async; as user) {
 <div class="flex justify-end w-full">
   <a
@@ -10,7 +11,6 @@
     <p-avatar class="login-avatar" label="{{ user.initials }}" shape="circle" />
   </a>
 </div>
-<p-menu #menu appendTo="body" styleClass="login-avatar-menu" [autoZIndex]="true" [model]="userMenu" [popup]="true" />
 } @else {
 <p-button class="login-button" label="Login" (click)="login()" />
 }
