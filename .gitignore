@@ -11,6 +11,9 @@ frontend/dist/
 
 # Angular development server
 frontend/.angular/
+# development environment
+frontend/src/environments/environment.development.ts
+frontend/src/assets/version.json
 
 # IDEs and editors
 .idea/

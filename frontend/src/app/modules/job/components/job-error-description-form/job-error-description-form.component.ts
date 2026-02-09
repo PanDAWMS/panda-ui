@@ -17,6 +17,7 @@ import { SelectModule } from 'primeng/select';
 import { OptionObject } from '../../../../core/models/option.model';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageModule } from 'primeng/message';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-job-error-description-form',
@@ -45,6 +46,7 @@ export class JobErrorDescriptionFormComponent implements OnInit, OnChanges {
   submitted = false;
 
   private fb: FormBuilder = inject(FormBuilder);
+  private log = inject(LoggingService).forContext('JobErrorDescriptionFormComponent');
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -121,7 +123,7 @@ export class JobErrorDescriptionFormComponent implements OnInit, OnChanges {
       category: formData.category?.id ? formData.category.id : 0,
     };
     this.submitted = true;
-    console.debug('Form submitted:', newItem);
+    this.log.debug('Form submitted:', newItem);
     this.save.emit({ ...newItem });
   }
 }

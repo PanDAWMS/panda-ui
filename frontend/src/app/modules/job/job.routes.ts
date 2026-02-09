@@ -3,5 +3,10 @@ import { JobErrorDescriptionListComponent } from './components/job-error-descrip
 import { authGuard } from '../../core/guards/auth.guard';
 
 export const jobRoutes: Routes = [
-  { path: 'job-error-descriptions', component: JobErrorDescriptionListComponent, canActivate: [authGuard] },
+  {
+    path: 'job-error-descriptions',
+    component: JobErrorDescriptionListComponent,
+    title: 'Job error descriptions',
+    canActivate: [authGuard],
+  },
 ];

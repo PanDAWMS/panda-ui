@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT", "development")
+ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT", "production")
 
 # Load environment variables from .env file
 if ENVIRONMENT == "development":

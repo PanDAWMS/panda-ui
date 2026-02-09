@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarModule } from 'primeng/avatar';
-import { MenuModule } from 'primeng/menu';
+import { Menu, MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfile } from '../../../../core/models/user.model';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 })
 export class LoginComponent {
   auth = inject(AuthService);
+  @ViewChild('menu') menu: Menu | undefined;
 
   user$!: Observable<UserProfile | null>;
   userMenu: MenuItem[] = [];
@@ -36,11 +37,16 @@ export class LoginComponent {
   buildUserMenu(): MenuItem[] {
     return [
       { label: 'Profile', icon: 'pi pi-user', routerLink: ['/user/profile'] },
-      { label: 'Logout', icon: 'pi pi-sign-out', routerLink: ['/logout'] },
+      { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.logout() },
     ];
   }
 
   login(): void {
     this.auth.login();
+  }
+
+  logout(): void {
+    this.menu?.hide();
+    this.auth.logout();
   }
 }

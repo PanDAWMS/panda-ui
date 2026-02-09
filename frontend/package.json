@@ -40,6 +40,8 @@
     "@angular/cli": "^21.0.2",
     "@angular/compiler-cli": "^21.0.3",
     "@angular/localize": "^21.0.3",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@types/express": "^4.17.25",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.19.26",

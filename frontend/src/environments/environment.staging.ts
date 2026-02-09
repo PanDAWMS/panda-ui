@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: '', // placeholder to be overwritten by config service
+  apiUrl: '__API_URL__',
   logLevel: 'WARN',
   vo: '',
 };

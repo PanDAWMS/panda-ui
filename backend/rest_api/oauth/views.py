@@ -22,6 +22,7 @@
 """Views for the OAuth application."""
 
 import logging
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import logout
@@ -46,7 +47,15 @@ def redirect_after_login_view(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The HTTP response object with a redirect to the frontend.
     """
-    response = redirect(f'{settings.FRONTEND_BASE_URL}/login/callback/?next=/{request.session.get("next", "")}')
+    # parse the URL in case a full URL was stored
+    next_url = request.session.get("next", "/")
+    _logger.debug(f"Session 'next' before redirect: {next_url}")
+    parsed = urlparse(next_url)
+    path_with_query = parsed.path
+    if parsed.query:
+        path_with_query += f"?{parsed.query}"
+
+    response = redirect(f"{settings.FRONTEND_BASE_URL}/login/callback/?next={path_with_query.lstrip('/')}")
     response = preserve_cookies(request, response)
     _logger.debug(f"Setting cookies: {response.cookies}")
 

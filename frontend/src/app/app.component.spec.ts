@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter, RouterOutlet } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent, RouterOutlet],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), { provide: MessageService }],
     }).compileComponents();
   });
 
