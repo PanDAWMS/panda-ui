@@ -14,7 +14,7 @@ import { OptionObject } from '../../../../core/models/option.model';
 import { DialogModule } from 'primeng/dialog';
 import { JobErrorDescriptionFormComponent } from '../job-error-description-form/job-error-description-form.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
 import { JobErrorCategoriesService } from '../../../../core/services/job-error-categories.service';
 import { JobErrorCategory } from '../../../../core/models/job-error-category.model';
@@ -36,7 +36,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
     TagModule,
     JobErrorDescriptionFormComponent,
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   standalone: true,
   templateUrl: './job-error-description-list.component.html',
   styleUrl: './job-error-description-list.component.scss',

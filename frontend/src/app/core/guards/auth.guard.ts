@@ -3,14 +3,14 @@ import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { map } from 'rxjs/operators';
 import { from, take } from 'rxjs';
-import { MessageService } from 'primeng/api';
 import { LoggingService } from '../services/logging.service';
+import { MessageBufferService } from '../services/message-buffer.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const authService = inject(AuthService);
   const log = inject(LoggingService).forContext('authGuard');
-  const messageService = inject(MessageService);
+  const messageBuffer = inject(MessageBufferService);
   if (typeof window === 'undefined') {
     log.debug('Running on server, returning true to allow SSR rendering, it will be re-checked on client.');
     return true;
@@ -29,13 +29,11 @@ export const authGuard: CanActivateFn = (route, state) => {
       }
 
       log.debug('User is not authenticated, redirecting to home page.');
-      setTimeout(() => {
-        messageService.add({
-          severity: 'warn',
-          summary: 'Authentication Required',
-          detail: `You must be logged in to access the following page: ${state.url}`,
-        });
-      }, 0);
+      messageBuffer.add({
+        severity: 'warn',
+        summary: 'Authentication Required',
+        detail: `You must be logged in to access the following page: ${state.url}`,
+      });
       return router.parseUrl('/');
     }),
     take(1),

@@ -2,28 +2,27 @@ import { inject, Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
-import { MessageService } from 'primeng/api';
 import { LoggingService } from '../services/logging.service';
+import { MessageBufferService } from '../services/message-buffer.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
   private log = inject(LoggingService).forContext('HttpErrorInterceptor');
-  private messageService = inject(MessageService);
+  private messageBuffer = inject(MessageBufferService);
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         // Backend unreachable or offline
-        if (error.status === 0) {
-          this.messageService.add({
+        if (error.status === 0 || error.status >= 500) {
+          this.messageBuffer.add({
             severity: 'error',
             summary: 'Connection Error',
-            detail: 'Unable to reach the server. Please check your network or try again later.',
+            detail: 'Unable to reach the API server. Please try later :( ',
             sticky: true,
             closable: false,
           });
           this.log.error('Caught error: ', error);
-          this.log.debug('MessageService instance:', this.messageService);
         }
 
         return throwError(() => error);
