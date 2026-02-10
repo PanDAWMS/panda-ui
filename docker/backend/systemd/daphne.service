@@ -5,11 +5,10 @@ After=network.target
 [Service]
 User=atlpan
 Group=zp
-WorkingDirectory=/opt/prod
-ExecStart=/opt/prod/venv/bin/daphne -u /tmp/daphne.sock rest_api.asgi:application
+WorkingDirectory=/opt/pandaui
+ExecStart=/opt/pandaui/venv/bin/daphne -u /tmp/daphne.sock rest_api.asgi:application
 Restart=always
 Environment="DJANGO_SETTINGS_MODULE=rest_api.settings"
-EnvironmentFile=/opt/prod/config/.env
 
 [Install]
 WantedBy=multi-user.target

@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, TitleStrategy } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
@@ -8,7 +8,8 @@ import { routes } from './app.routes';
 import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { IndexPreset } from './core/theme/index.preset';
-import { authInitializer } from './core/init/auth.initializer';
+import { appInitializer } from './core/init/app.initializer';
+import { AppTitleStrategy } from './core/services/app-title.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,12 +40,13 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    { provide: TitleStrategy, useClass: AppTitleStrategy },
     provideClientHydration(withEventReplay()),
     // http clint and interceptors, interceptors must be provided before the http client
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
-    // initialize authentication on app startup, must be last
-    provideAppInitializer(authInitializer),
+    // init app configuration and authentication on app startup, must be last
+    provideAppInitializer(appInitializer),
   ],
 };

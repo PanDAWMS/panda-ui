@@ -1,14 +1,16 @@
+<p-menu #menu appendTo="body" styleClass="login-avatar-menu" [autoZIndex]="true" [model]="userMenu" [popup]="true" />
 @if (user$ | async; as user) {
-<a
-  class="p-menubar-item-link flex items-center gap-2 cursor-pointer login-avatar-link"
-  pRipple
-  role="button"
-  tabindex="0"
-  (click)="menu.toggle($event)"
-  (keydown.enter)="menu.toggle($event)">
-  <p-avatar class="login-avatar" label="{{ user.initials }}" shape="circle" />
-</a>
-<p-menu #menu class="login-avatar-menu" [model]="userMenu" [popup]="true" />
+<div class="flex justify-end w-full">
+  <a
+    class="p-menubar-item-link flex items-center gap-2 cursor-pointer login-avatar-link"
+    pRipple
+    role="button"
+    tabindex="0"
+    (click)="menu.toggle($event)"
+    (keydown.enter)="menu.toggle($event)">
+    <p-avatar class="login-avatar" label="{{ user.initials }}" shape="circle" />
+  </a>
+</div>
 } @else {
 <p-button class="login-button" label="Login" (click)="login()" />
 }

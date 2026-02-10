@@ -40,41 +40,36 @@ ENV LOGS_PATH=/data/pandaui/logs
 
 # Create working dirs and adjust permissions
 RUN mkdir -p $APP_PATH $CONFIG_PATH $LOGS_PATH && \
-    chgrp -R 0 $LOGS_PATH $CONFIG_PATH && \
-    chmod -R g=u $LOGS_PATH $CONFIG_PATH
+    chgrp -R 0 $APP_PATH $CONFIG_PATH $LOGS_PATH && \
+    chmod -R g=u $APP_PATH $CONFIG_PATH $LOGS_PATH
 
 WORKDIR $APP_PATH
 
 # Set up Python venv & install dependencies
-COPY docker/requirements.txt $APP_PATH/requirements.txt
+COPY docker/backend/requirements.txt $APP_PATH/requirements.txt
 RUN python -m venv $VENV_PATH && \
     $VENV_PATH/bin/pip install --upgrade pip && \
     $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt && \
-    chgrp -R 0 $VENV_PATH && \
-    chmod -R g=u $VENV_PATH/bin
+    chgrp -R 0 $VENV_PATH && chmod -R g=u $VENV_PATH/bin
 
 # Copy backend code and set permissions
 COPY backend $APP_PATH/backend
-RUN chgrp -R 0 $APP_PATH && \
-    chmod -R g=u $APP_PATH
+RUN chgrp -R 0 $APP_PATH && chmod -R g=u $APP_PATH
 
 # Config files and permissions
-COPY docker/start.sh /usr/local/bin/
-COPY docker/systemd/daphne.service /etc/systemd/system/daphne.service
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/backend/start.sh /usr/local/bin/
+COPY docker/backend/systemd/daphne.service /etc/systemd/system/daphne.service
+COPY docker/backend/nginx/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /var/lib/nginx/tmp/client_body && \
-    chgrp -R 0  /etc/nginx /var/lib/nginx /var/log/nginx /var/run && \
+    chgrp -R 0 /etc/nginx /var/lib/nginx /var/log/nginx /var/run && \
     chmod -R g=u /etc/nginx /var/lib/nginx /var/log/nginx && \
     chmod +x /usr/local/bin/start.sh
 
 ## Symlinks
-#RUN ln -fs $CONFIG_PATH/tnsnames.ora /etc/tnsnames.ora
-
-USER atlpan
+RUN ln -fs $CONFIG_PATH/tnsnames.ora /etc/tnsnames.ora
 
 ENTRYPOINT ["start.sh"]
-
 STOPSIGNAL SIGINT
 
-EXPOSE 8080 8000 8443
+EXPOSE 8080 8000
 CMD ["all"]

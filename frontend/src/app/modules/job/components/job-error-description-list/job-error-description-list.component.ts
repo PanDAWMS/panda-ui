@@ -14,10 +14,11 @@ import { OptionObject } from '../../../../core/models/option.model';
 import { DialogModule } from 'primeng/dialog';
 import { JobErrorDescriptionFormComponent } from '../job-error-description-form/job-error-description-form.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
 import { JobErrorCategoriesService } from '../../../../core/services/job-error-categories.service';
 import { JobErrorCategory } from '../../../../core/models/job-error-category.model';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-job-error-description-list',
@@ -35,7 +36,7 @@ import { JobErrorCategory } from '../../../../core/models/job-error-category.mod
     TagModule,
     JobErrorDescriptionFormComponent,
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   standalone: true,
   templateUrl: './job-error-description-list.component.html',
   styleUrl: './job-error-description-list.component.scss',
@@ -45,6 +46,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
   private api = inject(ApiService);
   private confirmDialogService = inject(ConfirmationService);
   private jobErrorCategoriesService = inject(JobErrorCategoriesService);
+  private log = inject(LoggingService).forContext('JobErrorDescriptionListComponent');
   private jobErrorDescriptionsSubject = new BehaviorSubject<ErrorDescription[]>([]);
 
   categories: JobErrorCategory[] | null = null;
@@ -121,13 +123,13 @@ export class JobErrorDescriptionListComponent implements OnInit {
   }
 
   onEdit(item: ErrorDescription): void {
-    console.debug('Selected item for edit:', item);
+    this.log.debug('Selected item for edit:', item);
     this.selectedItem = item;
     this.isDialogOpen = true;
   }
 
   confirmDelete(event: Event, item: ErrorDescription): void {
-    console.debug('Confirm delete triggered');
+    this.log.debug('Confirm delete triggered');
     this.confirmDialogService.confirm({
       target: event.target as EventTarget,
       header: 'Confirm Deletion',
@@ -145,7 +147,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
       },
       accept: () => {
         if (item) {
-          console.debug('Confirmed deletion for item:', item);
+          this.log.debug('Confirmed deletion for item:', item);
           this.onDelete(item);
         }
       },
@@ -160,7 +162,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
       // update the local list reactively
       const currentItems = this.jobErrorDescriptionsSubject.value;
       this.jobErrorDescriptionsSubject.next(currentItems.filter((i) => i.id !== item.id));
-      console.debug('Deleted item with id:', item.id);
+      this.log.debug('Deleted item with id:', item.id);
     });
   }
 
@@ -169,7 +171,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
     if (mode === 'create') {
       this.api.post<ErrorDescription>('job/error-description', item).subscribe({
         next: (res) => {
-          console.debug('Item saved:', item);
+          this.log.debug('Item saved:', item);
           const newItem = { ...item, id: res.id };
           // update the local list reactively
           const currentItems = this.jobErrorDescriptionsSubject.value;
@@ -179,13 +181,13 @@ export class JobErrorDescriptionListComponent implements OnInit {
           this.selectedItem = null;
         },
         error: (err) => {
-          console.error('Error saving item:', err);
+          this.log.error('Error saving item:', err);
         },
       });
     } else if (mode === 'edit') {
       this.api.patch<ErrorDescription>('job/error-description', item.id!, item).subscribe({
         next: (res) => {
-          console.debug('Item updated:', item, res);
+          this.log.debug('Item updated:', item, res);
           const updatedItem = { ...item };
           // update the local list reactively
           const currentItems = this.jobErrorDescriptionsSubject.value.filter((i) => i.id !== item.id);
@@ -195,7 +197,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
           this.selectedItem = null;
         },
         error: (err) => {
-          console.error('Error saving item:', err);
+          this.log.error('Error saving item:', err);
         },
       });
     }

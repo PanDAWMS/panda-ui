@@ -3,14 +3,15 @@
 set -e
 export PYTHONPATH=/opt/pandaui/backend
 
-# Activate virtualenv
+echo "Activating virtual env"
 source /opt/pandaui/venv/bin/activate
 
-# Start NGINX
+echo "Marking migrations as applied (fake) to trigger post migration signals"
+python /opt/pandaui/backend/manage.py migrate --fake --noinput
+
 echo "Starting NGINX..."
 nginx -g "daemon off;" &
 
-# Start Daphne server (ASGI)
 echo "Starting Daphne ASGI server..."
 exec /opt/pandaui/venv/bin/daphne -u /tmp/daphne.sock rest_api.asgi:application
 
