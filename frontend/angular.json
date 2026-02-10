@@ -19,7 +19,6 @@
           "options": {
             "outputPath": "dist/frontend",
             "index": "src/index.html",
-            "browser": "src/main.ts",
             "polyfills": ["zone.js", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -30,7 +29,7 @@
                 "output": "/assets/"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["src/styles/styles.css"],
             "stylePreprocessorOptions": {
               "sass": {
                 "silenceDeprecations": ["mixed-decls", "color-functions", "global-builtin", "import"]
@@ -95,7 +94,7 @@
                 "input": "src/assets"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["src/styles/styles.css"],
             "scripts": []
           }
         },

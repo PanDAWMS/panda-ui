@@ -1,0 +1,18 @@
+/*
+This file defines the global styling pipeline and is only for global imports, not for component-specific styles.
+It loads Tailwind, the PrimeNG plugin, fonts, and icons in the correct order.
+
+General style organization:
+- Global pipeline: this file (imports only)
+- Global rules: styles/global.css
+- General theme by PrimeNG: defined in TypeScript under app/core/theme following PrimeNG theming philosophy
+- Component styles: *.component.scss
+
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+@import 'primeicons/primeicons.css';
+
+@import './global.css';
