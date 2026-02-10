@@ -1,0 +1,37 @@
+html {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
+
+/*
+user menu in overlay attached to body for correct placement and alignment
+variables here can be not resolved by IDE, but will be in browser because of the order of imports
+*/
+.login-avatar-menu.p-menu-overlay {
+  transform-origin: top right !important;
+  background-color: var(--pui-surface-900);
+  border-color: var(--pui-surface-900);
+  border-radius: 0;
+  min-width: 10rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.4);
+}
+
+.login-avatar-menu .p-menu-list {
+  background-color: var(--pui-surface-900);
+  padding: 0;
+}
+
+.login-avatar-menu .p-menu-item:not(.p-disabled) .p-menu-item-content {
+  color: var(--pui-surface-100);
+}
+
+.login-avatar-menu .p-menu-item:not(.p-disabled) .p-menu-item-content:hover,
+.login-avatar-menu .p-menu-item:not(.p-disabled) .p-menu-item-content:focus {
+  color: var(--pui-surface-100);
+  background-color: var(--pui-surface-800);
+}

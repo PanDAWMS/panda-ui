@@ -29,13 +29,16 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.name = `${this.vo} ${this.name}`;
     this.items = [
-      {
-        label: 'Tasks',
-        items: [{ label: 'All' }, { label: 'Analysis' }, { label: 'Production' }],
-      },
+      // {
+      //   label: 'Tasks',
+      //   items: [{ label: 'All' }, { label: 'Analysis' }, { label: 'Production' }],
+      // },
       {
         label: 'Jobs',
-        items: [{ label: 'All' }, { label: 'Error descriptions', routerLink: '/job-error-descriptions' }],
+        items: [
+          // { label: 'All' },
+          { label: 'Error descriptions', routerLink: '/job-error-descriptions' },
+        ],
       },
     ];
   }

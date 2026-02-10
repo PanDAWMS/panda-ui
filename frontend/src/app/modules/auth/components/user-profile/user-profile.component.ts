@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Observable } from 'rxjs';
+import { concatMap, Observable, Subject, switchMap, take } from 'rxjs';
 import { UserProfile } from '../../../../core/models/user.model';
 import { CommonModule } from '@angular/common';
 import { tap } from 'rxjs/operators';
@@ -19,25 +19,24 @@ import { SkeletonModule } from 'primeng/skeleton';
 })
 export class UserProfileComponent {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
-  // expose reactive streams
+  private loadAction$ = new Subject<string | null>();
   user$: Observable<UserProfile | null> = this.authService.user$;
-  token$: Observable<string | null> = this.authService.token$;
+  token$ = this.loadAction$.asObservable();
 
   loadingToken = false;
 
-  // trigger token load
   loadToken(): void {
     this.loadingToken = true;
     this.authService
       .getUserToken()
-      .pipe(
-        tap({
-          next: () => (this.loadingToken = false),
-          error: () => (this.loadingToken = false),
-        }),
-      )
-      .subscribe();
+      .pipe(concatMap(() => this.authService.token$.pipe(take(1))))
+      .subscribe({
+        next: (tokenValue) => {
+          this.loadingToken = false;
+          this.loadAction$.next(tokenValue);
+        },
+        error: () => (this.loadingToken = false),
+      });
   }
 }
