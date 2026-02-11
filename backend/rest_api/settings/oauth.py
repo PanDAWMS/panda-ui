@@ -58,6 +58,13 @@ FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
 if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND_BASE_URL.startswith("http")):
     raise ValueError("PANDAUI_FRONTEND_BASE_URL environment variable is not set or does not start with http(s)")
 
+# session settings
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_NAME = "pandauisessionid"
+SESSION_COOKIE_SAMESITE = None  # to allow pass cookie to/from iam redirect
+
 # cookie settings
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
