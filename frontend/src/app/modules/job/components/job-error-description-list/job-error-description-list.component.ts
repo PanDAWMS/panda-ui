@@ -168,11 +168,18 @@ export class JobErrorDescriptionListComponent implements OnInit {
 
   onSave(item: ErrorDescription): void {
     const mode: string = item.id ? 'edit' : 'create';
+    // enrich item with display fields
+    const enrichCategory = (i: ErrorDescription): ErrorDescription => ({
+      ...i,
+      categoryName: this.getJobErrorCategoryName(i.category),
+      categoryColor: this.getJobErrorCategoryColor(i.category),
+    });
+
     if (mode === 'create') {
       this.api.post<ErrorDescription>('job/error-description', item).subscribe({
         next: (res) => {
           this.log.debug('Item saved:', item);
-          const newItem = { ...item, id: res.id };
+          const newItem = enrichCategory({ ...item, id: res.id });
           // update the local list reactively
           const currentItems = this.jobErrorDescriptionsSubject.value;
           this.jobErrorDescriptionsSubject.next([...currentItems, newItem]);
@@ -188,7 +195,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
       this.api.patch<ErrorDescription>('job/error-description', item.id!, item).subscribe({
         next: (res) => {
           this.log.debug('Item updated:', item, res);
-          const updatedItem = { ...item };
+          const updatedItem = enrichCategory({ ...item });
           // update the local list reactively
           const currentItems = this.jobErrorDescriptionsSubject.value.filter((i) => i.id !== item.id);
           this.jobErrorDescriptionsSubject.next([...currentItems, updatedItem]);

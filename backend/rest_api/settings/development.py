@@ -29,11 +29,12 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 # Make session work with HTTP in development
 SESSION_COOKIE_SECURE = False
 # CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_DOMAIN = ".cern.ch"
 SESSION_COOKIE_SAMESITE = "Lax"
 
 # Logging
 for logger in LOGGING["loggers"]:
+    if logger in ["django.utils.autoreload"]:
+        continue
     LOGGING["loggers"][logger]["level"] = "DEBUG"
     LOGGING["loggers"][logger]["handlers"].append("console")
 

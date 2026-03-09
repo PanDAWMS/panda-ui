@@ -51,10 +51,10 @@ export class JobErrorDescriptionFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.form = this.fb.group({
       component: ['', [Validators.required]],
-      code: [null, [Validators.required, Validators.pattern(/^[0-9)]{1,5}$/)]],
-      acronym: ['', [Validators.pattern(/^[A-Z)]{5,20}$/)]],
-      diagnostics: ['', [Validators.maxLength(200), Validators.minLength(20)]],
-      description: ['', [Validators.maxLength(500), Validators.minLength(50)]],
+      code: [null, [Validators.required, Validators.pattern(/^[0-9]{1,5}$/)]],
+      acronym: ['', [Validators.pattern(/^[A-Za-z_]{5,50}$/)]],
+      diagnostics: ['', [Validators.maxLength(200), Validators.minLength(10)]],
+      description: ['', [Validators.maxLength(1000), Validators.minLength(20)]],
       category: [null, []],
     });
     this.form.setValidators(this.duplicateComponentCodeValidator);
@@ -120,7 +120,7 @@ export class JobErrorDescriptionFormComponent implements OnInit, OnChanges {
       acronym: formData.acronym,
       diagnostics: formData.diagnostics,
       description: formData.description,
-      category: formData.category?.id ? formData.category.id : 0,
+      category: formData.category?.value ?? 0,
     };
     this.submitted = true;
     this.log.debug('Form submitted:', newItem);

@@ -46,8 +46,8 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_uid",
     "social_core.pipeline.social_auth.auth_allowed",
     "social_core.pipeline.social_auth.social_user",
+    "rest_api.oauth.pipeline.merge_social_users",
     "social_core.pipeline.user.get_username",
-    "rest_api.oauth.pipeline.associate_by_email",  # custom association by email
     "social_core.pipeline.user.create_user",
     "social_core.pipeline.social_auth.associate_user",
     "social_core.pipeline.social_auth.load_extra_data",

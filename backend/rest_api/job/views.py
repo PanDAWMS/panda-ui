@@ -2,7 +2,7 @@ import rest_api.job.constants as job_const
 from django.db import IntegrityError, transaction
 from rest_api.job.models import ErrorDescription
 from rest_api.job.serializers import ErrorDescriptionSerializer
-from rest_api.oauth.permissions import IsExperimentMember
+from rest_api.oauth.permissions import IsErrorDescriptionManager, IsExperimentMember
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import action
@@ -12,13 +12,23 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+READ_ACTIONS = ["list", "retrieve"]
+WRITE_ACTIONS = ["create", "update", "partial_update", "destroy", "bulk_create"]
+
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):
     queryset = ErrorDescription.objects.all()
     serializer_class = ErrorDescriptionSerializer
     renderer_classes = [JSONRenderer]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsExperimentMember]
+    permission_classes = [IsAuthenticated, IsExperimentMember, IsErrorDescriptionManager]
+
+    def get_permissions(self):
+        if self.action in READ_ACTIONS:
+            perms = [IsAuthenticated, IsExperimentMember]
+        else:
+            perms = [IsAuthenticated, IsExperimentMember, IsErrorDescriptionManager]
+        return [p() for p in perms]
 
     @action(detail=False, methods=["post"], url_path="bulk")
     def bulk_create(self, request: Request) -> Response:

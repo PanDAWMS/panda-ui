@@ -19,39 +19,55 @@
 # Tatiana Korchuganova <tatiana.korchuganova@cern.ch>
 # Paul Nilsson <paul.nilsson@cern.ch>
 
+import logging
 
-def associate_by_email(backend, details, user=None, *args, **kwargs):
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from social_django.models import UserSocialAuth
+
+_logger = logging.getLogger("oauth")
+
+
+def merge_social_users(strategy, details, backend, user=None, *args, **kwargs):
     """
-    Associates the current authentication with a user in the database who has the same email address.
+    Merge duplicate Django users that share the same email across different
+    social-auth providers, so that all social accounts are linked to a single
+    canonical application user.
 
     Args:
-        backend: The authentication backend in use.
-        details (dict): A dictionary containing user details, including the email address.
-        user (optional): The currently authenticated user, if any.
-        *args: Additional positional arguments.
-        **kwargs: Additional keyword arguments.
+        strategy: social-auth strategy object (pipeline context).
+        details (dict): user details extracted from the provider; must contain
+            the email field.
+        backend: authentication backend (provider) instance.
+        user: existing Django user instance, if already resolved earlier in
+            the pipeline.
 
     Returns:
-        dict or None: A dictionary with the associated user and a flag indicating if the user is new,
-        or None if no association is made.
-
-    Notes:
-        This function is not fully secure unless the authentication provider enforces email verification.
-        The Indigo IAM backend we are using ensures email verification. Other backends may need additional checks.
+        dict | None:
+            - {"user": primary_user} if a user with the given email exists
+              (after merging duplicates if needed).
+            - None if no email is provided or no matching users exist.
     """
-    if user:
+    email = details.get("email", None)
+    if not email:
         return None
 
-    email = details.get("email")
-    if email:
-        # Try to associate accounts registered with the same email address
-        users = list(backend.strategy.storage.user.get_users_by_email(email))
-        if len(users) == 0:
-            return None
-        if len(users) > 1:
-            return {
-                "user": sorted(users, key=lambda x: x.date_joined)[0],
-                "is_new": False,
-            }
-        return {"user": users[0], "is_new": False}
-    return None
+    auth_user_model = get_user_model()
+    users = list(auth_user_model.objects.filter(email__iexact=email).values("id"))
+    if len(users) == 0:
+        return None
+
+    user_ids = sorted([u["id"] for u in users])
+    primary_user_id = user_ids[0]
+    duplicates = user_ids[1:]
+    if len(duplicates) > 0:
+        with transaction.atomic():
+            # update associated user for all other providers
+            UserSocialAuth.objects.filter(user_id__in=duplicates).update(user_id=primary_user_id)
+            # mark duplicated users as inactive to clean up later
+            auth_user_model.objects.filter(id__in=duplicates).update(is_active=0)
+        _logger.debug(f"Found {len(duplicates)} social user duplicates -> merged them with {primary_user_id} user_id")
+
+    # pass primary user object into pipeline
+    primary_user = auth_user_model.objects.get(id=primary_user_id)
+    return {"user": primary_user}
