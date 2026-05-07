@@ -104,7 +104,7 @@ class UserInfo(APIView):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "groups": list(user.groups.values_list("name", flat=True)),
-            "permissions": list(user.get_all_permissions()),
+            "permissions": [],
         }
 
         return JsonResponse(user_info)

@@ -72,3 +72,7 @@ CSRF_COOKIE_HTTPONLY = True
 # make sure https is used and redirects use correct host
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
+
+AUTHORIZATION_POLICY_PATH = os.getenv("AUTHORIZATION_POLICY_PATH", None)
+if not AUTHORIZATION_POLICY_PATH or not os.path.isfile(AUTHORIZATION_POLICY_PATH):
+    raise ValueError("AUTHORIZATION_POLICY_PATH environment variable is not set")

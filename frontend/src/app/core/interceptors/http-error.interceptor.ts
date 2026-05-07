@@ -25,6 +25,17 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           this.log.error('Caught error: ', error);
         }
 
+        // Permission Errors (403)
+        if (error.status === 403) {
+          this.messageBuffer.add({
+            severity: 'error',
+            summary: 'Forbidden',
+            detail: 'You do not have the necessary permissions for this action.',
+            life: 5000, // Usually better to let these expire unlike connection errors
+          });
+          this.log.warn('Access forbidden to:', req.url);
+        }
+
         return throwError(() => error);
       }),
     );
