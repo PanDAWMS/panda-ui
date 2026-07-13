@@ -71,5 +71,5 @@ RUN ln -fs $CONFIG_PATH/tnsnames.ora /etc/tnsnames.ora
 ENTRYPOINT ["start.sh"]
 STOPSIGNAL SIGINT
 
-EXPOSE 8080 8000
+EXPOSE 443
 CMD ["all"]
