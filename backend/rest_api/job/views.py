@@ -2,7 +2,7 @@ import rest_api.job.constants as job_const
 from django.db import IntegrityError, transaction
 from rest_api.job.models import ErrorDescription
 from rest_api.job.serializers import ErrorDescriptionSerializer
-from rest_api.oauth.permissions import IsExperimentMember
+from rest_api.oauth.permissions import GlobalPermission
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import action
@@ -12,13 +12,17 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+READ_ACTIONS = ["list", "retrieve"]
+WRITE_ACTIONS = ["create", "update", "partial_update", "destroy", "bulk_create"]
+
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):
+    object_type = "error_description"
     queryset = ErrorDescription.objects.all()
     serializer_class = ErrorDescriptionSerializer
     renderer_classes = [JSONRenderer]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsExperimentMember]
+    permission_classes = [IsAuthenticated, GlobalPermission]
 
     @action(detail=False, methods=["post"], url_path="bulk")
     def bulk_create(self, request: Request) -> Response:
@@ -137,8 +141,9 @@ class JobErrorCategoryListView(APIView):
     Permission: Authenticated users only
     """
 
+    object_type = "error_description"
     authentication_classes = [TokenAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, GlobalPermission]
 
     def get(self, request, *args, **kwargs):
         try:

@@ -46,8 +46,8 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_uid",
     "social_core.pipeline.social_auth.auth_allowed",
     "social_core.pipeline.social_auth.social_user",
+    "rest_api.oauth.pipeline.merge_social_users",
     "social_core.pipeline.user.get_username",
-    "rest_api.oauth.pipeline.associate_by_email",  # custom association by email
     "social_core.pipeline.user.create_user",
     "social_core.pipeline.social_auth.associate_user",
     "social_core.pipeline.social_auth.load_extra_data",
@@ -58,6 +58,13 @@ FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
 if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND_BASE_URL.startswith("http")):
     raise ValueError("PANDAUI_FRONTEND_BASE_URL environment variable is not set or does not start with http(s)")
 
+# session settings
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_NAME = "pandauisessionid"
+SESSION_COOKIE_SAMESITE = None  # to allow pass cookie to/from iam redirect
+
 # cookie settings
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
@@ -65,3 +72,7 @@ CSRF_COOKIE_HTTPONLY = True
 # make sure https is used and redirects use correct host
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
+
+AUTHORIZATION_POLICY_PATH = os.getenv("AUTHORIZATION_POLICY_PATH", None)
+if not AUTHORIZATION_POLICY_PATH or not os.path.isfile(AUTHORIZATION_POLICY_PATH):
+    raise ValueError("AUTHORIZATION_POLICY_PATH environment variable is not set")
