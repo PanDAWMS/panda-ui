@@ -1,0 +1,2 @@
+p,atlas-adc-pandamon,error_description,read,{},{},allow
+p,atlas-adc-pandamon,error_description,write,{},{},allow
