@@ -24,7 +24,6 @@ ALLOWED_HOSTS = os.getenv("PANDAUI_ALLOWED_HOSTS", default="").split(",")
 # Application definition
 INSTALLED_APPS = [
     # django essentials
-    # 'django.contrib.admin',
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -52,6 +51,21 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_VERSION": "v1",
+    "ALLOWED_VERSIONS": ["v1", "v2"],
+    "VERSION_PARAM": "version",
+}
+
 ROOT_URLCONF = "rest_api.urls"
 
 WSGI_APPLICATION = "rest_api.wsgi.application"
@@ -64,6 +78,11 @@ USE_TZ = False
 
 # static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
+
+# UI frontend and backend URLs
+FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
+if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND_BASE_URL.startswith("http")):
+    raise ValueError("PANDAUI_FRONTEND_BASE_URL environment variable is not set or does not start with http(s)")
 
 # PanDA API URL
 PANDA_SERVER_API_URL = os.getenv("PANDA_SERVER_API_URL", None)

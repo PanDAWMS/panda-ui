@@ -54,7 +54,7 @@ class OauthConfig(AppConfig):
         if not policy_path:
             base_policy_dir = os.path.join(settings.BASE_DIR, "oauth", "policies")
             # try to find vo-specific policy file, if not found, use default policy
-            vo = getattr(settings, "MON_VO", "").lower().strip()
+            vo = getattr(settings, "VO", "").lower().strip()
             vo_policy_file = os.path.join(base_policy_dir, f"policy_{vo}.csv")
             default_policy_file = os.path.join(base_policy_dir, "policy__default.csv")
             if vo and os.path.exists(vo_policy_file):

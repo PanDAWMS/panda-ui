@@ -88,7 +88,7 @@ class UserInfo(APIView):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """
         Return user information.
 
@@ -120,7 +120,7 @@ class UserToken(APIView):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """
         Return user token.
 
