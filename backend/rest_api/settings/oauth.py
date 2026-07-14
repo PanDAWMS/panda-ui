@@ -9,17 +9,6 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
-    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
-}
-
 # get the IAM configuration from the environment
 SOCIAL_AUTH_OIDC_OIDC_ENDPOINT = os.getenv("AUTH_IAM_ENDPOINT")
 SOCIAL_AUTH_IAM_KEY = os.getenv("AUTH_IAM_CLIENT_ID")
@@ -54,9 +43,6 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.user.user_details",
 )
 LOGIN_REDIRECT_URL = "/api/oauth/redirect_after_login/"
-FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
-if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND_BASE_URL.startswith("http")):
-    raise ValueError("PANDAUI_FRONTEND_BASE_URL environment variable is not set or does not start with http(s)")
 
 # session settings
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
