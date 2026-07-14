@@ -11,6 +11,11 @@ env:
 on:
   pull_request:
     branches: [next]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker/**'
+      - 'VERSION'
   workflow_dispatch:  # optional manual trigger
 
 jobs:
