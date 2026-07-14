@@ -88,7 +88,7 @@ class UserInfo(APIView):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """
         Return user information.
 
@@ -104,7 +104,7 @@ class UserInfo(APIView):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "groups": list(user.groups.values_list("name", flat=True)),
-            "permissions": list(user.get_all_permissions()),
+            "permissions": [],
         }
 
         return JsonResponse(user_info)
@@ -120,7 +120,7 @@ class UserToken(APIView):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """
         Return user token.
 

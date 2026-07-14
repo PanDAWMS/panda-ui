@@ -16,9 +16,9 @@ Including another URLconf
 """
 
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include, re_path
 
 urlpatterns = []
 for app in settings.INSTALLED_APPS:
     if app.startswith("rest_api."):
-        urlpatterns.append(path(f"api/{app.replace('rest_api.', '')}/", include(f"{app}.urls")))
+        urlpatterns.append(re_path(rf"api/(?P<version>v1|v2)/{app.replace('rest_api.', '')}/", include(f"{app}.urls")))

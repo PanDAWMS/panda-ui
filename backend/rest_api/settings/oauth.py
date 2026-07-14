@@ -9,17 +9,6 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
-    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
-}
-
 # get the IAM configuration from the environment
 SOCIAL_AUTH_OIDC_OIDC_ENDPOINT = os.getenv("AUTH_IAM_ENDPOINT")
 SOCIAL_AUTH_IAM_KEY = os.getenv("AUTH_IAM_CLIENT_ID")
@@ -46,17 +35,21 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_uid",
     "social_core.pipeline.social_auth.auth_allowed",
     "social_core.pipeline.social_auth.social_user",
+    "rest_api.oauth.pipeline.merge_social_users",
     "social_core.pipeline.user.get_username",
-    "rest_api.oauth.pipeline.associate_by_email",  # custom association by email
     "social_core.pipeline.user.create_user",
     "social_core.pipeline.social_auth.associate_user",
     "social_core.pipeline.social_auth.load_extra_data",
     "social_core.pipeline.user.user_details",
 )
 LOGIN_REDIRECT_URL = "/api/oauth/redirect_after_login/"
-FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
-if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND_BASE_URL.startswith("http")):
-    raise ValueError("PANDAUI_FRONTEND_BASE_URL environment variable is not set or does not start with http(s)")
+
+# session settings
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_NAME = "pandauisessionid"
+SESSION_COOKIE_SAMESITE = None  # to allow pass cookie to/from iam redirect
 
 # cookie settings
 CSRF_COOKIE_SECURE = True
@@ -65,3 +58,5 @@ CSRF_COOKIE_HTTPONLY = True
 # make sure https is used and redirects use correct host
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
+
+AUTHORIZATION_POLICY_PATH = os.getenv("AUTHORIZATION_POLICY_PATH", None)

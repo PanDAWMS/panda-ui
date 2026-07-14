@@ -45,7 +45,6 @@ class IamBackend(OpenIdConnectAuth):
     def auth_complete(self, *args: Any, **kwargs: Any) -> Any:
         """
         Override the auth_complete method to handle the response from the OIDC provider.
-
         Create a DRF Token for the user and put it in cookies.
 
         Args:
