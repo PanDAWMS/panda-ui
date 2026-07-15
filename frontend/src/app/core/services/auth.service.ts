@@ -27,7 +27,8 @@ export class AuthService {
 
   private get authUrl(): string {
     // DRF endpoint that redirects to the IAM login URL
-    return `${this.config.apiUrl}/oauth/`;
+    const baseApiUrl = this.config.apiUrl.replace(/\/v\d+\/?$/, '');
+    return `${baseApiUrl}/oauth/`;
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

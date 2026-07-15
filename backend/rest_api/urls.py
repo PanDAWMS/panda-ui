@@ -21,4 +21,8 @@ from django.urls import include, re_path
 urlpatterns = []
 for app in settings.INSTALLED_APPS:
     if app.startswith("rest_api."):
-        urlpatterns.append(re_path(rf"api/(?P<version>v1|v2)/{app.replace('rest_api.', '')}/", include(f"{app}.urls")))
+        app_name = app.replace("rest_api.", "")
+        if app_name == "oauth":
+            urlpatterns.append(re_path(f"api/{app_name}/", include(f"{app}.urls")))
+        else:
+            urlpatterns.append(re_path(rf"api/(?P<version>v1|v2)/{app_name}/", include(f"{app}.urls")))
