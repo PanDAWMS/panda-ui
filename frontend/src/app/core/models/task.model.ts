@@ -18,7 +18,6 @@ export type Task = {
   transpath?: string;
   termcondition?: string;
   splitrule?: string;
-  workqueue_id?: number;
   errordialog?: string;
   parent_tid?: number;
   eventservice?: number;

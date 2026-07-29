@@ -1,0 +1,18 @@
+// Import Angular Material Theme
+@use './material-theme.scss';
+
+// Import TailwindCSS
+@use 'tailwindcss';
+
+// Global Non-Material Styles
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+// Global default styling for native HTML tables
+table {
+  width: 100%;
+  border-collapse: collapse;
+}

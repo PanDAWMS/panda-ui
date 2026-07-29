@@ -1,78 +1,85 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <div class="flex flex-col md:flex-row gap-2 mb-2">
-    <div class="flex flex-col w-full md:w-3/4 lg:w-2/4">
-      <label for="label">Component</label>
-      <p-select
-        formControlName="component"
-        optionLabel="label"
-        placeholder="Select a component"
-        required
-        [options]="components()" />
-      @if (form.get('component')?.invalid && (form.get('component')?.touched || submitted)) {
-      <p-message severity="error" size="small" variant="simple">Component is required.</p-message>
+<form class="flex flex-col gap-2 mt-2" [formGroup]="form" (ngSubmit)="submit()">
+  <!-- Row 1: Component & Code -->
+  <div class="flex flex-col md:flex-row gap-2">
+    <!-- Component Dropdown -->
+    <mat-form-field appearance="outline" class="w-full md:w-1/2">
+      <mat-label>Component</mat-label>
+      <mat-select formControlName="component" required>
+        @for (comp of components(); track comp.value) {
+        <mat-option [value]="comp.value">{{ comp.label }}</mat-option>
+        }
+      </mat-select>
+      @if (form.get('component')?.hasError('required')) {
+      <mat-error>Component is required.</mat-error>
       }
-    </div>
-    <div class="flex flex-col w-full md:w-1/4 lg:w-2/4">
-      <label for="code">Code</label>
-      <p-inputnumber formControlName="code" inputId="code" required [max]="10000" [min]="0" />
-      @if (form.get('code')?.invalid && (form.get('code')?.touched || submitted)) {
-      <p-message severity="error" size="small" variant="simple"
-        >Code is required, it must be integer and in range from 0 to 10000</p-message
-      >
-      } @if (form.get('code')?.touched && form.errors?.['duplicate']) {
-      <p-message severity="error" size="small" variant="simple">Duplicate</p-message>
+    </mat-form-field>
+
+    <!-- Code Input -->
+    <mat-form-field appearance="outline" class="w-full md:w-1/2">
+      <mat-label>Code</mat-label>
+      <input formControlName="code" matInput max="10000" min="0" required type="number" />
+      @if (form.get('code')?.hasError('required')) {
+      <mat-error>Code is required.</mat-error>
+      } @else if (form.get('code')?.hasError('min') || form.get('code')?.hasError('max')) {
+      <mat-error>Code must be an integer between 0 and 10000.</mat-error>
+      } @else if (form.hasError('duplicate')) {
+      <mat-error>Duplicate component and code combination.</mat-error>
       }
-    </div>
+    </mat-form-field>
   </div>
 
-  <div class="flex flex-col md:flex-row gap-2 mb-2">
-    <div class="flex flex-col w-full md:w-2/4">
-      <label for="category">Category</label>
-      <p-select
-        formControlName="category"
-        optionLabel="label"
-        placeholder="Select a category"
-        [options]="categories()" />
-    </div>
-    <div class="flex flex-col w-full md:w-2/4">
-      <label for="acronym">Acronym</label>
-      <input formControlName="acronym" pInputText />
-      @if (form.get('acronym')?.invalid && (form.get('acronym')?.touched || submitted)) {
-      <p-message severity="error" size="small" variant="simple"
-        >Acronym must be a one word in upper case without any special symbols</p-message
+  <!-- Row 2: Category & Acronym -->
+  <div class="flex flex-col md:flex-row gap-2">
+    <!-- Category Dropdown -->
+    <mat-form-field appearance="outline" class="w-full md:w-1/2">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category">
+        <mat-option [value]="null">-- None --</mat-option>
+        @for (cat of categories(); track cat.value) {
+        <mat-option [value]="cat.value">{{ cat.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Acronym Input -->
+    <mat-form-field appearance="outline" class="w-full md:w-1/2">
+      <mat-label>Acronym</mat-label>
+      <input formControlName="acronym" matInput placeholder="e.g. ERR_TIMEOUT" />
+      @if (form.get('acronym')?.hasError('pattern')) {
+      <mat-error
+        >Acronym must be 5-50 characters in upper/lower letters or underscores without special symbols.</mat-error
       >
       }
-    </div>
+    </mat-form-field>
   </div>
 
-  <div class="flex flex-col w-full mb-2">
-    <label for="diagnostics">Diagnostics</label>
-    <textarea
-      formControlName="diagnostics"
-      pTextarea
-      placeholder="Short diagnostic message defining error..."
-      required
-      rows="2"></textarea>
-    @if (form.get('diagnostics')?.invalid && (form.get('diagnostics')?.touched || submitted)) {
-    <p-message severity="error" size="small" variant="simple">Length must be between 20 and 200 symbols</p-message>
+  <!-- Row 3: Diagnostics -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Diagnostics</mat-label>
+    <textarea matInput formControlName="diagnostics" placeholder="Short diagnostic message defining error..." rows="2">
+    </textarea>
+    @if (form.get('diagnostics')?.hasError('minlength') || form.get('diagnostics')?.hasError('maxlength')) {
+    <mat-error>Length must be between 10 and 200 characters.</mat-error>
     }
-  </div>
+  </mat-form-field>
 
-  <div class="flex flex-col w-full mb-2">
-    <label for="description">Description</label>
+  <!-- Row 4: Description -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Description</mat-label>
     <textarea
       formControlName="description"
-      pTextarea
+      matInput
       placeholder="Longer explanation of the error cause and clues on how to fix it"
-      required
-      rows="4"></textarea>
-    @if (form.get('description')?.invalid && (form.get('description')?.touched || submitted)) {
-    <p-message severity="error" size="small" variant="simple">Length must be between 50 and 500 symbols</p-message>
+      rows="4">
+    </textarea>
+    @if (form.get('description')?.hasError('minlength') || form.get('description')?.hasError('maxlength')) {
+    <mat-error>Length must be between 20 and 1000 characters.</mat-error>
     }
-  </div>
+  </mat-form-field>
 
-  <div class="flex justify-end gap-2">
-    <p-button label="Cancel" severity="secondary" type="button" (click)="onCancel()" />
-    <p-button label="Save" severity="success" type="submit" [disabled]="form.invalid" />
+  <!-- Actions -->
+  <div class="flex justify-end gap-3 mt-2">
+    <button color="warn" mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button color="primary" mat-flat-button type="submit" [disabled]="form.invalid">Save</button>
   </div>
 </form>

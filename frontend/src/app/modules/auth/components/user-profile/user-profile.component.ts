@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { concatMap, Observable, Subject, switchMap, take } from 'rxjs';
+import { concatMap, Observable, Subject, take } from 'rxjs';
 import { UserProfile } from '../../../../core/models/user.model';
 import { CommonModule } from '@angular/common';
-import { tap } from 'rxjs/operators';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
+
+import { AsyncPipe } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule, ButtonModule, TableModule, SkeletonModule],
+  imports: [AsyncPipe, CommonModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './user-profile.component.html',
   standalone: true,
   styleUrl: './user-profile.component.scss',

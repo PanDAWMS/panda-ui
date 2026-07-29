@@ -1,30 +1,44 @@
-:host ::ng-deep .login-button > button.p-button {
-  background-color: var(--pui-surface-900);
-  border: none;
-  padding: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover,
-  &:focus {
-    background-color: var(--pui-surface-800);
+:host {
+  .user-menu-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-right: 0.5rem;
   }
-}
 
-:host .login-avatar-link {
-  padding: 0.25rem 0.5rem;
-
-  > .login-avatar {
+  button[mat-icon-button].avatar-button {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
     font-size: 0.875rem;
-    height: 2rem;
-    width: 2rem;
-    background-color: var(--pui-surface-50);
+    font-weight: 500;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      font-weight 0.2s ease,
+      text-shadow 0.2s ease;
+
+    --mat-mdc-button-hover-state-layer-opacity: 0;
+    --mat-mdc-button-focus-state-layer-opacity: 0;
+
+    .mat-mdc-button-persistent-ripple,
+    .mat-mdc-button-touch-target,
+    .mat-mdc-button-ripple {
+      display: none;
+    }
 
     &:hover,
-    &:focus {
-      font-weight: bold;
-      background-color: var(--pui-emerald-200);
+    &:focus-visible,
+    &[aria-expanded='true'] {
+      background-color: var(--mat-sys-tertiary-container);
+      font-weight: 700;
+      text-shadow: 0 0 0.5px currentColor;
     }
   }
 }

@@ -1,15 +1,15 @@
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { Component, inject, input, InputSignal, Signal } from '@angular/core';
+import { of, switchMap } from 'rxjs';
 import { Task } from '../../../../core/models/task.model';
 import { TaskService } from '../../../../core/services/task.service';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-task-params-list',
-  imports: [CardModule, CommonModule, TableModule],
+  imports: [CommonModule, MatCardModule, MatTableModule],
   templateUrl: './task-params-list.component.html',
   styleUrl: './task-params-list.component.scss',
 })

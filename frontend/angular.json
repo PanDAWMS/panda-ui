@@ -29,8 +29,9 @@
                 "output": "/assets/"
               }
             ],
-            "styles": ["src/styles/styles.css"],
+            "styles": ["src/styles/material-theme.scss", "src/styles/styles.scss"],
             "stylePreprocessorOptions": {
+              "includePaths": ["node_modules", "src/styles"],
               "sass": {
                 "silenceDeprecations": ["mixed-decls", "color-functions", "global-builtin", "import"]
               }
@@ -94,7 +95,7 @@
                 "input": "src/assets"
               }
             ],
-            "styles": ["src/styles/styles.css"],
+            "styles": ["src/styles/styles.scss", "src/styles/material-theme.scss"],
             "scripts": []
           }
         },

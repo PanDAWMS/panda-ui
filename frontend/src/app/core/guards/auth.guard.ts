@@ -29,10 +29,9 @@ export const authGuard: CanActivateFn = (route, state) => {
       }
 
       log.debug('User is not authenticated, redirecting to home page.');
-      messageBuffer.add({
-        severity: 'warn',
-        summary: 'Authentication Required',
-        detail: `You must be logged in to access the following page: ${state.url}`,
+      messageBuffer.add(`Authentication Required: You must be logged in to access ${state.url}`, 'Close', {
+        duration: 5000,
+        panelClass: ['bg-amber-500', 'text-white'], // Optional Tailwind styling for 'warn' severity
       });
       return router.parseUrl('/');
     }),

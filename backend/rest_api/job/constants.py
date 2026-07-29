@@ -9,11 +9,5 @@ JOB_ERROR_CATEGORIES = MappingProxyType(
         "4": "Job Termination and Kill Signals",
         "5": "Software and Environment Issues",
         "6": "Internal and Unknown Errors",
-        "7": "Brokerage Errors",
-        "8": "DDM Errors",
-        "9": "Task Buffer Errors",
-        "10": "PanDA Job Dispatcher Errors",
-        "11": "PanDA Supervisor Errors",
-        "12": "Transformation Errors",
     }
 )
