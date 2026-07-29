@@ -46,8 +46,6 @@ export class HeaderComponent implements OnInit {
         items: [
           // { label: 'All' },
           { label: 'Error descriptions', routerLink: '/job-error-descriptions' },
-          { label: 'Error descriptions 1', routerLink: '/job-error-descriptions' },
-          { label: 'Error descriptions 2', routerLink: '/job-error-descriptions' },
         ],
       },
     ];
