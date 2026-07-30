@@ -15,7 +15,6 @@ import { MenuItem } from '../../../../core/models/menu-item';
   imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   auth = inject(AuthService);

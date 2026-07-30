@@ -3,6 +3,7 @@ import { JobErrorCategoriesService } from './job-error-categories.service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { JobErrorCategory } from '../models/job-error-category.model';
 import { firstValueFrom } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('JobErrorCategoriesService', () => {
   let service: JobErrorCategoriesService;
@@ -14,6 +15,10 @@ describe('JobErrorCategoriesService', () => {
     });
     service = TestBed.inject(JobErrorCategoriesService);
     httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
   });
 
   it('should be created', () => {

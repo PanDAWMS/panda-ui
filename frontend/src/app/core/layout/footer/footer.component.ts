@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatIconModule],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
   private versionService = inject(VersionService);

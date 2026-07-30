@@ -56,7 +56,7 @@
   <!-- Row 3: Diagnostics -->
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Diagnostics</mat-label>
-    <textarea matInput formControlName="diagnostics" placeholder="Short diagnostic message defining error..." rows="2">
+    <textarea formControlName="diagnostics" matInput placeholder="Short diagnostic message defining error..." rows="2">
     </textarea>
     @if (form.get('diagnostics')?.hasError('minlength') || form.get('diagnostics')?.hasError('maxlength')) {
     <mat-error>Length must be between 10 and 200 characters.</mat-error>

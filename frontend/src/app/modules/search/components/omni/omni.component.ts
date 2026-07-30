@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, O
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { ApiService } from '../../../../core/services/api.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,7 +19,6 @@ export interface OmniResult {
 }
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-search-omni',
   standalone: true,
   imports: [

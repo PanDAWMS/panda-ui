@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { appInitializer, resetInitializedForTesting } from './app.initializer';
 import { AppConfigService } from '../services/app-config.service';
@@ -11,21 +12,22 @@ import { environment } from '../../../environments/environment';
 
 describe('appInitializer', () => {
   let configService: AppConfigService;
-  let authService: jasmine.SpyObj<AuthService>;
+  let authService: { init: ReturnType<typeof vi.fn>; userSubject: { value: any } };
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     resetInitializedForTesting();
 
-    authService = jasmine.createSpyObj<AuthService>('AuthService', ['init']);
-    // Mock the property 'userSubject' as a BehaviorSubject
-    (authService as any)['userSubject'] = { value: null };
+    authService = {
+      init: vi.fn(),
+      userSubject: { value: null },
+    };
 
     TestBed.configureTestingModule({
       providers: [
         AppConfigService,
         { provide: AuthService, useValue: authService },
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
       ],
     });
@@ -63,7 +65,7 @@ describe('appInitializer', () => {
       permissions: [],
       groups: [],
     };
-    authService.init.and.resolveTo(mockUser);
+    authService.init.mockResolvedValue(mockUser);
 
     const promise = TestBed.runInInjectionContext(() => appInitializer());
 
@@ -75,7 +77,6 @@ describe('appInitializer', () => {
     if (configReqs.length > 0) {
       configReqs[0].flush(mockConfig);
     } else {
-      // If we reach here, the 'if(initialized)' block likely triggered an early return
       console.warn('The initializer returned early and did not request app-config.json');
     }
 
@@ -99,12 +100,12 @@ describe('appInitializer', () => {
       permissions: [],
       groups: [],
     };
-    authService.init.and.resolveTo(mockUser);
+    authService.init.mockResolvedValue(mockUser);
 
     const promise = TestBed.runInInjectionContext(() => appInitializer());
     // handle the unexpected version.json request that's firing automatically
     httpMock.match('/assets/version.json').forEach((req) => req.flush({ version: '0.0.0' }));
-    // verify that the app-config.json was NOT called (as per your test logic)
+    // verify that the app-config.json was NOT called
     httpMock.expectNone('/assets/app-config.json');
 
     const user = await promise;

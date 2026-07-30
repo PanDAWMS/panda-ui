@@ -74,7 +74,7 @@
             <mat-select-trigger class="truncate block">
               @if ((categoryFilterCtrl.value?.length ?? 0) === 0) { All } @else if (categoryFilterCtrl.value?.length ===
               1) {
-              {{ getCategoryLabel(categoryFilterCtrl.value?.[0]) }}
+              {{ getCategoryLabel($safeNavigationMigration(categoryFilterCtrl.value?.[0])) }}
               } @else { Selected ({{ categoryFilterCtrl.value?.length }}) }
             </mat-select-trigger>
             @for (opt of categoryOptions; track opt.value) {

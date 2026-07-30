@@ -2,7 +2,7 @@ import { ErrorHandler, Injectable, Injector, inject } from '@angular/core';
 import { MessageBufferService } from './message-buffer.service';
 import { LoggingService } from './logging.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ErrorHandlerService implements ErrorHandler {
   // Use Injector to lazily retrieve MessageBufferService and avoid DI cycle during startup
   private readonly injector = inject(Injector);

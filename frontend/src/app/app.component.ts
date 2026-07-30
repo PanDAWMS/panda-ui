@@ -10,7 +10,6 @@ import { MessageBufferService } from './core/services/message-buffer.service';
   imports: [RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   private messageBuffer = inject(MessageBufferService);

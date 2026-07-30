@@ -15,7 +15,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   templateUrl: './user-profile.component.html',
   standalone: true,
   styleUrl: './user-profile.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserProfileComponent {
   private authService = inject(AuthService);

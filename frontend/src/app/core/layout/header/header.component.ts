@@ -23,7 +23,6 @@ import { MenuItem } from '../../models/menu-item';
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit {
   private readonly config = inject(AppConfigService);

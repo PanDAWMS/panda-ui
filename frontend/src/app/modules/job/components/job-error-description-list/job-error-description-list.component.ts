@@ -35,7 +35,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   templateUrl: './job-error-description-list.component.html',
   styleUrl: './job-error-description-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JobErrorDescriptionListComponent implements OnInit {
   private api = inject(ApiService);

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { SearchOmniComponent } from './omni.component';
 
-import { OmniComponent } from './omni.component';
-
-describe('OmniComponent', () => {
-  let component: OmniComponent;
-  let fixture: ComponentFixture<OmniComponent>;
+describe('SearchOmniComponent', () => {
+  let component: SearchOmniComponent;
+  let fixture: ComponentFixture<SearchOmniComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OmniComponent],
+      imports: [SearchOmniComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OmniComponent);
+    fixture = TestBed.createComponent(SearchOmniComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
