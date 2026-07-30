@@ -1,5 +1,5 @@
 p,atlas-adc-pandamon,error_description,read,{},{},allow
 p,atlas-adc-pandamon,error_description,write,{},{},allow
 p,atlas-adc-pandamon,error_description,delete,{},{},allow
-p,atlas,job,read,{},{},allow
-p,atlas,task,read,{},{},allow
+p,/atlas,job,read,{},{},allow
+p,/atlas,task,read,{},{},allow
