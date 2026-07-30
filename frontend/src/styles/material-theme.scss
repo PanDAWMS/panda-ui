@@ -1,0 +1,207 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+@use 'theme-colors' as app-theme;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: app-theme.$primary-palette,
+        tertiary: app-theme.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: -1,
+    )
+  );
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+
+  p {
+    margin: 0.25rem 0;
+  }
+}
+
+:root {
+  @include mat.button-overrides(
+    (
+      text-container-shape: 0px,
+      filled-container-shape: 0px,
+      outlined-container-shape: 0px,
+      text-touch-target-display: none,
+      filled-touch-target-display: none,
+      outlined-touch-target-display: none,
+      text-icon-spacing: 0.1rem,
+    )
+  );
+
+  @include mat.card-overrides(
+    (
+      elevated-container-shape: 0,
+      filled-container-shape: 0,
+      outlined-container-shape: 0,
+      outlined-container-color: var(--mat-sys-surface),
+      outlined-outline-color: var(--mat-sys-secondary),
+      title-text-line-height: 1rem,
+      title-text-size: 0.875rem,
+    )
+  );
+
+  @include mat.form-field-overrides(
+    (
+      outlined-container-shape: 0,
+      container-height: 1rem,
+      container-text-line-height: 1rem,
+      container-text-size: 0.875rem,
+      container-vertical-padding: 0.5rem,
+      filled-with-label-container-padding-top: 0.5rem,
+      filled-with-label-container-padding-bottom: 0.25rem,
+      outlined-label-text-size: 0.75rem,
+      filled-label-text-size: 0.75rem,
+      subscript-text-size: 0.75rem,
+      outlined-label-text-populated-size: 1rem,
+    )
+  );
+
+  @include mat.icon-button-overrides(
+    (
+      icon-size: 1rem,
+      state-layer-size: 1.5rem,
+      touch-target-size: 2rem,
+      focus-state-layer-opacity: 0,
+      hover-state-layer-opacity: 0,
+      pressed-state-layer-opacity: 0,
+    )
+  );
+
+  @include mat.menu-overrides(
+    (
+      container-shape: 0,
+      divider-bottom-spacing: 0,
+      divider-top-spacing: 0,
+      item-spacing: 0,
+      item-leading-spacing: 0.5rem,
+      item-trailing-spacing: 0.5rem,
+    )
+  );
+
+  @include mat.select-overrides(
+    (
+      panel-background-color: var(--mat-sys-surface),
+      trigger-text-line-height: 1rem,
+      trigger-text-size: 0.875rem,
+    )
+  );
+
+  @include mat.snack-bar-overrides(
+    (
+      container-shape: 0,
+      container-color: var(--mat-sys-on-error-container),
+      supporting-text-color: var(--mat-sys-on-error),
+      button-color: var(--mat-sys-on-error),
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      header-container-height: 1rem,
+      header-headline-line-height: 1rem,
+      header-headline-size: 1rem,
+      header-headline-weight: bold,
+      row-item-container-height: 1rem,
+      row-item-label-text-line-height: 1rem,
+      row-item-label-text-size: 1rem,
+      row-item-outline-width: 0px,
+      footer-container-height: 1rem,
+      footer-supporting-text-line-height: 1rem,
+      footer-supporting-text-size: 1rem,
+      footer-supporting-text-weight: bold,
+    )
+  );
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: var(--mat-sys-inverse-surface),
+      title-text-size: 1rem,
+      title-text-line-height: 1rem,
+      standard-height: 2.5rem,
+      mobile-height: 2.5rem,
+    )
+  );
+
+  // Overrides for non-tokenized features
+
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 0.5rem 0 0.5rem;
+    }
+    .mat-mdc-form-field-error-wrapper {
+      padding: 0;
+    }
+  }
+
+  .mat-mdc-autocomplete-panel,
+  .mat-mdc-select-panel {
+    min-width: 12rem;
+    padding: 0;
+
+    mat-option {
+      padding: 0 0.5rem;
+      min-height: 1.25rem;
+      font-size: 0.875rem;
+
+      &.mat-mdc-option-active {
+        font-weight: 600;
+      }
+
+      mat-pseudo-checkbox {
+        margin-right: 0.1rem;
+      }
+    }
+  }
+
+  .mat-mdc-table {
+    th.mat-mdc-header-cell {
+      padding: 0.2rem 0.5rem;
+    }
+    td.mat-mdc-cell {
+      padding: 0.2rem 0.5rem;
+    }
+    th.mat-mdc-footer-cell {
+      padding: 0.2rem 0.5rem;
+    }
+    tr.mat-mdc-row {
+      &:nth-child(even) {
+        background-color: var(--mat-sys-surface-container-low, #f9fafb);
+      }
+
+      &:nth-child(odd) {
+        background-color: var(--mat-sys-surface, #ffffff);
+      }
+
+      &:hover {
+        background-color: var(--mat-sys-surface-container-high, #f3f4f6);
+      }
+    }
+  }
+}

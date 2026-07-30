@@ -1,16 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { AppConfigService } from './app-config.service';
-import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private log = inject(LoggingService).forContext('ApiService');
   private config = inject(AppConfigService);
 
   private apiUrl?: string;
@@ -24,47 +21,28 @@ export class ApiService {
   // generic GET
   get<T>(endpoint: string, params?: Record<string, unknown>): Observable<T> {
     const httpParams = this.makeParams(params || {});
-    return this.http
-      .get<T>(`${this.apiBaseUrl}/${endpoint}/`, { params: httpParams })
-      .pipe(catchError(this.handleError));
+    return this.http.get<T>(`${this.apiBaseUrl}/${endpoint}/`, { params: httpParams });
   }
 
   // generic POST
   post<T>(endpoint: string, data: unknown, params?: Record<string, unknown>): Observable<T> {
     const httpParams = this.makeParams(params || {});
-    return this.http
-      .post<T>(`${this.apiBaseUrl}/${endpoint}/`, data, { params: httpParams })
-      .pipe(catchError(this.handleError));
+    return this.http.post<T>(`${this.apiBaseUrl}/${endpoint}/`, data, { params: httpParams });
   }
 
   // generic PUT
   put<T>(endpoint: string, id: number | bigint | string, data: unknown): Observable<T> {
-    return this.http.put<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
+    return this.http.put<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`, data);
   }
 
   // generic PATCH
   patch<T>(endpoint: string, id: number | bigint | string, data: unknown): Observable<T> {
-    return this.http.patch<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`, data).pipe(catchError(this.handleError));
+    return this.http.patch<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`, data);
   }
 
   // generic DELETE
   delete<T>(endpoint: string, id: number | bigint | string): Observable<T> {
-    return this.http.delete<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`).pipe(catchError(this.handleError));
-  }
-
-  // common error handler
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    this.log.debug('Handling error:', error, 'type', error.type);
-    if (error.status === 0) {
-      // Network or CORS error
-      this.log.error('Network error:', error);
-    } else if (error.status === 401) {
-      // Authentication error
-      this.log.warn('Unauthorized request:', error.url);
-    } else {
-      this.log.error('API error:', error);
-    }
-    return throwError(() => new Error(error.message || 'Server error'));
+    return this.http.delete<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`);
   }
 
   makeParams(params: Record<string, unknown>): HttpParams {

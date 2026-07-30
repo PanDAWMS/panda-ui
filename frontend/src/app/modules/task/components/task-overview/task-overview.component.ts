@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TaskParamsListComponent } from '../task-params-list/task-params-list.component';
 
@@ -6,6 +6,7 @@ import { TaskParamsListComponent } from '../task-params-list/task-params-list.co
   selector: 'app-task-overview',
   imports: [TaskParamsListComponent],
   templateUrl: './task-overview.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './task-overview.component.scss',
 })
 export class TaskOverviewComponent implements OnInit {

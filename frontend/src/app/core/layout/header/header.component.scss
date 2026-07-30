@@ -1,12 +1,75 @@
-:host ::ng-deep .p-menubar-start {
-  > a {
-    color: var(--pui-surface-50);
-    font-weight: bold;
-    text-decoration: none;
-    margin: auto 0.75rem;
+@use '@angular/material' as mat;
+
+::ng-deep .mat-mdc-menu-panel.header-dark-menu {
+  @include mat.menu-overrides(
+    (
+      container-color: var(--mat-sys-inverse-surface),
+      item-label-text-color: var(--mat-sys-on-primary),
+      item-hover-state-layer-color: var(--mat-sys-on-surface),
+      item-focus-state-layer-color: (
+        --mat-sys-on-surface,
+      ),
+    )
+  );
+
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
+  .mat-mdc-menu-item {
+    min-height: 2rem;
+    height: 2rem;
   }
 }
+div.hamburger-wrapper {
+  align-items: center;
+  height: 100%;
+}
+a[routerLink='/'] {
+  color: var(--mat-sys-on-primary, #f8fafc);
+  font-weight: bold;
+  text-decoration: none;
+  margin: auto 0.75rem;
+}
 
-:host ::ng-deep .p-menubar {
+::ng-deep .mat-toolbar.app-toolbar {
+  --mat-sys-hover-state-layer-opacity: 0;
+  --mat-sys-pressed-state-layer-opacity: 0;
+  --mat-sys-focus-state-layer-opacity: 0;
+
   border: none;
+  box-shadow: none;
+  padding: 0;
+
+  nav,
+  .flex {
+    height: 100%;
+    align-items: stretch;
+  }
+
+  .mat-mdc-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-outlined-button {
+    height: 100%;
+    border-radius: 0;
+    color: var(--mat-sys-on-primary);
+    padding: 0 0.5rem;
+    &:hover,
+    &:focus,
+    &:active,
+    &[aria-expanded='true'] {
+      background-color: var(--mat-sys-on-surface);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-on-primary);
+      outline-offset: -2px;
+      border-radius: 0;
+    }
+  }
+
+  app-search-omni,
+  app-login {
+    display: inline-flex;
+    align-items: stretch;
+    height: 100%;
+  }
 }

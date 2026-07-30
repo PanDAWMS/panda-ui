@@ -1,0 +1,79 @@
+.omni-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .omni-form-field {
+  width: 15rem;
+
+  &.mat-focused,
+  &:hover {
+    .mdc-line-ripple::before,
+    .mdc-line-ripple::after {
+      border-bottom-color: var(--mat-sys-tertiary-container);
+      border-bottom-width: 1px;
+    }
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--mat-sys-on-surface-variant);
+
+    .mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      color: var(--mat-sys-surface-container);
+      padding: 0;
+
+      .mat-icon {
+        padding: 0 0.5rem 0 0;
+      }
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      padding: 0;
+    }
+
+    .mat-mdc-form-field-infix {
+      .mdc-text-field__input {
+        color: var(--mat-sys-surface-container);
+        caret-color: var(--mat-sys-surface-container);
+
+        &::placeholder {
+          color: var(--mat-sys-outline);
+        }
+      }
+    }
+
+    button.mat-mdc-icon-button {
+      color: var(--mat-sys-outline);
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      --mdc-icon-button-state-layer-size: 0px;
+
+      .mat-mdc-button-persistent-ripple,
+      .mat-mdc-button-touch-target,
+      .mat-mdc-button-ripple {
+        display: none;
+      }
+
+      &:hover .mat-icon {
+        font-weight: 800;
+      }
+    }
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    position: absolute;
+    height: 0;
+    padding: 0;
+  }
+}

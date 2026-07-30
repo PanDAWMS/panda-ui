@@ -1,0 +1,26 @@
+<div class="omni-wrapper">
+  <mat-form-field appearance="fill" class="w-full omni-form-field" subscriptSizing="fixed">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      placeholder="Type something..."
+      type="text"
+      [formControl]="searchControl"
+      [matAutocomplete]="auto"
+      (keydown.enter)="onEnter()" />
+
+    @if (isLoading) {
+    <mat-progress-spinner diameter="20" matSuffix mode="indeterminate" />
+    } @else if (searchControl.value) {
+    <button aria-label="Clear search" mat-icon-button matSuffix type="button" (click)="clearSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+    }
+
+    <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="navigateTo($event.option.value)">
+      @for (result of results; track $index) {
+      <mat-option [value]="result">{{ result.title }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

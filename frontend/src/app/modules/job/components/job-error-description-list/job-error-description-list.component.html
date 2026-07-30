@@ -1,146 +1,135 @@
-<p-confirmdialog />
-<p-table
-  #dtErrorDescriptions
-  currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
-  dataKey="id"
-  [globalFilterFields]="['component', 'code', 'diagnostics', 'description']"
-  [paginator]="true"
-  [rows]="10"
-  [rowsPerPageOptions]="[10, 25, 50]"
-  [showCurrentPageReport]="true"
-  [tableStyle]="{ width: '100%', 'table-layout': 'fixed' }"
-  [value]="(jobErrorDescriptions$ | async) ?? []">
-  <ng-template pTemplate="caption">
-    <div class="flex justify-between items-center w-full">
-      <p-button icon="pi pi-plus" label="Add new" severity="success" (click)="onCreate()" />
-      <p-iconfield>
-        <p-inputicon class="pi pi-search" />
-        <input
-          pInputText
-          placeholder="Search keyword"
-          type="text"
-          (input)="dtErrorDescriptions.filterGlobal($event.target.value, 'contains')" />
-      </p-iconfield>
-    </div>
-  </ng-template>
-  <ng-template pTemplate="header">
-    <tr>
-      <th class="w-auto" pSortableColumn="component">
-        <div class="flex items-center gap-1">
-          <span>Component</span>
-          <p-sortIcon field="component" />
-        </div>
-      </th>
-      <th class="w-auto" pSortableColumn="code">
-        <div class="flex items-center gap-1">
-          <span>Code</span>
-          <p-sortIcon field="code" />
-        </div>
-      </th>
-      <th class="w-1/6">Diagnostics</th>
-      <th class="w-3/6">Description</th>
-      <th class="w-auto" pSortableColumn="category">
-        <div class="flex items-center gap-1">
-          <span>Category</span>
-          <p-sortIcon field="code" />
-        </div>
-      </th>
-      <th class="w-auto">Actions</th>
-    </tr>
-    <tr>
-      <th class="w-auto">
-        <p-columnFilter field="component" matchMode="in" [showMenu]="false">
-          <ng-template let-filter="filterCallback" let-value="value" pTemplate="filter">
-            <p-multiselect
-              appendTo="body"
-              optionLabel="label"
-              placeholder="All"
-              showClear="true"
-              [maxSelectedLabels]="1"
-              [ngModel]="value"
-              [options]="componentOptions"
-              (ngModelChange)="onMultiSelectFilterChange($event, filter)">
-              <ng-template let-option pTemplate="item">
-                <span>{{ option.label }}</span>
-              </ng-template>
-            </p-multiselect>
-          </ng-template>
-        </p-columnFilter>
-      </th>
-      <th class="w-auto">
-        <p-columnFilter ariaLabel="Filter code" field="code" filterOn="input" type="numeric">
-          <ng-template let-filter="filterCallback" let-value pTemplate="filter">
-            <input
-              class="w-full"
-              pInputText
-              placeholder="Type code"
-              type="text"
-              [ngModel]="value"
-              (ngModelChange)="filter($event)" />
-          </ng-template>
-        </p-columnFilter>
-      </th>
-      <th class="w-1/6"></th>
-      <th class="w-3/6"></th>
-      <th class="w-auto">
-        <p-columnFilter field="category" matchMode="in" [showMenu]="false">
-          <ng-template let-filter="filterCallback" let-value="value" pTemplate="filter">
-            <p-multiselect
-              appendTo="body"
-              optionLabel="label"
-              placeholder="All"
-              showClear="true"
-              [maxSelectedLabels]="1"
-              [ngModel]="value"
-              [options]="categoryOptions"
-              (ngModelChange)="onMultiSelectFilterChange($event, filter)">
-              <ng-template let-option>
-                <span>{{ option.label }}</span>
-              </ng-template>
-            </p-multiselect>
-          </ng-template>
-        </p-columnFilter>
-      </th>
-      <th class="w-auto"></th>
-    </tr>
-  </ng-template>
-  <ng-template let-item pTemplate="body">
-    <tr>
-      <td class="w-auto">{{ item.component }}</td>
-      <td class="w-auto">{{ item.code }}</td>
-      <td class="w-1/6">{{ item.diagnostics }}</td>
-      <td class="w-3/6">{{ item.description }}</td>
-      <td class="w-auto">
-        <p-tag [rounded]="true" [style]="{ 'background-color': item.categoryColor }" [value]="item.categoryName" />
-      </td>
-      <td class="w-auto">
-        <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (click)="onEdit(item)" />
-        <p-button
-          icon="pi pi-eraser"
-          severity="danger"
-          [rounded]="true"
-          [text]="true"
-          (click)="confirmDelete($event, item)" />
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="7">No error descriptions found.</td>
-    </tr>
-  </ng-template>
-</p-table>
+<div class="flex justify-between items-center w-full my-1">
+  <button color="primary" mat-flat-button (click)="onCreate()">
+    <mat-icon>add</mat-icon>
+    Add new
+  </button>
 
-<p-dialog
-  header="{{ selectedItem ? 'Edit Error Description' : 'Create new Error Description' }}"
-  [modal]="true"
-  [style]="{ width: '50vw' }"
-  [(visible)]="isDialogOpen">
-  <app-job-error-description-form
-    [categories]="categoryOptions"
-    [componentCodesMap]="componentCodeMap"
-    [components]="componentOptions"
-    [selectedItem]="selectedItem"
-    (cancelEdit)="isDialogOpen = false"
-    (save)="onSave($event)" />
-</p-dialog>
+  <mat-form-field appearance="outline" class="w-72 density-compact" subscriptSizing="fixed">
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput placeholder="Search keyword" (keyup)="applyGlobalFilter($event)" />
+  </mat-form-field>
+</div>
+
+<div class="table-container">
+  <table class="w-full table-fixed" mat-table matSort [dataSource]="dataSource">
+    <!-- Component Column -->
+    <ng-container matColumnDef="component">
+      <th *matHeaderCellDef class="w-1/12" mat-header-cell mat-sort-header>
+        <div class="flex flex-col gap-1 py-2">
+          <span>Component</span>
+          <mat-select
+            class="filter-select"
+            multiple
+            placeholder="All"
+            [formControl]="componentFilterCtrl"
+            (click)="$event.stopPropagation()">
+            @for (opt of componentOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </div>
+      </th>
+      <td *matCellDef="let item" class="w-1/12" mat-cell>{{ item.component }}</td>
+    </ng-container>
+
+    <!-- Code Column -->
+    <ng-container matColumnDef="code">
+      <th *matHeaderCellDef class="w-1/12" mat-header-cell mat-sort-header>
+        <div class="flex flex-col gap-1 py-2">
+          <span>Code</span>
+          <input
+            class="filter-input w-full"
+            placeholder="Type code"
+            type="text"
+            [formControl]="codeFilterCtrl"
+            (click)="$event.stopPropagation()" />
+        </div>
+      </th>
+      <td *matCellDef="let item" class="w-1/12" mat-cell>{{ item.code }}</td>
+    </ng-container>
+
+    <!-- Diagnostics Column -->
+    <ng-container matColumnDef="diagnostics">
+      <th *matHeaderCellDef class="w-2/12" mat-header-cell>Diagnostics</th>
+      <td *matCellDef="let item" class="w-2/12" mat-cell>{{ item.diagnostics }}</td>
+    </ng-container>
+
+    <!-- Description Column -->
+    <ng-container matColumnDef="description">
+      <th *matHeaderCellDef class="w-6/12" mat-header-cell>Description</th>
+      <td *matCellDef="let item" class="w-6/12" mat-cell>{{ item.description }}</td>
+    </ng-container>
+
+    <!-- Category Column -->
+    <ng-container matColumnDef="category">
+      <th *matHeaderCellDef class="w-1/12" mat-header-cell mat-sort-header>
+        <div class="flex flex-col gap-1 py-2 w-full">
+          <span>Category</span>
+          <mat-select
+            class="filter-select"
+            multiple
+            placeholder="All"
+            [formControl]="categoryFilterCtrl"
+            (click)="$event.stopPropagation()">
+            <mat-select-trigger class="truncate block">
+              @if ((categoryFilterCtrl.value?.length ?? 0) === 0) { All } @else if (categoryFilterCtrl.value?.length ===
+              1) {
+              {{ getCategoryLabel($safeNavigationMigration(categoryFilterCtrl.value?.[0])) }}
+              } @else { Selected ({{ categoryFilterCtrl.value?.length }}) }
+            </mat-select-trigger>
+            @for (opt of categoryOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </div>
+      </th>
+      <td *matCellDef="let item" class="w-1/12" mat-cell>
+        <span
+          class="category-label inline-block px-3 py-1 rounded-3xl text-center"
+          [style.background-color]="item.categoryColor">
+          {{ item.categoryName }}
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th *matHeaderCellDef class="w-1/12" mat-header-cell>Actions</th>
+      <td *matCellDef="let item" class="w-1/12" mat-cell>
+        <button aria-label="Edit" class="mr-4" mat-icon-button (click)="onEdit(item)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button aria-label="Delete" mat-icon-button (click)="confirmDelete(item)">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Header & Row Declarations -->
+    <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+    <tr *matRowDef="let row; columns: displayedColumns" mat-row></tr>
+
+    <!-- Empty State -->
+    <tr *matNoDataRow class="mat-row">
+      <td class="mat-cell p-4 text-center" [attr.colspan]="displayedColumns.length">No error descriptions found.</td>
+    </tr>
+  </table>
+
+  <mat-paginator showFirstLastButtons [pageSize]="10" [pageSizeOptions]="[10, 25, 50]"> </mat-paginator>
+</div>
+
+<!-- Edit / Create Modal Template -->
+<ng-template #formDialog>
+  <h2 mat-dialog-title>
+    {{ selectedItem ? 'Edit Error Description' : 'Create new Error Description' }}
+  </h2>
+  <mat-dialog-content class="mat-typography">
+    <app-job-error-description-form
+      [categories]="categoryOptions"
+      [componentCodesMap]="componentCodeMap"
+      [components]="componentOptions"
+      [selectedItem]="selectedItem"
+      (cancelEdit)="dialogRef?.close()"
+      (save)="onSave($event)" />
+  </mat-dialog-content>
+</ng-template>
