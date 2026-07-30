@@ -1,25 +1,88 @@
-<p-menubar [model]="items">
-  <ng-template pTemplate="start">
-    <a routerLink="/">{{ name }}</a>
-  </ng-template>
-  <ng-template let-item let-root="root" pTemplate="item">
-    <a class="flex items-center p-menubar-item-link" pRipple>
-      <span>{{ item.label }}</span>
-      @if (item.badge) {
-      <p-badge [ngClass]="{ 'ml-auto': !root, 'ml-2': root }" [value]="item.badge" />
-      } @if (item.shortcut) {
-      <span class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{
-        item.shortcut
-      }}</span>
-      } @if (item.items) {
-      <i [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i>
-      }
-    </a>
-  </ng-template>
-  <ng-template pTemplate="end">
-    <div class="flex items-center gap-1">
-      <!--      <app-search></app-search>-->
-      <app-login />
+<mat-toolbar class="app-toolbar justify-between">
+  <!-- Start Section -->
+  <div class="flex items-center</> gap-2">
+    <div class="hamburger-wrapper md:hidden">
+      <button aria-label="Toggle navigation menu" mat-icon-button [matMenuTriggerFor]="mobileNavMenu">
+        <mat-icon>menu</mat-icon>
+      </button>
     </div>
-  </ng-template>
-</p-menubar>
+    <mat-menu #mobileNavMenu="matMenu" class="header-dark-menu">
+      @for (item of items; track item.label) { @if (item.items && item.items.length) {
+      <!-- Sub-header label for groups -->
+      <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider" mat-submenu-title>
+        {{ item.label }}
+      </div>
+      @for (subItem of item.items; track subItem.label) {
+      <a mat-menu-item [routerLink]="subItem.routerLink">
+        @if (subItem.icon) {
+        <mat-icon>{{ subItem.icon }}</mat-icon>
+        }
+        <span>{{ subItem.label }}</span>
+        @if (subItem.badge) {
+        <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+          {{ subItem.badge }}
+        </span>
+        }
+      </a>
+      } } @else {
+      <a mat-menu-item [routerLink]="item.routerLink">
+        <span>{{ item.label }}</span>
+        @if (item.badge) {
+        <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+          {{ item.badge }}
+        </span>
+        }
+      </a>
+      } }
+    </mat-menu>
+
+    <a routerLink="/">{{ name }}</a>
+
+    <!-- Menu Items -->
+    @if (items && items.length) {
+    <nav class="hidden md:flex flex items-center gap-1">
+      @for (item of items; track item.label) { @if (item.items && item.items.length) {
+      <!-- Root item WITH dropdown menu -->
+      <button mat-button [matMenuTriggerFor]="subMenu">
+        <span>{{ item.label }}</span>
+        <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+      </button>
+
+      <!-- Dropdown Submenu -->
+      <mat-menu #subMenu="matMenu" class="header-dark-menu">
+        @for (subItem of item.items; track subItem.label) {
+        <a mat-menu-item [routerLink]="subItem.routerLink">
+          @if (subItem.icon) {
+          <mat-icon>{{ subItem.icon }}</mat-icon>
+          }
+          <span>{{ subItem.label }}</span>
+
+          @if (subItem.badge) {
+          <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+            {{ subItem.badge }}
+          </span>
+          }
+        </a>
+        }
+      </mat-menu>
+      } @else {
+      <!-- Direct Root item link WITHOUT dropdown -->
+      <a mat-button [routerLink]="item.routerLink">
+        <span>{{ item.label }}</span>
+        @if (item.badge) {
+        <span class="ml-2 text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+          {{ item.badge }}
+        </span>
+        }
+      </a>
+      } }
+    </nav>
+    }
+  </div>
+
+  <!-- Right Section -->
+  <div class="flex items-center gap-2">
+    <app-search-omni />
+    <app-login />
+  </div>
+</mat-toolbar>

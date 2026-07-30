@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AppTitleStrategy } from './app-title.service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('AppTitleStrategy', () => {
   let strategy: AppTitleStrategy;
@@ -9,7 +10,7 @@ describe('AppTitleStrategy', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AppTitleStrategy, { provide: Title, useValue: { setTitle: jasmine.createSpy('setTitle') } }],
+      providers: [AppTitleStrategy, { provide: Title, useValue: { setTitle: vi.fn() } }],
     });
     strategy = TestBed.inject(AppTitleStrategy);
     titleService = TestBed.inject(Title);
@@ -18,7 +19,8 @@ describe('AppTitleStrategy', () => {
   it('should set a simple title when no params are involved', () => {
     const mockSnapshot = createMockSnapshot('Home', {}, {});
     // Mock buildTitle to return 'Home'
-    spyOn(strategy, 'buildTitle').and.returnValue('Home');
+    vi.spyOn(strategy, 'buildTitle').mockReturnValue('Home');
+
     strategy.updateTitle(mockSnapshot);
     expect(titleService.setTitle).toHaveBeenCalledWith('UI | Home');
   });
@@ -27,7 +29,7 @@ describe('AppTitleStrategy', () => {
     const mockSnapshot = createMockSnapshot('Task', { titleParam: 'jeditaskid' }, { jeditaskid: '4004142' });
 
     // Mock buildTitle to return 'Task'
-    spyOn(strategy, 'buildTitle').and.returnValue('Task');
+    vi.spyOn(strategy, 'buildTitle').mockReturnValue('Task');
 
     strategy.updateTitle(mockSnapshot);
     expect(titleService.setTitle).toHaveBeenCalledWith('UI | Task 4004142');
@@ -37,7 +39,7 @@ describe('AppTitleStrategy', () => {
     const mockSnapshot = createMockSnapshot(undefined, {}, {});
 
     // Mock buildTitle to return undefined, simulating a route without a 'title' property
-    spyOn(strategy, 'buildTitle').and.returnValue(undefined);
+    vi.spyOn(strategy, 'buildTitle').mockReturnValue(undefined);
 
     strategy.updateTitle(mockSnapshot);
     expect(titleService.setTitle).toHaveBeenCalledWith('PanDA UI');
@@ -57,6 +59,5 @@ function createMockSnapshot(title: string | undefined, data: any, params: any): 
 
   return {
     root: { firstChild: leaf },
-    // buildTitle is a method of the strategy, we mock it or let it run
   } as unknown as RouterStateSnapshot;
 }

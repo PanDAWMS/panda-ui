@@ -9,7 +9,6 @@ import { LoggingService } from '../../../../core/services/logging.service';
   imports: [],
   templateUrl: './login-callback.component.html',
   styleUrl: './login-callback.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginCallbackComponent implements OnInit {
   private authService = inject(AuthService);

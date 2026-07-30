@@ -35,8 +35,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     # apps
-    "rest_api.oauth",
     "rest_api.job",
+    "rest_api.oauth",
+    "rest_api.search",
     "rest_api.task",
 ]
 

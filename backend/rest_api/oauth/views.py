@@ -38,12 +38,14 @@ _logger = logging.getLogger("oauth")
 
 
 @login_required
-def redirect_after_login_view(request: HttpRequest) -> HttpResponse:
+def redirect_after_login_view(request: HttpRequest, *args, **kwargs) -> HttpResponse:
     """
     Redirect user to the URL stored in the session after successful login.
 
     Args:
         request (HttpRequest): The HTTP request object.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
     Returns:
         HttpResponse: The HTTP response object with a redirect to the frontend.
     """
@@ -62,12 +64,14 @@ def redirect_after_login_view(request: HttpRequest) -> HttpResponse:
     return response
 
 
-def logout_view(request: HttpRequest) -> JsonResponse:
+def logout_view(request: HttpRequest, *args, **kwargs) -> JsonResponse:
     """
     Logout view that logout the user, clears the session and deletes the session cookie.
 
     Args:
         request (HttpRequest): The HTTP request object.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
     Returns:
         JsonResponse: The JSON response indicating successful logout.
     """

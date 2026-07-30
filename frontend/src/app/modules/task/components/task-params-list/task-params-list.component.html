@@ -1,21 +1,32 @@
 @let task = taskInfo(); @if (task) {
-<p-card header="Task Parameters">
-  <p-table stripedRows [value]="toKeyValueList(task)">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Field</th>
-        <th>Value</th>
-      </tr>
-    </ng-template>
+<mat-card appearance="outlined" class="task-card">
+  <mat-card-header>
+    <mat-card-title>Task Parameters</mat-card-title>
+  </mat-card-header>
 
-    <ng-template let-row pTemplate="body">
-      <tr>
-        <td>{{ row.key }}</td>
-        <td>@if (row.value) { {{ row.value }} } @else {-}</td>
-      </tr>
-    </ng-template>
-  </p-table>
-</p-card>
+  <mat-card-content>
+    <table class="mat-elevation-z0 task-table" mat-table [dataSource]="toKeyValueList(task)">
+      <ng-container matColumnDef="key">
+        <th *matHeaderCellDef mat-header-cell>Param</th>
+        <td *matCellDef="let row" class="font-medium" mat-cell>{{ row.key }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="value">
+        <th *matHeaderCellDef mat-header-cell>Value</th>
+        <td *matCellDef="let row" mat-cell>
+          @if (row.value) {
+          {{ row.value }}
+          } @else { - }
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="['key', 'value']" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: ['key', 'value']" mat-row></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
 } @else {
-<p>Loading task parameters...</p>
+<div class="p-4 text-gray-500">
+  <p>Loading task parameters...</p>
+</div>
 }

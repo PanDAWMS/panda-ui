@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, EventEmitter, inject, input, Output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -8,97 +8,80 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { EventEmitter, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { ErrorDescription } from '../../../../core/models/error-description.model';
-import { SelectModule } from 'primeng/select';
 import { OptionObject } from '../../../../core/models/option.model';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { MessageModule } from 'primeng/message';
 import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-job-error-description-form',
-  imports: [
-    ButtonModule,
-    InputNumberModule,
-    InputTextModule,
-    MessageModule,
-    ReactiveFormsModule,
-    SelectModule,
-    TextareaModule,
-  ],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
   templateUrl: './job-error-description-form.component.html',
   styleUrl: './job-error-description-form.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class JobErrorDescriptionFormComponent implements OnInit, OnChanges {
+export class JobErrorDescriptionFormComponent {
   readonly categories = input<OptionObject[] | undefined>();
   readonly components = input<OptionObject[] | undefined>();
   readonly componentCodesMap = input<Map<string, Set<number>>>(new Map());
   readonly selectedItem = input<ErrorDescription | null>(null);
+
   @Output() readonly save = new EventEmitter<ErrorDescription>();
   @Output() readonly cancelEdit = new EventEmitter<void>();
 
-  form!: FormGroup;
-  submitted = false;
-
-  private fb: FormBuilder = inject(FormBuilder);
   private log = inject(LoggingService).forContext('JobErrorDescriptionFormComponent');
-
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      component: ['', [Validators.required]],
-      code: [null, [Validators.required, Validators.pattern(/^[0-9]{1,5}$/)]],
-      acronym: ['', [Validators.pattern(/^[A-Za-z_]{5,50}$/)]],
-      diagnostics: ['', [Validators.maxLength(200), Validators.minLength(10)]],
-      description: ['', [Validators.maxLength(1000), Validators.minLength(20)]],
-      category: [null, []],
-    });
-    this.form.setValidators(this.duplicateComponentCodeValidator);
-  }
+  private fb: FormBuilder = inject(FormBuilder);
 
   duplicateComponentCodeValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
     if (this.selectedItem()?.id) {
       return null;
-    } // skip validation in edit mode
-    const component = group.get('component')?.value?.value;
+    }
+    const component = group.get('component')?.value;
     const code = group.get('code')?.value;
-    if (!component || !code) {
+    if (!component || code === null || code === undefined) {
       return null;
     }
-    return this.componentCodesMap().get(component)?.has(code) ? { duplicate: true } : null;
+    return this.componentCodesMap().get(component)?.has(Number(code)) ? { duplicate: true } : null;
   };
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!this.form) {
-      return;
-    }
-    if (changes['selectedItem']) {
+  submitted = false;
+  readonly form: FormGroup = this.fb.group(
+    {
+      component: ['', [Validators.required]],
+      code: [null, [Validators.required, Validators.min(0), Validators.max(10000)]],
+      acronym: ['', [Validators.pattern(/^[A-Za-z_]{5,50}$/)]],
+      diagnostics: ['', [Validators.minLength(10), Validators.maxLength(200)]],
+      description: ['', [Validators.minLength(20), Validators.maxLength(1000)]],
+      category: [null, []],
+    },
+    { validators: (group) => this.duplicateComponentCodeValidator(group) },
+  );
+
+  constructor() {
+    // Automatically re-run whenever selectedItem signal changes
+    effect(() => {
       const currentItem = this.selectedItem();
-      if (currentItem && currentItem.id) {
-        // edit mode
+
+      if (currentItem && currentItem.id !== null) {
+        // Edit mode
         this.form.patchValue({
-          component: currentItem.component ? { label: currentItem.component, value: currentItem.component } : '',
+          component: currentItem.component ?? '',
           code: currentItem.code,
-          acronym: currentItem.acronym,
-          diagnostics: currentItem.diagnostics,
-          description: currentItem.description,
-          category:
-            currentItem.category && this.categories()
-              ? this.categories()?.find((cat) => cat.value === currentItem!.category) || null
-              : null,
+          acronym: currentItem.acronym ?? '',
+          diagnostics: currentItem.diagnostics ?? '',
+          description: currentItem.description ?? '',
+          category: currentItem.category ?? null,
         });
         this.form.get('component')?.disable();
         this.form.get('code')?.disable();
       } else {
-        // create mode
+        // Create mode
         this.form.reset();
         this.form.enable();
       }
-    }
+    });
   }
 
   onCancel(): void {
@@ -111,19 +94,19 @@ export class JobErrorDescriptionFormComponent implements OnInit, OnChanges {
       this.form.markAllAsTouched();
       return;
     }
-    const formData = this.form.getRawValue();
+    const formData = this.form.getRawValue(); // gets values even from disabled fields
     const currentItem = this.selectedItem();
-    const newItem = {
+    const newItem: ErrorDescription = {
       id: currentItem?.id ? currentItem.id : null,
-      component: formData.component?.value,
-      code: formData.code,
+      component: formData.component,
+      code: Number(formData.code),
       acronym: formData.acronym,
       diagnostics: formData.diagnostics,
       description: formData.description,
-      category: formData.category?.value ?? 0,
+      category: formData.category ?? 0,
     };
     this.submitted = true;
     this.log.debug('Form submitted:', newItem);
-    this.save.emit({ ...newItem });
+    this.save.emit(newItem);
   }
 }

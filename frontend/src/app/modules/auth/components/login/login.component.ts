@@ -1,24 +1,23 @@
-import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AvatarModule } from 'primeng/avatar';
-import { Menu, MenuModule } from 'primeng/menu';
-import { ButtonModule } from 'primeng/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfile } from '../../../../core/models/user.model';
-import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
-import { Observable } from 'rxjs';
+import { MenuItem } from '../../../../core/models/menu-item';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, AvatarModule, MenuModule, ButtonModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   auth = inject(AuthService);
-  @ViewChild('menu') menu: Menu | undefined;
 
   user$!: Observable<UserProfile | null>;
   userMenu: MenuItem[] = [];
@@ -36,8 +35,8 @@ export class LoginComponent {
 
   buildUserMenu(): MenuItem[] {
     return [
-      { label: 'Profile', icon: 'pi pi-user', routerLink: ['/user/profile'] },
-      { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.logout() },
+      { label: 'Profile', icon: 'person', routerLink: 'user/profile' },
+      { label: 'Logout', icon: 'logout', command: () => this.logout() },
     ];
   }
 
@@ -46,7 +45,6 @@ export class LoginComponent {
   }
 
   logout(): void {
-    this.menu?.hide();
     this.auth.logout();
   }
 }

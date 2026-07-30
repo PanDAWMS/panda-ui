@@ -1,16 +1,26 @@
-<p-menu #menu appendTo="body" styleClass="login-avatar-menu" [autoZIndex]="true" [model]="userMenu" [popup]="true" />
+<mat-menu #menu="matMenu" class="header-dark-menu">
+  @for (item of userMenu; track item.label) {
+  <button mat-menu-item [routerLink]="item.routerLink || null" (click)="item.command?.($event)">
+    @if (item.icon) {
+    <mat-icon>{{ item.icon }}</mat-icon>
+    }
+    <span>{{ item.label }}</span>
+  </button>
+  }
+</mat-menu>
+
 @if (user$ | async; as user) {
-<div class="flex justify-end w-full">
-  <a
-    class="p-menubar-item-link flex items-center gap-2 cursor-pointer login-avatar-link"
-    pRipple
-    role="button"
-    tabindex="0"
-    (click)="menu.toggle($event)"
-    (keydown.enter)="menu.toggle($event)">
-    <p-avatar class="login-avatar" label="{{ user.initials }}" shape="circle" />
-  </a>
+<div class="user-menu-wrapper">
+  <button
+    class="avatar-button"
+    mat-icon-button
+    [attr.aria-label]="'User menu for ' + user.initials"
+    [matMenuTriggerFor]="menu">
+    {{ user.initials }}
+  </button>
 </div>
 } @else {
-<p-button class="login-button" label="Login" (click)="login()" />
+<div class="login-wrapper">
+  <button class="login-button" mat-button (click)="login()">Login</button>
+</div>
 }

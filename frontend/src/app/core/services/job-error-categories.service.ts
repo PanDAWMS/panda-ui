@@ -13,14 +13,13 @@ export class JobErrorCategoriesService {
   private apiService = inject(ApiService);
   private log = inject(LoggingService).forContext('JobErrorCategoriesService');
   private palette = [
-    '#57534e',
-    '#475569',
-    '#059669',
-    '#dc2626',
-    '#16a34a',
-    '#7c3aed',
-    '#57534e',
-    '#ea580c',
+    '#898989',
+    '#934fff',
+    '#b22222',
+    '#099999',
+    '#deb900',
+    '#2174bb',
+    '#e67300',
     '#65a30d',
     '#d97706',
     '#db2777',
