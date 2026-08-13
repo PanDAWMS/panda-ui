@@ -28,8 +28,16 @@ export class AppConfigService {
   }
 
   hasApp(appName: string): boolean {
-    const apps = this.config.installedApps ?? [];
     const normalizedAppName = appName.toLowerCase();
+    const installedApps = this.config?.installedApps;
+    if (!installedApps) {
+      return false;
+    }
+    const apps = Array.isArray(installedApps)
+      ? installedApps
+      : typeof installedApps === 'string'
+      ? [installedApps]
+      : [];
 
     return apps.some((app) => {
       const normalized = app.toLowerCase();
