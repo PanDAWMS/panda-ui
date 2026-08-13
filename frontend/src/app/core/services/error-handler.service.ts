@@ -46,9 +46,27 @@ export class ErrorHandlerService implements ErrorHandler {
   }
 
   private extractErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message || error.stack || '';
+    if (!error) {
+      return '';
     }
-    return String(error ?? '');
+
+    const actualError =
+      (error as { reloadedError?: unknown; ngOriginalError?: unknown }).ngOriginalError ||
+      (error as { promise?: { reason?: unknown } }).promise?.reason ||
+      error;
+
+    if (actualError instanceof Error) {
+      return `${actualError.name}: ${actualError.message}\n${actualError.stack || ''}`;
+    }
+
+    if (typeof error === 'object') {
+      try {
+        return JSON.stringify(error);
+      } catch {
+        return String(error);
+      }
+    }
+
+    return String(error);
   }
 }
