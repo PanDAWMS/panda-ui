@@ -45,6 +45,69 @@ export class ApiService {
     return this.http.delete<T>(`${this.apiBaseUrl}/${endpoint}/${id}/`);
   }
 
+  stream<T>(endpoint: string, body: unknown): Observable<T> {
+    return new Observable<T>((observer) => {
+      const controller = new AbortController();
+      const url = `${this.apiBaseUrl}/${endpoint.replace(/^\/|\/$/g, '')}/`;
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          if (!response.body) {
+            throw new Error('ReadableStream not supported or empty body');
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let buffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || ''; // Hold onto fragmented chunks
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const dataStr = line.replace('data: ', '').trim();
+                if (!dataStr) {
+                  continue;
+                }
+
+                try {
+                  const parsedEvent = JSON.parse(dataStr) as T;
+                  observer.next(parsedEvent);
+                } catch (err) {
+                  console.error('Error parsing SSE json chunk:', line);
+                }
+              }
+            }
+          }
+
+          observer.complete();
+        })
+        .catch((error) => {
+          if (error.name !== 'AbortError') {
+            observer.error(error);
+          }
+        });
+
+      // Cleanup logic: automatically cancels the fetch stream if the component unsubscribes!
+      return () => controller.abort();
+    });
+  }
+
   makeParams(params: Record<string, unknown>): HttpParams {
     let httpParams = new HttpParams();
     if (params) {
@@ -57,5 +120,13 @@ export class ApiService {
       }
     }
     return httpParams;
+  }
+
+  generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.floor(Math.random() * 16);
+      const v = c === 'x' ? r : (r % 4) + 8; // (r & 0x3) | 0x8 is mathematically equivalent to (r % 4) + 8
+      return v.toString(16);
+    });
   }
 }

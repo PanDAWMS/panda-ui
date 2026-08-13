@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { ApiService } from './api.service';
+import { ApiService } from '../../core/services/api.service';
 import { Observable, of } from 'rxjs';
-import { JobErrorCategory } from '../models/job-error-category.model';
+import { JobErrorCategory } from './job-error-category.model';
 import { tap } from 'rxjs/operators';
-import { LoggingService } from './logging.service';
+import { LoggingService } from '../../core/services/logging.service';
 
 @Injectable({
   providedIn: 'root',

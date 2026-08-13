@@ -1,18 +1,16 @@
 @let task = taskInfo(); @if (task) {
-<mat-card appearance="outlined" class="task-card">
+<mat-card>
   <mat-card-header>
-    <mat-card-title>Task Parameters</mat-card-title>
+    <mat-card-title>Task parameters</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
-    <table class="mat-elevation-z0 task-table" mat-table [dataSource]="toKeyValueList(task)">
+    <table class="mat-elevation-z0" mat-table [dataSource]="toKeyValueList(task)">
       <ng-container matColumnDef="key">
-        <th *matHeaderCellDef mat-header-cell>Param</th>
-        <td *matCellDef="let row" class="font-medium" mat-cell>{{ row.key }}</td>
+        <td *matCellDef="let row" mat-cell>{{ row.key }}</td>
       </ng-container>
 
       <ng-container matColumnDef="value">
-        <th *matHeaderCellDef mat-header-cell>Value</th>
         <td *matCellDef="let row" mat-cell>
           @if (row.value) {
           {{ row.value }}
@@ -20,13 +18,12 @@
         </td>
       </ng-container>
 
-      <tr *matHeaderRowDef="['key', 'value']" mat-header-row></tr>
       <tr *matRowDef="let row; columns: ['key', 'value']" mat-row></tr>
     </table>
   </mat-card-content>
 </mat-card>
 } @else {
-<div class="p-4 text-gray-500">
+<div class="p-2 text-gray-500">
   <p>Loading task parameters...</p>
 </div>
 }

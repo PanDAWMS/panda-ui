@@ -24,7 +24,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
       } else if (error.status === 500) {
         messageBuffer.add(
           'Something went wrong on our end. Please try refreshing or try again in a few minutes. ',
-          '',
+          'Close',
           {
             duration: 0,
             panelClass: ['snackbar-warning'],
@@ -39,6 +39,9 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
         log.warn('Caught error: Feature not implemented: ', req.url);
       } else if (error.status === 401) {
         log.warn('Unauthorized request:', req.url);
+        if (req.url.includes('/oauth/')) {
+          return throwError(() => error);
+        }
       } else if (error.status === 403) {
         messageBuffer.add('Forbidden: You do not have the necessary permissions for this action.', 'Close', {
           duration: 5000,

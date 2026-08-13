@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ErrorDescription } from '../../../../core/models/error-description.model';
+import { ErrorDescription } from '../../error-description.model';
 import { OptionObject } from '../../../../core/models/option.model';
 import { LoggingService } from '../../../../core/services/logging.service';
 

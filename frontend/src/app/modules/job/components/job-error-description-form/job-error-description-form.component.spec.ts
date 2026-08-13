@@ -3,7 +3,7 @@ import { ComponentRef } from '@angular/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { JobErrorDescriptionFormComponent } from './job-error-description-form.component';
-import { ErrorDescription } from '../../../../core/models/error-description.model';
+import { ErrorDescription } from '../../error-description.model';
 import { OptionObject } from '../../../../core/models/option.model';
 import { LoggingService } from '../../../../core/services/logging.service';
 

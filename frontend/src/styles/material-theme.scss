@@ -15,7 +15,7 @@ html {
         tertiary: app-theme.$tertiary-palette,
       ),
       typography: Roboto,
-      density: -1,
+      density: -5,
     )
   );
 }
@@ -36,13 +36,45 @@ body {
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
-
-  p {
-    margin: 0.25rem 0;
-  }
 }
 
 :root {
+  // Override system-level typography variables to use smaller font sizes and line heights
+  --mat-sys-title-large-size: 1rem;
+  --mat-sys-title-large-line-height: 1.25rem;
+  --mat-sys-title-medium-size: 0.875rem;
+  --mat-sys-title-medium-line-height: 1.125rem;
+  --mat-sys-title-small-size: 0.875rem;
+  --mat-sys-title-small-line-height: 1.125rem;
+
+  --mat-sys-body-large-size: 1rem;
+  --mat-sys-body-large-line-height: 1.25rem;
+  --mat-sys-body-medium-size: 0.875rem;
+  --mat-sys-body-medium-line-height: 1.125rem;
+  --mat-sys-body-small-size: 0.75rem;
+  --mat-sys-body-small-line-height: 1rem;
+
+  --mat-sys-display-large-size: 1rem;
+  --mat-sys-display-large-line-height: 1.25rem;
+  --mat-sys-display-medium-size: 0.875rem;
+  --mat-sys-display-medium-line-height: 1.125rem;
+  --mat-sys-display-small-size: 0.75rem;
+  --mat-sys-display-small-line-height: 1rem;
+
+  --mat-sys-label-large-size: 1rem;
+  --mat-sys-label-large-line-height: 1.25rem;
+  --mat-sys-label-medium-size: 0.875rem;
+  --mat-sys-label-medium-line-height: 1.125rem;
+  --mat-sys-label-small-size: 0.75rem;
+  --mat-sys-label-small-line-height: 1rem;
+
+  --mat-sys-headline-large-size: 1rem;
+  --mat-sys-headline-large-line-height: 1.25rem;
+  --mat-sys-headline-medium-size: 0.875rem;
+  --mat-sys-headline-medium-line-height: 1.125rem;
+  --mat-sys-headline-small-size: 0.875rem;
+  --mat-sys-headline-small-line-height: 1.125rem;
+
   @include mat.button-overrides(
     (
       text-container-shape: 0px,
@@ -62,8 +94,29 @@ body {
       outlined-container-shape: 0,
       outlined-container-color: var(--mat-sys-surface),
       outlined-outline-color: var(--mat-sys-secondary),
-      title-text-line-height: 1rem,
-      title-text-size: 0.875rem,
+      title-text-line-height: var(--mat-sys-title-medium-line-height),
+      title-text-size: var(--mat-sys-title-medium-size),
+      title-text-weight: var(--mat-sys-title-medium-weight),
+    )
+  );
+
+  @include mat.expansion-overrides(
+    (
+      container-shape: 0,
+      header-expanded-state-height: 48px,
+      header-collapsed-state-height: 32px,
+      container-background-color: var(--mat-sys-secondary-container),
+    )
+  );
+
+  @include mat.fab-overrides(
+    (
+      container-shape: 0.5rem,
+      small-container-shape: 0.5rem,
+      extended-container-height: 2.5rem,
+      extended-container-shape: 0.5rem,
+      touch-target-size: 2rem,
+      small-touch-target-size: 1.5rem,
     )
   );
 
@@ -85,7 +138,7 @@ body {
 
   @include mat.icon-button-overrides(
     (
-      icon-size: 1rem,
+      icon-size: 1.5rem,
       state-layer-size: 1.5rem,
       touch-target-size: 2rem,
       focus-state-layer-opacity: 0,
@@ -113,6 +166,12 @@ body {
     )
   );
 
+  @include mat.sidenav-overrides(
+    (
+      container-shape: 0,
+    )
+  );
+
   @include mat.snack-bar-overrides(
     (
       container-shape: 0,
@@ -124,17 +183,17 @@ body {
 
   @include mat.table-overrides(
     (
-      header-container-height: 1rem,
-      header-headline-line-height: 1rem,
-      header-headline-size: 1rem,
+      header-container-height: var(--mat-sys-headline-small-line-height),
+      header-headline-line-height: var(--mat-sys-headline-small-line-height),
+      header-headline-size: var(--mat-sys-headline-small-size),
       header-headline-weight: bold,
-      row-item-container-height: 1rem,
-      row-item-label-text-line-height: 1rem,
-      row-item-label-text-size: 1rem,
+      row-item-container-height: var(--mat-sys-body-medium-line-height),
+      row-item-label-text-line-height: var(--mat-sys-body-medium-line-height),
+      row-item-label-text-size: var(--mat-sys-body-medium-size),
       row-item-outline-width: 0px,
-      footer-container-height: 1rem,
-      footer-supporting-text-line-height: 1rem,
-      footer-supporting-text-size: 1rem,
+      footer-container-height: var(--mat-sys-headline-small-line-height),
+      footer-supporting-text-line-height: var(--mat-sys-headline-small-line-height),
+      footer-supporting-text-size: var(--mat-sys-headline-small-size),
       footer-supporting-text-weight: bold,
     )
   );
@@ -150,6 +209,29 @@ body {
   );
 
   // Overrides for non-tokenized features
+  mat-card {
+    .mat-mdc-card-header {
+      padding: 0.5rem;
+      background-color: var(--mat-sys-secondary-container, #ffffff);
+    }
+
+    .mat-mdc-card-content {
+      padding: 0 0.5rem;
+    }
+  }
+
+  mat-expansion-panel {
+    mat-expansion-panel-header {
+      padding: 0 0.5rem;
+
+      mat-panel-description {
+        font-size: var(--mat-sys-body-small-size);
+      }
+    }
+    .mat-expansion-panel-body {
+      padding: 0 0.5rem 0.5rem 0.5rem;
+    }
+  }
 
   .mat-mdc-form-field {
     .mat-mdc-text-field-wrapper {
@@ -177,6 +259,14 @@ body {
       mat-pseudo-checkbox {
         margin-right: 0.1rem;
       }
+    }
+  }
+
+  mat-sidenav {
+    width: 100vw;
+
+    @media (min-width: 640px) {
+      width: 420px;
     }
   }
 
