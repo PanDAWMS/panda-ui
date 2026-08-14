@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 VERSION_FILE="${REPO_ROOT}/VERSION"
@@ -42,7 +42,7 @@ git push origin --tags
 echo "Syncing version $new_version back into $SOURCE_BRANCH..."
 git checkout "$SOURCE_BRANCH"
 git reset --hard "origin/$SOURCE_BRANCH"
-git merge "$TARGET_BRANCH" -m "Chore: sync version $new_version back into $SOURCE_BRANCH"
+git merge "$BRANCH" -m "Chore: sync version $new_version back into $SOURCE_BRANCH"
 git push origin "$SOURCE_BRANCH"
 
 echo "Version successfully bumped to $new_version and synced to $SOURCE_BRANCH!"
