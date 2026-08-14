@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+
+  .chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: var(--mat-sys-surface-container-lowest, #f9fafb);
+    overflow: hidden;
+  }
+
+  .message-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mat-sys-spacing, 0.3rem);
+  }
+
+  .bubble-container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+
+    .message-card {
+      max-width: 80%;
+      border-radius: 0.5rem;
+      background-color: var(--mat-sys-surface-container);
+      box-shadow: none;
+
+      /* Compact Angular Material Card Headers */
+      mat-card-header {
+        padding: 0.5rem 0.5rem 0 0.5rem;
+        min-height: auto;
+        background-color: inherit;
+        border-radius: inherit;
+      }
+
+      .sender-meta {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--mat-sys-on-surface-variant);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      mat-card-content {
+        padding: 0 0.5rem 0.5rem 0.5rem;
+      }
+
+      .content-text {
+        margin: 0;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    }
+
+    /* User Message Variant (Right aligned, Primary background) */
+    &.user {
+      justify-content: flex-end;
+
+      .message-card {
+        background-color: var(--mat-sys-primary-container, #e0e7ff);
+        color: var(--mat-sys-on-primary-container, #1e1b4b);
+
+        .sender-meta {
+          color: var(--mat-sys-on-primary-container, #3730a3);
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  .tools-container {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+
+    mat-chip {
+      --mdc-chip-container-height: 22px;
+      font-size: 0.7rem;
+
+      mat-icon {
+        font-size: 0.875rem;
+        width: 0.875rem;
+        height: 0.875rem;
+      }
+
+      &.completed {
+        background-color: var(--mat-sys-secondary-container, #d1fae5);
+        color: var(--mat-sys-on-secondary-container, #065f46);
+      }
+    }
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant, #6b7280);
+    font-style: italic;
+
+    mat-spinner {
+      flex-shrink: 0;
+    }
+  }
+
+  .input-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--mat-sys-surface-container-lowest, #ffffff);
+
+    .chat-input {
+      flex: 1;
+      /* Remove bottom space reserved for error messages */
+      ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+      /* Make input field compact to match low density themes */
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        padding: 0 0.5rem;
+      }
+      textarea[matInput] {
+        resize: none;
+      }
+    }
+
+    button[matIconButton] {
+      color: var(--mat-sys-primary);
+
+      &:disabled {
+        color: var(--mat-sys-outline);
+      }
+    }
+  }
+}

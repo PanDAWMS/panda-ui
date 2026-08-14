@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { JobErrorCategoriesService } from './job-error-categories.service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { JobErrorCategory } from '../models/job-error-category.model';
+import { JobErrorCategory } from './job-error-category.model';
 import { firstValueFrom } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -4,6 +4,8 @@ set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 VERSION_FILE="${REPO_ROOT}/VERSION"
 BRANCH="${GITHUB_REF_NAME:-main}"
+SOURCE_BRANCH="next"
+
 echo "On branch: $BRANCH"
 
 cd "$REPO_ROOT"
@@ -35,3 +37,12 @@ fi
 # push commit and tags
 git push origin "$BRANCH"
 git push origin --tags
+
+# sync new version back into 'next' branch
+echo "Syncing version $new_version back into $SOURCE_BRANCH..."
+git checkout "$SOURCE_BRANCH"
+git reset --hard "origin/$SOURCE_BRANCH"
+git merge "$TARGET_BRANCH" -m "Chore: sync version $new_version back into $SOURCE_BRANCH"
+git push origin "$SOURCE_BRANCH"
+
+echo "Version successfully bumped to $new_version and synced to $SOURCE_BRANCH!"

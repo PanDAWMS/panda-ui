@@ -1,28 +1,28 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { Observable, switchMap, take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { LoggingService } from '../services/logging.service';
 
-@Injectable()
-export class TokenInterceptor implements HttpInterceptor {
-  private authService = inject(AuthService);
-  private log = inject(LoggingService).forContext('TokenInterceptor');
+export const tokenInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> => {
+  const authService = inject(AuthService);
+  const log = inject(LoggingService).forContext('TokenInterceptor');
 
-  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // get the latest token value once for this request
-    return this.authService.token$.pipe(
-      take(1),
-      switchMap((token) => {
-        // clone the request and add headers if token exists
-        const headers = token ? req.headers.set('Authorization', `Token ${token}`) : req.headers;
-        const cloned = req.clone({
-          headers,
-          withCredentials: true,
-        });
-        this.log.debug('Token: ', token ? 'ok' : 'null');
-        return next.handle(cloned);
-      }),
-    );
-  }
-}
+  return authService.token$.pipe(
+    take(1),
+    switchMap((token) => {
+      // clone the request and add headers if token exists
+      const headers = token ? req.headers.set('Authorization', `Token ${token}`) : req.headers;
+      const cloned = req.clone({
+        headers,
+        withCredentials: true,
+      });
+
+      log.debug('Token: ', token ? 'ok' : 'null');
+      return next(cloned);
+    }),
+  );
+};

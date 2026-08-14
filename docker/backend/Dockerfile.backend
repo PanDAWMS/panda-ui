@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.13.0
+ARG PYTHON_VERSION=3.14.7
 
 FROM docker.io/almalinux:9
 ARG PYTHON_VERSION
@@ -16,7 +16,7 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/2380000/or
     yum install /tmp/oracle-instantclient-sqlplus-23.8.0.25.04-1.el9.x86_64.rpm -y && \
     yum clean all && rm -rf /var/cache/yum
 
-# Python 3.13 installation
+# Python 3.14 installation
 RUN mkdir /tmp/python && cd /tmp/python && \
     wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
     tar -xzf Python-${PYTHON_VERSION}.tgz && \
@@ -27,8 +27,8 @@ RUN mkdir /tmp/python && cd /tmp/python && \
     cd / && rm -rf /tmp/python
 
 # Python toolchain symlinks
-RUN ln -s /usr/local/bin/python3.13 /usr/bin/python && \
-    ln -s /usr/local/bin/pip3.13 /usr/bin/pip
+RUN ln -s /usr/local/bin/python3.14 /usr/bin/python && \
+    ln -s /usr/local/bin/pip3.14 /usr/bin/pip
 
 # ENV and directory structure
 ENV PYTHONPATH=/opt/pandaui/backend

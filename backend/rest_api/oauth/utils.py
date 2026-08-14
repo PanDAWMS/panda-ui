@@ -25,6 +25,7 @@ import logging
 
 from django.contrib.auth.models import Group, User
 from django.http import HttpRequest, HttpResponse
+from rest_api.oauth.constants import TOKEN_NAME
 
 _logger = logging.getLogger("oauth")
 
@@ -51,9 +52,9 @@ def preserve_cookies(request: HttpRequest, response: HttpResponse) -> HttpRespon
             )
 
     # Set the token in cookies
-    if request.user.is_authenticated and "pandauitoken" not in response.cookies:
+    if request.user.is_authenticated and TOKEN_NAME not in response.cookies:
         response.set_cookie(
-            "pandauitoken",
+            TOKEN_NAME,
             request.user.auth_token.key,
             httponly=True,
             secure=False,

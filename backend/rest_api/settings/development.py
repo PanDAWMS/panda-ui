@@ -2,7 +2,7 @@
 Development settings for the Django project.
 """
 
-from .base import FRONTEND_BASE_URL, REST_FRAMEWORK
+from .base import FRONTEND_BASE_URL, REST_FRAMEWORK, SECURE_CSP
 from .logging import LOGGING
 
 DEBUG = True
@@ -23,6 +23,11 @@ CORS_ALLOW_HEADERS = [
     "content-type",
     "x-csrftoken",
 ]
+
+SECURE_CSP_DEBUG = True
+SECURE_CSP["connect-src"].append(
+    f"wss://{FRONTEND_BASE_URL.replace('https://', '').replace('http://', '')}",
+)
 
 # Make auth work with HTTP in development
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False

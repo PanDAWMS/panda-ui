@@ -9,12 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ErrorDescription } from '../../../../core/models/error-description.model';
+import { ErrorDescription } from '../../error-description.model';
 import { ApiService } from '../../../../core/services/api.service';
 import { OptionObject } from '../../../../core/models/option.model';
 import { JobErrorDescriptionFormComponent } from '../job-error-description-form/job-error-description-form.component';
-import { JobErrorCategoriesService } from '../../../../core/services/job-error-categories.service';
-import { JobErrorCategory } from '../../../../core/models/job-error-category.model';
+import { JobErrorCategoriesService } from '../../job-error-categories.service';
+import { JobErrorCategory } from '../../job-error-category.model';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 

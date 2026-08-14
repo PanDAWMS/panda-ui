@@ -8,6 +8,8 @@ import { LoginComponent } from '../../../modules/auth/components/login/login.com
 import { AppConfigService } from '../../services/app-config.service';
 import { SearchOmniComponent } from '../../../modules/search/components/omni/omni.component';
 import { MenuItem } from '../../models/menu-item';
+import { SidePanelComponent } from '../side-panel/side-panel.component';
+import { SidePanelService } from '../side-panel/side-panel.service';
 
 @Component({
   selector: 'app-header',
@@ -26,6 +28,7 @@ import { MenuItem } from '../../models/menu-item';
 })
 export class HeaderComponent implements OnInit {
   private readonly config = inject(AppConfigService);
+  panelService = inject(SidePanelService);
   items: MenuItem[] | undefined;
   name = 'PanDA UI';
 
