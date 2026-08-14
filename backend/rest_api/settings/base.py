@@ -6,6 +6,8 @@ Django settings for rest_api project.
 import os
 from pathlib import Path
 
+from django.utils.csp import CSP
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,6 +25,9 @@ ALLOWED_HOSTS = os.getenv("PANDAUI_ALLOWED_HOSTS", default="").split(",")
 
 # Application definition
 INSTALLED_APPS = [
+    # websockets
+    "daphne",
+    "channels",
     # django essentials
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,10 +44,12 @@ INSTALLED_APPS = [
     "rest_api.oauth",
     "rest_api.search",
     "rest_api.task",
+    "rest_api.aide",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -51,6 +58,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -69,6 +82,7 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = "rest_api.urls"
 
+ASGI_APPLICATION = "rest_api.asgi.application"
 WSGI_APPLICATION = "rest_api.wsgi.application"
 
 # internationalization
@@ -77,8 +91,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = False
 
-# static files (CSS, JavaScript, Images)
-STATIC_URL = "static/"
 
 # UI frontend and backend URLs
 FRONTEND_BASE_URL = os.getenv("PANDAUI_FRONTEND_BASE_URL", None)
@@ -89,3 +101,13 @@ if not FRONTEND_BASE_URL or (isinstance(FRONTEND_BASE_URL, str) and not FRONTEND
 PANDA_SERVER_API_URL = os.getenv("PANDA_SERVER_API_URL", None)
 if not PANDA_SERVER_API_URL:
     raise ValueError("PANDA_SERVER_API_URL environment variable is not set")
+
+
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "connect-src": [
+        CSP.SELF,
+        "https:",
+        "wss:",
+    ],
+}

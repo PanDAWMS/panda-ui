@@ -83,6 +83,16 @@
   <!-- Right Section -->
   <div class="flex items-center gap-2">
     <app-search-omni />
+    <div class="docs-wrapper">
+      <button
+        aria-label="Toggle Side Panel"
+        mat-icon-button
+        matTooltip="Toggle Help & Aide Assistant"
+        [class.active]="panelService.isOpen()"
+        (click)="panelService.togglePanel()">
+        <mat-icon>help_outline</mat-icon>
+      </button>
+    </div>
     <app-login />
   </div>
 </mat-toolbar>

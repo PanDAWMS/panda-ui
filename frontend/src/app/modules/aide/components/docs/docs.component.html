@@ -1,0 +1,43 @@
+<div class="p-2 overflow-y-auto h-full">
+  <mat-accordion class="space-y-4 display-block" multi>
+    <!-- 1. PAGE SPECIFIC HELP PANEL (Expanded by default when context exists) -->
+    @if (pageContext(); as ctx) {
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ ctx.pageTitle }}
+        </mat-panel-title>
+        <mat-panel-description> Contextual </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="docs-topics-container">
+        @for (topic of ctx.topics; track topic.id) {
+        <div class="docs-topic" [id]="'help-topic-' + topic.id">
+          <p class="docs-topic-title">{{ topic.title }}</p>
+          <p class="docs-topic-content">{{ topic.content }}</p>
+        </div>
+        } @empty {
+        <p>No page-specific topics available.</p>
+        }
+      </div>
+    </mat-expansion-panel>
+    }
+
+    <!-- 2. GENERAL GLOBAL DOCUMENTATION PANEL (Always visible, expanded by default) -->
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title> General Docs </mat-panel-title>
+        <mat-panel-description> Global Help </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="docs-topics-container">
+        @for (topic of globalTopics(); track topic.id) {
+        <div class="docs-topic" [id]="'help-topic-' + topic.id">
+          <p class="docs-topic-title">{{ topic.title }}</p>
+          <p class="docs-topic-content">{{ topic.content }}</p>
+        </div>
+        }
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

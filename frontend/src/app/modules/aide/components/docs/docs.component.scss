@@ -1,0 +1,22 @@
+:host {
+  .docs-topics-container {
+    .docs-topic {
+      //border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 0.5rem;
+      padding: 0.3rem;
+      margin-bottom: 0.5rem;
+      background-color: var(--mat-sys-surface-container-lowest);
+
+      .docs-topic-title {
+        font-size: var(--mat-sys-title-medium-size);
+        font-weight: var(--mat-sys-title-medium-weight);
+        padding: 0 0 0.5rem 0;
+      }
+      .docs-topic-content {
+        font-size: var(--mat-sys-body-medium-size);
+        line-height: var(--mat-sys-body-small-line-height);
+        color: var(--mat-sys-on-surface-variant);
+      }
+    }
+  }
+}

@@ -7,7 +7,8 @@ import os
 from .base import INSTALLED_APPS
 
 LOG_LEVEL = os.getenv("PANDAUI_LOG_LEVEL", "INFO")
-LOG_PATH = os.getenv("PANDAUI_LOG_PATH", "/tmp") + "/"
+LOG_PATH = os.getenv("PANDAUI_LOG_PATH", "/tmp")
+LOG_PATH = LOG_PATH if LOG_PATH.endswith("/") else LOG_PATH + "/"
 LOG_MAX_BYTES = int(os.getenv("PANDAUI_LOG_MAX_BYTES", 100 * 1024 * 1024))
 
 # base logging configuration
@@ -49,7 +50,7 @@ LOGGING = {
         "general_error": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": f"{LOG_PATH}general_error.log",
+            "filename": f"{LOG_PATH}error.log",
             "formatter": "verbose",
         },
     },

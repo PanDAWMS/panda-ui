@@ -27,6 +27,24 @@ export class AppConfigService {
     return this.config.apiUrl;
   }
 
+  hasApp(appName: string): boolean {
+    const normalizedAppName = appName.toLowerCase();
+    const installedApps = this.config?.installedApps;
+    if (!installedApps) {
+      return false;
+    }
+    const apps = Array.isArray(installedApps)
+      ? installedApps
+      : typeof installedApps === 'string'
+      ? [installedApps]
+      : [];
+
+    return apps.some((app) => {
+      const normalized = app.toLowerCase();
+      return normalized === normalizedAppName || normalized === 'all';
+    });
+  }
+
   // general getter for other config
   get<K extends keyof AppConfig>(key: K): AppConfig[K] {
     return this.config[key];

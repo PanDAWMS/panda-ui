@@ -1,7 +1,7 @@
-import { Component, inject, input, InputSignal, Signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, InputSignal, Signal } from '@angular/core';
 import { of, switchMap } from 'rxjs';
-import { Task } from '../../../../core/models/task.model';
-import { TaskService } from '../../../../core/services/task.service';
+import { Task } from '../../task.model';
+import { TaskService } from '../../task.service';
 import { CommonModule } from '@angular/common';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,6 @@ import { MatTableModule } from '@angular/material/table';
   selector: 'app-task-params-list',
   imports: [CommonModule, MatCardModule, MatTableModule],
   templateUrl: './task-params-list.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './task-params-list.component.scss',
 })
 export class TaskParamsListComponent {

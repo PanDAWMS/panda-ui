@@ -1,0 +1,65 @@
+<div class="chat-wrapper">
+  <!-- Messages List -->
+  <div class="message-list">
+    @for (msg of chatService.messages(); track msg.id) {
+    <div [class]="'bubble-container ' + msg.sender">
+      <mat-card appearance="filled" class="message-card">
+        <mat-card-header>
+          <mat-card-subtitle class="sender-meta">
+            {{ msg.sender | titlecase }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- MCP Tool Badges -->
+          @if (msg.toolsUsed.length > 0) {
+          <mat-chip-set class="tools-container">
+            @for (tool of msg.toolsUsed; track tool.name) {
+            <mat-chip [class.completed]="tool.status === 'completed'">
+              <mat-icon fontIcon="build" matChipAvatar></mat-icon>
+              {{ tool.name }} {{ tool.status === 'running' ? '...' : '✓' }}
+            </mat-chip>
+            }
+          </mat-chip-set>
+          }
+
+          <!-- Status Indicator -->
+          @if (msg.statusText) {
+          <div class="status-indicator">
+            <mat-spinner diameter="16"></mat-spinner>
+            <span>{{ msg.statusText }}</span>
+          </div>
+          }
+
+          <!-- Main Message Text -->
+          <p class="content-text">{{ msg.content }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    }
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-bar">
+    <mat-form-field appearance="outline" class="chat-input">
+      <mat-label>Type a question...</mat-label>
+      <textarea
+        #autosize="cdkTextareaAutosize"
+        cdkTextareaAutosize
+        matInput
+        [cdkAutosizeMaxRows]="5"
+        [cdkAutosizeMinRows]="1"
+        [disabled]="chatService.isGenerating()"
+        [(ngModel)]="userInput"
+        (keyup.enter)="send()"></textarea>
+    </mat-form-field>
+
+    <button
+      aria-label="Send Message"
+      matIconButton
+      [disabled]="chatService.isGenerating() || !userInput.trim()"
+      (click)="send()">
+      <mat-icon fontIcon="send"></mat-icon>
+    </button>
+  </div>
+</div>
