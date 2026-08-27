@@ -8,6 +8,7 @@ ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT", "production")
 if ENVIRONMENT == "development":
     PATH_ENV_FILE = os.getenv("PATH_ENV_FILE", "/tmp/.env")
     load_dotenv(PATH_ENV_FILE)
+print(ENVIRONMENT)
 
 from .base import *  # noqa: F403, F401, E402
 from .database import *  # noqa: F403, F401, E402
