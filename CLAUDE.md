@@ -16,9 +16,11 @@ npm install          # install dependencies
 npm start            # dev server at http://localhost:4200
 npm run build        # production build to dist/frontend/
 npm run watch        # build with watch mode
-npm test             # run tests with Vitest
+npm test             # run tests (Vitest, via Angular's unit-test builder)
 npm run lint         # ESLint
 ```
+
+Run a single test file: `npx ng test --include='**/job-list.component.spec.ts'`
 
 ### Backend (Django)
 
@@ -27,9 +29,11 @@ cd backend
 python manage.py runserver           # dev server
 python manage.py migrate             # apply migrations
 python manage.py makemigrations      # create migrations
+python manage.py test                # run all tests
+python manage.py test rest_api.job   # run tests for one app
 ```
 
-Django settings module: `rest_api.settings`
+Django settings module: `rest_api.settings`. Backend requires `DJANGO_SETTINGS_MODULE=rest_api.settings` and the env vars listed below; there's no sqlite fallback — `database.py` raises at import time if no `DB_CONN_PANDAUI_*` vars are set.
 
 ### Code Quality
 
@@ -88,3 +92,9 @@ Nginx acts as reverse proxy for both frontend and backend. Docker images are bui
 Backend requires environment variables (see `/backend/rest_api/settings/` for references). Key variables include `PANDAUI_SECRET_KEY`, `PANDAUI_DEBUG`, `PANDAUI_ALLOWED_HOSTS`, Oracle DB credentials, and OAuth provider config. Use a `.env` file or set them in the shell.
 
 Frontend environment config lives in `frontend/src/environments/`. The dev environment file is not committed; create it from the template if needed.
+
+Database env vars follow the pattern `DB_CONN_<CONNECTION>_<PROPERTY>` (e.g. `DB_CONN_PANDAUI_VENDOR`, `_NAME`, `_USER`, `_PASSWORD`, plus `_HOST`/`_PORT` for PostgreSQL); the `PANDAUI` connection is required and becomes Django's `default` database (`backend/rest_api/settings/database.py`). Both Oracle and PostgreSQL are supported.
+
+## Branching
+
+- PRs target the `next` branch, not `main` directly. Merges to `next` auto-bump the minor version; pushes to `main` trigger the release workflow (Docker image build + publish to GHCR).
