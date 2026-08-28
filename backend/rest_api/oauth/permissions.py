@@ -34,7 +34,7 @@ class GlobalPermission(BasePermission):
         """Helper property to access the initialized AuthorizationService from the app config."""
         authz_service = apps.get_app_config("oauth").authz
         if not authz_service:
-            raise "Failed to import AuthorizationService"  # Or raise a server error
+            raise ImportError("Failed to import AuthorizationService")
         return authz_service
 
     def get_user_roles(self, user) -> list[str]:
