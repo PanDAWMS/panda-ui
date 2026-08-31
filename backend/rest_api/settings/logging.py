@@ -8,7 +8,6 @@ from .base import INSTALLED_APPS
 
 LOG_LEVEL = os.getenv("PANDAUI_LOG_LEVEL", "INFO")
 LOG_PATH = os.getenv("PANDAUI_LOG_PATH", "/tmp")
-LOG_PATH = LOG_PATH if LOG_PATH.endswith("/") else LOG_PATH + "/"
 LOG_MAX_BYTES = int(os.getenv("PANDAUI_LOG_MAX_BYTES", 100 * 1024 * 1024))
 
 # base logging configuration
@@ -36,7 +35,7 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "maxBytes": LOG_MAX_BYTES,
             "backupCount": 3,
-            "filename": f"{LOG_PATH}django.log",
+            "filename": os.path.join(LOG_PATH, "django.log"),
             "formatter": "verbose",
         },
         "file_request": {
@@ -44,13 +43,13 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "maxBytes": LOG_MAX_BYTES,
             "backupCount": 3,
-            "filename": f"{LOG_PATH}request.log",
+            "filename": os.path.join(LOG_PATH, "request.log"),
             "formatter": "verbose",
         },
         "general_error": {
             "level": "WARNING",
             "class": "logging.FileHandler",
-            "filename": f"{LOG_PATH}error.log",
+            "filename": os.path.join(LOG_PATH, "error.log"),
             "formatter": "verbose",
         },
     },
@@ -87,16 +86,17 @@ LOGGING = {
 # create a separate log file for each app
 apps = [app_name.replace("rest_api.", "") for app_name in INSTALLED_APPS if app_name.startswith("rest_api.")]
 for app_name in apps:
+    logger_name = f"rest_api.{app_name}"
     LOGGING["handlers"][app_name] = {
         "level": LOG_LEVEL,
         "class": "logging.handlers.RotatingFileHandler",
         "maxBytes": LOG_MAX_BYTES,
         "backupCount": 3,
-        "filename": f"{LOG_PATH}{app_name}.log",
+        "filename": os.path.join(LOG_PATH, f"{app_name}.log"),
         "formatter": "verbose",
     }
-    LOGGING["loggers"][app_name] = {
-        "handlers": [app_name],
+    LOGGING["loggers"][logger_name] = {
+        "handlers": [app_name, "general_error"],
         "level": LOG_LEVEL,
-        "propagate": True,
+        "propagate": False,
     }
