@@ -1,11 +1,16 @@
 import rest_api.job.constants as job_const
 from django.db import IntegrityError, transaction
-from rest_api.job.models import ErrorDescription
-from rest_api.job.serializers import ErrorDescriptionSerializer
+from rest_api.common.mixins.filter_result_header import FilterMetadataHeaderMixin
+from rest_api.common.utils.filter_engine import FilterResult, filter_union_queryset
+from rest_api.job.models import ErrorDescription, JobsActive4, JobsArchived4, JobsDefined4
+from rest_api.job.querysets import JobUnionQuerySet
+from rest_api.job.serializers import ErrorDescriptionSerializer, JobDetailSerializer, JobSerializer
 from rest_api.oauth.permissions import GlobalPermission
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
@@ -14,6 +19,73 @@ from rest_framework.views import APIView
 
 READ_ACTIONS = ["list", "retrieve"]
 WRITE_ACTIONS = ["create", "update", "partial_update", "destroy", "bulk_create"]
+
+
+class JobDetailView(FilterMetadataHeaderMixin, RetrieveAPIView):
+    """
+    View to retrieve complete details for a single Job across all job tables.
+    """
+
+    object_type = "job"
+    lookup_field = "pandaid"
+    lookup_url_kwarg = "pandaid"
+
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, GlobalPermission]
+    serializer_class = JobDetailSerializer
+
+    JOB_MODELS = [JobsDefined4, JobsActive4, JobsArchived4]
+
+    def get_object(self):
+        """
+        Queries union views across models for a single job ID with all fields.
+        """
+        all_fields = JobUnionQuerySet.get_values_list(is_all=True)
+        pandaid = self.kwargs.get(self.lookup_url_kwarg)
+        request_params = self.request.query_params.dict()
+        request_params["pandaid"] = pandaid
+
+        # 3. Execute Union Queryset
+        queryset, self.filter_result = filter_union_queryset(
+            models_list=self.JOB_MODELS,
+            request_params=request_params,
+            time_field="statechangetime",
+            default_hours=0,
+            values_list=all_fields,
+        )
+        # extract single record or raise 404
+        obj = queryset.first()
+        if not obj:
+            raise NotFound(detail=f"Job with pandaid '{pandaid}' was not found.")
+
+        return obj
+
+
+class JobListView(FilterMetadataHeaderMixin, ListAPIView):
+    """
+    View to handle job list requests.
+    """
+
+    object_type = "job"
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, GlobalPermission]
+    serializer_class = JobSerializer
+    JOB_MODELS = [JobsDefined4, JobsActive4, JobsArchived4]
+    filter_result: FilterResult | None = None
+
+    def get_queryset(self):
+        """
+        Process GET params into filter queryset.
+        """
+        values_list = JobUnionQuerySet.get_values_list(is_with_task=False)
+        queryset, self.filter_result = filter_union_queryset(
+            models_list=self.JOB_MODELS,
+            request_params=self.request.query_params.dict(),
+            time_field="statechangetime",
+            default_hours=12,
+            values_list=values_list,
+        )
+        return queryset
 
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):

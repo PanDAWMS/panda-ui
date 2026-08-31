@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
     # CORS headers
     "corsheaders",
     # DRF
@@ -111,3 +110,5 @@ SECURE_CSP = {
         "wss:",
     ],
 }
+
+TEST_RUNNER = "rest_api.test_runner.TestRunner"
