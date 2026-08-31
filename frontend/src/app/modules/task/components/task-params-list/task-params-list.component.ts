@@ -18,7 +18,7 @@ export class TaskParamsListComponent {
   private taskService = inject(TaskService);
   private readonly taskId$ = toObservable(this.jeditaskid);
   // Auto-fetch the task whenever jeditaskid changes
-  readonly taskInfo: Signal<Task | null> = toSignal(
+  readonly taskDetail: Signal<Task | null> = toSignal(
     this.taskId$.pipe(switchMap((id) => (id ? this.taskService.getTask(id) : of(null)))),
     { initialValue: null },
   );
