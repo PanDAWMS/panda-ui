@@ -1,7 +1,11 @@
-## This workflow is triggered on pull requests to the 'next' branch.
-## It calculates a unique temporary version for the PR and builds a Docker images
+# ==============================================================================
+# Workflow: Build Next (PR & Merge)
+# Description: Automates versioning and Docker builds for the 'next' branch.
+#   - On PR:   Builds test images tagged with PR-specific numbers (pr-next-XX).
+#   - On Push: Bumps minor version, creates Git tag, and updates the ':next' image.
+# ==============================================================================
 
-name: PR Build Next
+name: Build Next
 
 env:
   REGISTRY: ghcr.io
@@ -9,20 +13,26 @@ env:
   IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
 
 on:
-  pull_request:
-    branches: [next]
+  push:
+    branches: [ next ]
     paths:
       - 'backend/**'
       - 'frontend/**'
       - 'docker/**'
       - 'VERSION'
-  workflow_dispatch:  # optional manual trigger
+  pull_request:
+    branches: [ next ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker/**'
+      - 'VERSION'
 
 jobs:
-  build-pr-next:
+  build-push-next:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - uses: actions/checkout@v4
@@ -30,16 +40,25 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
 
+      - name: Bump minor version
+        if: github.event_name == 'push'
+        run: bash .github/scripts/bump-version-minor.sh
+
       - name: Lowercase repository in image names
         run: |
           echo "IMAGE_NAME_BACKEND=$(echo '${{ env.IMAGE_NAME_BACKEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           echo "IMAGE_NAME_FRONTEND=$(echo '${{ env.IMAGE_NAME_FRONTEND }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Compute PR-next version
+      - name: Compute PR-next version and tag for image
         run: |
           BASE_VERSION=$(cat VERSION 2>/dev/null || echo "0.0")
-          PR_VERSION="${BASE_VERSION}-pr${{ github.event.pull_request.number }}.${{ github.run_number }}"
-          echo "VERSION=$PR_VERSION" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "VERSION=${BASE_VERSION}-next.${{ github.run_number }}" >> $GITHUB_ENV
+            echo "TAG=next" >> $GITHUB_ENV
+          else
+            echo "VERSION=${BASE_VERSION}-pr${{ github.event.pull_request.number }}.${{ github.run_number }}" >> $GITHUB_ENV
+            echo "TAG=pr-next-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          fi
 
       - name: Set up Docker Buildx (to enable caching)
         uses: docker/setup-buildx-action@v3
@@ -59,7 +78,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:pr-next-${{ github.event.pull_request.number }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -73,6 +92,6 @@ jobs:
             APP_VERSION=${{ env.VERSION }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:pr-next-${{ github.event.pull_request.number }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
