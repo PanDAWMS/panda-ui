@@ -23,7 +23,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
         log.error('Caught error: ', error);
       } else if (error.status === 500) {
         messageBuffer.add(
-          'Something went wrong on our end. Please try refreshing or try again in a few minutes. ',
+          'Something went wrong on our end. Please try refreshing or try again in a few minutes or report the issue to us. ',
           'Close',
           {
             duration: 0,
