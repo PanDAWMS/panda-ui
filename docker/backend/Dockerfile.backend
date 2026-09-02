@@ -50,7 +50,7 @@ WORKDIR $APP_PATH
 COPY docker/backend/requirements/ $REQUIREMENTS_PATH/
 RUN python -m venv $VENV_PATH && \
     $VENV_PATH/bin/pip install --upgrade pip && \
-    $VENV_PATH/bin/pip install --no-cache-dir -r $REQUIREMENTS_PATH/prod.txt && \
+    $VENV_PATH/bin/pip install --no-cache-dir -r $REQUIREMENTS_PATH/production.txt && \
     chgrp -R 0 $VENV_PATH && chmod -R g=u $VENV_PATH
 
 # Copy backend code and set permissions
