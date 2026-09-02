@@ -28,7 +28,7 @@ from social_django.models import UserSocialAuth
 _logger = logging.getLogger("oauth")
 
 
-def merge_social_users(strategy, details, backend, user=None, *args, **kwargs):
+def merge_social_users(strategy, details, backend, *args, user=None, **kwargs):
     """
     Merge duplicate Django users that share the same email across different
     social-auth providers, so that all social accounts are linked to a single
