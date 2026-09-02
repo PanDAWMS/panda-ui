@@ -31,26 +31,27 @@ RUN ln -s /usr/local/bin/python3.14 /usr/bin/python && \
     ln -s /usr/local/bin/pip3.14 /usr/bin/pip
 
 # ENV and directory structure
-ENV PYTHONPATH=/opt/pandaui/backend
-ENV DJANGO_SETTINGS_MODULE=rest_api.settings
-ENV APP_PATH=/opt/pandaui
-ENV VENV_PATH=$APP_PATH/venv
-ENV CONFIG_PATH=/data/pandaui/config
-ENV LOGS_PATH=/data/pandaui/logs
+ENV PYTHONPATH=/opt/pandaui/backend \
+    DJANGO_SETTINGS_MODULE=rest_api.settings \
+    APP_PATH=/opt/pandaui \
+    CONFIG_PATH=/data/pandaui/config \
+    LOGS_PATH=/data/pandaui/logs
+ENV VENV_PATH=$APP_PATH/venv \
+    REQUIREMENTS_PATH=$APP_PATH/requirements
 
 # Create working dirs and adjust permissions
-RUN mkdir -p $APP_PATH $CONFIG_PATH $LOGS_PATH && \
-    chgrp -R 0 $APP_PATH $CONFIG_PATH $LOGS_PATH && \
-    chmod -R g=u $APP_PATH $CONFIG_PATH $LOGS_PATH
+RUN mkdir -p $APP_PATH $CONFIG_PATH $LOGS_PATH $REQUIREMENTS_PATH && \
+    chgrp -R 0 $APP_PATH $CONFIG_PATH $LOGS_PATH $REQUIREMENTS_PATH && \
+    chmod -R g=u $APP_PATH $CONFIG_PATH $LOGS_PATH $REQUIREMENTS_PATH
 
 WORKDIR $APP_PATH
 
 # Set up Python venv & install dependencies
-COPY docker/backend/requirements/ $APP_PATH/requirements/
+COPY docker/backend/requirements/ $REQUIREMENTS_PATH/
 RUN python -m venv $VENV_PATH && \
     $VENV_PATH/bin/pip install --upgrade pip && \
-    $VENV_PATH/bin/pip install --no-cache-dir -r $APP_PATH/requirements/prod.txt && \
-    chgrp -R 0 $VENV_PATH && chmod -R g=u $VENV_PATH/bin
+    $VENV_PATH/bin/pip install --no-cache-dir -r $REQUIREMENTS_PATH/prod.txt && \
+    chgrp -R 0 $VENV_PATH && chmod -R g=u $VENV_PATH
 
 # Copy backend code and set permissions
 COPY backend $APP_PATH/backend
