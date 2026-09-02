@@ -1,5 +1,8 @@
+import logging
+
 import rest_api.job.constants as job_const
-from django.db import IntegrityError, transaction
+from django.core.exceptions import ValidationError
+from django.db import DatabaseError, IntegrityError, transaction
 from rest_api.job.models import ErrorDescription
 from rest_api.job.serializers import ErrorDescriptionSerializer
 from rest_api.oauth.permissions import GlobalPermission
@@ -12,8 +15,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-READ_ACTIONS = ["list", "retrieve"]
-WRITE_ACTIONS = ["create", "update", "partial_update", "destroy", "bulk_create"]
+_logger = logging.getLogger("job")
 
 
 class ErrorDescriptionViewSet(viewsets.ModelViewSet):
@@ -127,7 +129,20 @@ class ErrorDescriptionViewSet(viewsets.ModelViewSet):
                 {"error": "Database integrity error.", "details": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        except (ValidationError, KeyError) as e:
+            _logger.warning("Validation failure: %s", e)
+            return Response(
+                {"error": "Invalid input payload.", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except DatabaseError as e:
+            _logger.error("Database operation failed: %s", e, exc_info=True)
+            return Response(
+                {"error": "Failed to add new records to DB."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         except Exception as e:
+            _logger.error("Unexpected error: %s", e, exc_info=True)
             return Response(
                 {"error": "Failed to add new records to DB.", "details": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -146,12 +161,6 @@ class JobErrorCategoryListView(APIView):
     permission_classes = [IsAuthenticated, GlobalPermission]
 
     def get(self, request, *args, **kwargs):
-        try:
-            categories_dict = dict(job_const.JOB_ERROR_CATEGORIES)
-        except Exception as e:
-            return Response(
-                {"error": "Failed to retrieve job error categories.", "details": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        categories_dict = dict(job_const.JOB_ERROR_CATEGORIES)
         categories_list = [{"id": int(i), "name": name} for i, name in categories_dict.items()]
         return Response(categories_list)

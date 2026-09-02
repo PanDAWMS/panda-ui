@@ -92,3 +92,10 @@ class IamBackend(OpenIdConnectAuth):
             _logger.debug(f"User groups update status: {is_success}, user: {user_data['email']}, groups: {user_data['wlcg.groups']}")
 
         return user_data
+
+    def auth_html(self):
+        """
+        Abstract method implementation required by BaseAuth.
+        OIDC backends use HTTP redirects rather than rendering HTML.
+        """
+        raise NotImplementedError("IAM backend does not support direct HTML authentication.")

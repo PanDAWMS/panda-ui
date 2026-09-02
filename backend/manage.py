@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+# pylint: disable=wrong-import-position
+
 import os
 import sys
 

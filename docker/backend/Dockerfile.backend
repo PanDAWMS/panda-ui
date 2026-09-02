@@ -46,10 +46,10 @@ RUN mkdir -p $APP_PATH $CONFIG_PATH $LOGS_PATH && \
 WORKDIR $APP_PATH
 
 # Set up Python venv & install dependencies
-COPY docker/backend/requirements.txt $APP_PATH/requirements.txt
+COPY docker/backend/requirements/ $APP_PATH/requirements/
 RUN python -m venv $VENV_PATH && \
     $VENV_PATH/bin/pip install --upgrade pip && \
-    $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt && \
+    $VENV_PATH/bin/pip install --no-cache-dir -r $APP_PATH/requirements/prod.txt && \
     chgrp -R 0 $VENV_PATH && chmod -R g=u $VENV_PATH/bin
 
 # Copy backend code and set permissions
