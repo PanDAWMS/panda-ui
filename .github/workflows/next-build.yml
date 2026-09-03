@@ -79,8 +79,8 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=backend
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max,scope=backend' || '' }}
 
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
@@ -93,5 +93,3 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
