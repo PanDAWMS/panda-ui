@@ -8,7 +8,7 @@ from .base import INSTALLED_APPS
 
 LOG_LEVEL = os.getenv("PANDAUI_LOG_LEVEL", "INFO")
 LOG_PATH = os.getenv("PANDAUI_LOG_PATH", "/tmp")
-LOG_MAX_BYTES = int(os.getenv("PANDAUI_LOG_MAX_BYTES", 100 * 1024 * 1024))
+LOG_MAX_BYTES = int(os.getenv("PANDAUI_LOG_MAX_BYTES", "104857600"))  # 100MB
 
 # base logging configuration
 LOGGING = {
