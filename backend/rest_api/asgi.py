@@ -7,7 +7,6 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 
-# pylint: disable=wrong-import-position
 import os
 
 from channels.auth import AuthMiddlewareStack

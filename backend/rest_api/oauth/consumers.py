@@ -19,7 +19,7 @@ class BaseAuthConsumer(AsyncJsonWebsocketConsumer):
     def get_user_from_cookie_token(self, token_key):
         try:
             return Token.objects.select_related("user").get(key=token_key).user
-        except Token.DoesNotExist:
+        except (Token.DoesNotExist, Exception):
             return AnonymousUser()
 
     async def connect(self):

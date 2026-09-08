@@ -1,9 +1,3 @@
-"""
-Creates required permissions before starting the application and after the migrations.
-"""
-
-# pylint: disable=wrong-import-position
-
 import logging
 
 from django.db.models.signals import post_migrate
@@ -14,8 +8,8 @@ _logger = logging.getLogger("general_error")
 
 
 @receiver(post_migrate)
-def create_global_permission(**kwargs):
-    """Set up necessary permissions"""
+def create_global_permission(sender, **kwargs):
+    # set up necessary permissions
     try:
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
@@ -28,4 +22,4 @@ def create_global_permission(**kwargs):
             content_type=content_type,
         )
     except (OperationalError, ProgrammingError) as e:
-        _logger.warning("Failed to set up permissions %s", str(e))
+        _logger.warning(f"Failed to set up permissions {str(e)}")

@@ -33,16 +33,16 @@ export type Task = {
   corecount?: number;
   attemptnr?: number;
   lockedby?: string;
-  lockedtime?: string; // ISO string for DateTime
 
-  // timestamps
-  creationdate: string; // ISO string
+  // timestamps - ISO string
+  creationdate: string;
   starttime?: string;
   endtime?: string;
   frozentime?: string;
   statechangetime?: string;
   resquetime?: string;
   modificationtime: string;
+  lockedtime?: string;
 
   // job related metrics
   walltime?: number;
