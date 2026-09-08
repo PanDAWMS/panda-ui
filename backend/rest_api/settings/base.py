@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("PANDAUI_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("PANDAUI_DEBUG", default=False)
+DEBUG = os.getenv("PANDAUI_DEBUG", "False").lower() in ("true", "1")
 
 # SECURITY WARNING: do not use [*] in production, it is a list of host/domain names  this app is allowed to serve
 ALLOWED_HOSTS = os.getenv("PANDAUI_ALLOWED_HOSTS", default="").split(",")

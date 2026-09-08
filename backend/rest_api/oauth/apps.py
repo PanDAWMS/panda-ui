@@ -47,7 +47,7 @@ class OauthConfig(AppConfig):
         """
 
         # import signals so that they are registered
-        import rest_api.signals  # noqa: F401
+        import rest_api.signals  # noqa: F401 # pylint: disable=unused-import
 
         # initialize the authorization service
         policy_path = getattr(settings, "AUTHORIZATION_POLICY_PATH", None)
@@ -71,4 +71,4 @@ class OauthConfig(AppConfig):
             else:
                 _logger.error(f"Critical: Chosen policy path does not exist: {policy_path}")
         except Exception as e:
-            raise RuntimeError(f"Critical: AuthorizationService failed to initialize: {e}")
+            raise RuntimeError(f"Critical: AuthorizationService failed to initialize: {e}") from e
