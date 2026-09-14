@@ -17,15 +17,14 @@
 #
 # Authors:
 # Tatiana Korchuganova <tatiana.korchuganova@cern.ch>
-# Paul Nilsson <paul.nilsson@cern.ch>
 
-"""Apps.py for the Job application."""
+"""Apps.py for the Task application."""
 
 from django.apps import AppConfig
 
 
-class JobConfig(AppConfig):
-    """Django AppConfig for the Job application."""
+class TaskConfig(AppConfig):
+    """Django AppConfig for the Task application."""
 
     default_auto_field = "django.db.models.BigAutoField"
-    name = "rest_api.job"
+    name = "rest_api.task"
