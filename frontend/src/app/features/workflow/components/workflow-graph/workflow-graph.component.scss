@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 200px;
+  min-height: 200px; /* Provides fixed min baseline */
+  overflow: hidden; /* Breaks the resize calculation loop */
+}
+
+.graph-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+ngx-graph {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+ngx-graph,
+.ngx-chart-container {
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-color: #f8fafc;
+}

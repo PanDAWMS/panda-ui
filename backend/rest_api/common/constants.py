@@ -9,4 +9,4 @@ TIME_RANGE_PARAMS = {
     "date_to",
 }
 
-META_PARAMS = {"sort_by", "limit", "timestamp"}
+META_PARAMS = {"sort_by", "limit", "timestamp", "page", "page_size", "ordering"}

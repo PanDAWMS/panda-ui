@@ -4,6 +4,9 @@
 // Import TailwindCSS
 @use 'tailwindcss';
 
+// Custom colors
+@use 'status-colors';
+
 // Global Non-Material Styles
 *,
 ::before,

@@ -6,6 +6,8 @@ import { LoggingService } from './logging.service';
 export class ErrorHandlerService implements ErrorHandler {
   // Use Injector to lazily retrieve MessageBufferService and avoid DI cycle during startup
   private readonly injector = inject(Injector);
+  private lastErrorMessage = '';
+  private lastErrorTime = 0;
 
   handleError(error: unknown): void {
     const messageBuffer = this.injector.get(MessageBufferService);
@@ -38,6 +40,13 @@ export class ErrorHandlerService implements ErrorHandler {
       return;
     }
 
+    // detect continuous template execution loops
+    if (errorMsg.includes('Template')) {
+      if (this.isRepeating(errorMsg)) {
+        return;
+      }
+    }
+
     // Default Catch-All for Uncaught JS / Runtime Errors
     log.error('Unhandled Application Error:', error);
     messageBuffer.add('An unexpected error occurred. If the problem persists, please try refreshing.', 'Dismiss', {
@@ -68,5 +77,15 @@ export class ErrorHandlerService implements ErrorHandler {
     }
 
     return String(error);
+  }
+
+  private isRepeating(msg: string): boolean {
+    const now = Date.now();
+    if (this.lastErrorMessage === msg && now - this.lastErrorTime < 5000) {
+      return true;
+    }
+    this.lastErrorMessage = msg;
+    this.lastErrorTime = now;
+    return false;
   }
 }

@@ -5,12 +5,14 @@ import logging
 from django.db.models import Count, Q, Sum
 from rest_api.common.mixins.filter_result_header import FilterMetadataHeaderMixin
 from rest_api.common.utils.filter_engine import FilterResult, filter_single_queryset
+from rest_api.common.utils.pagination import StandardResultsSetPagination
 from rest_api.oauth.permissions import GlobalPermission
 from rest_api.task.models import JediDataset
 from rest_api.workflow.constants import ACTIVE_STATUSES, FAILED_STATUSES, PENDING_STATUSES
 from rest_api.workflow.models import Workflow
 from rest_api.workflow.serializers import WorkflowDetailSerializer, WorkflowListSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -27,14 +29,27 @@ class WorkflowListView(FilterMetadataHeaderMixin, ListAPIView):
     authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, GlobalPermission]
     serializer_class = WorkflowListSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [OrderingFilter]
     filter_result: FilterResult | None = None
+    ordering_fields = [
+        "workflow_id",
+        "name",
+        "status",
+        "start_time",
+        "creation_time",
+        "total_steps",
+        "completed_steps",
+        "failed_steps",
+    ]
+    ordering = ["-workflow_id"]  # default
 
     def get_queryset(self):
         """
         Construct the queryset for workflow list with summarized step and data counts per workflow.
         """
         # base queryset with database-level aggregations
-        base_queryset = Workflow.objects.only("workflow_id", "name", "status", "creation_time", "start_time", "end_time").annotate(
+        base_queryset = Workflow.objects.only("workflow_id", "name", "username", "status", "creation_time", "start_time", "end_time").annotate(
             total_steps=Count("steps__step_id", distinct=True),
             pending_steps=Count("steps__step_id", filter=Q(steps__status__in=PENDING_STATUSES), distinct=True),
             active_steps=Count("steps__step_id", filter=Q(steps__status__in=ACTIVE_STATUSES), distinct=True),

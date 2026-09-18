@@ -1,0 +1,253 @@
+// ============================================================
+// Semantic status palette
+// ============================================================
+
+:root {
+  // Green
+  --status-green-color: #16a34a;
+  --status-green-bg: #dcfce7;
+  --status-green-border: #86efac;
+  --status-green-text: #166534;
+
+  // Slate Blue
+  --status-slate-blue-color: #526b8a;
+  --status-slate-blue-bg: #e8eef5;
+  --status-slate-blue-border: #a8b8cc;
+  --status-slate-blue-text: #33465c;
+
+  // Blue
+  --status-blue-color: #2563eb;
+  --status-blue-bg: #dbeafe;
+  --status-blue-border: #93c5fd;
+  --status-blue-text: #1e40af;
+
+  // Cyan
+  --status-cyan-color: #0891b2;
+  --status-cyan-bg: #cffafe;
+  --status-cyan-border: #67e8f9;
+  --status-cyan-text: #155e75;
+
+  // Teal
+  --status-teal-color: #14b8a6;
+  --status-teal-bg: #ccfbf1;
+  --status-teal-border: #5eead4;
+  --status-teal-text: #115e59;
+
+  // Purple
+  --status-purple-color: #9333ea;
+  --status-purple-bg: #f3e8ff;
+  --status-purple-border: #d8b4fe;
+  --status-purple-text: #6b21a8;
+
+  // Violet
+  --status-violet-color: #7c3aed;
+  --status-violet-bg: #ede9fe;
+  --status-violet-border: #c4b5fd;
+  --status-violet-text: #5b21b6;
+
+  // Amber
+  --status-amber-color: #d97706;
+  --status-amber-bg: #fef3c7;
+  --status-amber-border: #fcd34d;
+  --status-amber-text: #92400e;
+
+  // Orange
+  --status-orange-color: #ea580c;
+  --status-orange-bg: #ffedd5;
+  --status-orange-border: #fdba74;
+  --status-orange-text: #9a3412;
+
+  // Red
+  --status-red-color: #dc2626;
+  --status-red-bg: #fee2e2;
+  --status-red-border: #fca5a5;
+  --status-red-text: #991b1b;
+
+  // Rose
+  --status-rose-color: #db2777;
+  --status-rose-bg: #fce7f3;
+  --status-rose-border: #f9a8d4;
+  --status-rose-text: #9d174d;
+
+  // Gray
+  --status-gray-color: #64748b;
+  --status-gray-bg: #f1f5f9;
+  --status-gray-border: #cbd5e1;
+  --status-gray-text: #334155;
+}
+
+// ============================================================
+// Dark theme
+// ============================================================
+
+.dark-theme {
+  // Green
+  --status-green-color: #4ade80;
+  --status-green-bg: #14532d;
+  --status-green-border: #22c55e;
+  --status-green-text: #dcfce7;
+
+  // Slate Blue
+  --status-slate-blue-color: #8da4bf;
+  --status-slate-blue-bg: #273548;
+  --status-slate-blue-border: #60758f;
+  --status-slate-blue-text: #dce6f0;
+
+  // Blue
+  --status-blue-color: #60a5fa;
+  --status-blue-bg: #172554;
+  --status-blue-border: #3b82f6;
+  --status-blue-text: #dbeafe;
+
+  // Cyan
+  --status-cyan-color: #22d3ee;
+  --status-cyan-bg: #164e63;
+  --status-cyan-border: #06b6d4;
+  --status-cyan-text: #cffafe;
+
+  // Teal
+  --status-teal-color: #2dd4bf;
+  --status-teal-bg: #134e4a;
+  --status-teal-border: #14b8a6;
+  --status-teal-text: #ccfbf1;
+
+  // Purple
+  --status-purple-color: #c084fc;
+  --status-purple-bg: #3b0764;
+  --status-purple-border: #a855f7;
+  --status-purple-text: #f3e8ff;
+
+  // Violet
+  --status-violet-color: #c084fc;
+  --status-violet-bg: #2e1065;
+  --status-violet-border: #8b5cf6;
+  --status-violet-text: #ede9fe;
+
+  // Amber
+  --status-amber-color: #fbbf24;
+  --status-amber-bg: #451a03;
+  --status-amber-border: #f59e0b;
+  --status-amber-text: #fef3c7;
+
+  // Orange
+  --status-orange-color: #fb923c;
+  --status-orange-bg: #431407;
+  --status-orange-border: #f97316;
+  --status-orange-text: #ffedd5;
+
+  // Red
+  --status-red-color: #f87171;
+  --status-red-bg: #450a0a;
+  --status-red-border: #ef4444;
+  --status-red-text: #fee2e2;
+
+  // Rose
+  --status-rose-color: #f472b6;
+  --status-rose-bg: #500724;
+  --status-rose-border: #ec4899;
+  --status-rose-text: #fce7f3;
+
+  // Gray
+  --status-gray-color: #cbd5e1;
+  --status-gray-bg: #1e293b;
+  --status-gray-border: #64748b;
+  --status-gray-text: #f1f5f9;
+}
+
+// ============================================================
+// PanDA status → semantic color
+// ============================================================
+
+$status-colors: (
+  pending: slate-blue,
+  defined: gray,
+  assigned: blue,
+  activated: blue,
+  sent: cyan,
+  starting: cyan,
+  running: teal,
+  holding: amber,
+  merging: violet,
+  transferring: violet,
+  finished: green,
+  failed: red,
+  closed: gray,
+  cancelled: orange,
+
+  registered: gray,
+  assigning: blue,
+  ready: cyan,
+  scouting: teal,
+  scouted: teal,
+  prepared: teal,
+  done: green,
+  aborting: red,
+  aborted: red,
+  finishing: green,
+  topreprocess: slate-blue,
+  preprocessing: slate-blue,
+  tobroken: red,
+  broken: red,
+  toretry: slate-blue,
+  toincexec: slate-blue,
+  rerefine: slate-blue,
+  paused: amber,
+  throttled: orange,
+  exhausted: rose,
+
+  neutral: gray,
+);
+
+// ============================================================
+// Generate per-status variables
+// ============================================================
+
+:root {
+  @each $status, $color in $status-colors {
+    --status-#{$status}-color: var(--status-#{$color}-color);
+
+    --status-#{$status}-bg: var(--status-#{$color}-bg);
+
+    --status-#{$status}-border: var(--status-#{$color}-border);
+
+    --status-#{$status}-text: var(--status-#{$color}-text);
+  }
+}
+
+// ============================================================
+// Generate status classes
+// ============================================================
+
+// Color
+@each $status, $color in $status-colors {
+  .status-#{$status} {
+    color: var(--status-#{$status}-color);
+  }
+}
+
+// Solid
+@each $status, $color in $status-colors {
+  .status-#{$status}-solid {
+    color: var(--mat-sys-on-primary);
+    background-color: var(--status-#{$status}-color);
+    border: none;
+  }
+}
+
+// Soft
+@each $status, $color in $status-colors {
+  .status-#{$status}-soft {
+    color: var(--status-#{$status}-text);
+    background-color: var(--status-#{$status}-bg);
+    border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
+  }
+}
+
+// Text only
+@each $status, $color in $status-colors {
+  .status-#{$status}-text {
+    color: var(--status-#{$status}-text);
+    background-color: transparent;
+    border: none;
+  }
+}
