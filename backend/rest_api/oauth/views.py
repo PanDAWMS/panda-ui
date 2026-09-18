@@ -31,6 +31,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from rest_api.oauth.utils import preserve_cookies
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -134,6 +135,6 @@ class UserToken(APIView):
             JsonResponse: The JSON response containing the user's token.
         """
         user = request.user
-        token = user.auth_token.key if user.is_authenticated else None
+        token, _ = Token.objects.get_or_create(user=user)
 
-        return JsonResponse({"token": token})
+        return JsonResponse({"token": token.key})

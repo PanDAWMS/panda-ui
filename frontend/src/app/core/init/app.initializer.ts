@@ -7,8 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { AppConfigService } from '../services/app-config.service';
 import { VersionService } from '../services/version.service';
 import { AuthService } from '../services/auth.service';
-import { UserProfile } from '../models/user.model';
-import { AppConfig } from '../models/app-config.model';
+import { UserProfile } from '../../shared/models/user.model';
+import { AppConfig } from '../../shared/models/app-config.model';
 import { LoggingService } from '../services/logging.service';
 import { environment } from '../../../environments/environment';
 

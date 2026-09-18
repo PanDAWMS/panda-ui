@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppConfig } from '../models/app-config.model';
+import { AppConfig } from '../../shared/models/app-config.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({

@@ -6,8 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { appInitializer, resetInitializedForTesting } from './app.initializer';
 import { AppConfigService } from '../services/app-config.service';
 import { AuthService } from '../services/auth.service';
-import { AppConfig } from '../models/app-config.model';
-import { UserProfile } from '../models/user.model';
+import { AppConfig } from '../../shared/models/app-config.model';
+import { UserProfile } from '../../shared/models/user.model';
 import { environment } from '../../../environments/environment';
 
 describe('appInitializer', () => {
@@ -54,6 +54,7 @@ describe('appInitializer', () => {
       logLevel: 'WARN',
       production: true,
       vo: '',
+      installedApps: ['all'],
     };
 
     const mockUser: UserProfile = {
