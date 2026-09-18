@@ -106,6 +106,6 @@ export class WorkflowGraphComponent {
     setTimeout(() => {
       this.zoomToFit$.next({ force: true, autoCenter: true });
       this.center$.next(true);
-    }, 1);
+    }, 300);
   }
 }

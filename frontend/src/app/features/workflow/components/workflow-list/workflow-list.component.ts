@@ -10,12 +10,44 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { DurationPipe } from '../../../../shared/pipes/duration.pipe';
 import { WorkflowItem } from '../../workflow.model';
 import { WorkflowService } from '../../workflow.service';
-import { WorkflowDetailsPanelComponent } from '../workflow-details-panel/workflow-details-panel.component';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
 import { StatusCount } from '../../../../shared/models/status.model';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
+import { PageContext } from '../../../../shared/models/page-context.model';
+import { DocsService } from '../../../aide/components/docs/docs.service';
+
+const DOCS_WORKFLOW: PageContext = {
+  pageTitle: 'PanDA Native Workflow',
+  topics: [
+    {
+      id: 'workflow-definition',
+      title: 'Workflow Definition',
+      content:
+        'A workflow is a set of tasks whose relationships are described by a directed acyclic graph (DAG). ' +
+        'Each edge is directed from a parent task to a child task, where the child processes output data produced by the parent. ' +
+        'A PanDA native workflow runs entirely inside the PanDA server and is described by a single YAML workflow description (WFD) file. ' +
+        'The server parses the description, registers the workflow, its steps, and its data in the PanDA database, and drives execution using its workflow engine.',
+    },
+    {
+      id: 'workflow-step',
+      title: 'Workflow Step',
+      content:
+        'A workflow step is a node in the DAG and is defined by an arbitrary step name and a step definition. ' +
+        'The step type defaults to prun and can also be workflow for a sub-workflow. ' +
+        'A prun step is essentially a prun invocation together with the wiring that identifies its input data. ',
+    },
+    {
+      id: 'workflow-data-availability',
+      title: 'Data Availability',
+      content:
+        'A child step starts when the data it consumes is considered available. ' +
+        'By default, the workflow engine waits until the parent step finishes, or until all of the parent output collections are closed and non-empty, so that the child receives the complete input. ' +
+        'This behavior can be relaxed with workflow-level options so that child steps can start while their parents are still running.',
+    },
+  ],
+};
 
 @Component({
   selector: 'app-workflow-list',
@@ -36,6 +68,7 @@ import { filter } from 'rxjs';
   styleUrls: ['./workflow-list.component.scss'],
 })
 export class WorkflowListComponent implements OnInit, AfterViewInit {
+  private docsService = inject(DocsService);
   private log = inject(LoggingService).forContext('WorkflowListComponent');
   private router: Router = inject(Router);
   private route: ActivatedRoute = inject(ActivatedRoute);
@@ -76,6 +109,7 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadWorkflows();
+    this.docsService.setPageContext(DOCS_WORKFLOW);
   }
 
   ngAfterViewInit(): void {

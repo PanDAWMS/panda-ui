@@ -1,6 +1,6 @@
-<div class="flex flex-col h-full bg-white">
+<div class="flex flex-col h-full min-h-0 bg-white">
   <!-- Panel Header -->
-  <div class="flex items-center justify-between px-2 py-3">
+  <div class="flex items-center justify-between px-2 py-3 shrink-0">
     <span class="font-semibold text-slate-800">Assistance Panel</span>
     <button aria-label="Close panel" mat-icon-button (click)="panelService.isOpen.set(false)">
       <mat-icon fontIcon="close"></mat-icon>
@@ -16,7 +16,7 @@
     (selectedIndexChange)="onTabChange($event)">
     <!-- TAB 1: Contextual Tips & Documentation -->
     <mat-tab label="Tips & Docs">
-      <div class="h-full flex flex-col overflow-hidden">
+      <div class="h-full min-h-0 overflow-y-auto">
         <app-docs></app-docs>
       </div>
     </mat-tab>
@@ -24,7 +24,7 @@
     <!-- TAB 2: Assistant Chat if enabled -->
     @if (panelService.isAideEnabled) {
     <mat-tab label="Chat">
-      <div class="h-full flex flex-col overflow-hidden">
+      <div class="h-full min-h-0 overflow-y-auto">
         <app-chat></app-chat>
       </div>
     </mat-tab>
