@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnInit, Signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, Event as RouterEvent, RouterOutlet } from '@angular/router';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { DurationPipe } from '../../../../shared/pipes/duration.pipe';
 import { WorkflowItem } from '../../workflow.model';
@@ -14,6 +14,8 @@ import { WorkflowDetailsPanelComponent } from '../workflow-details-panel/workflo
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
 import { StatusCount } from '../../../../shared/models/status.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-workflow-list',
@@ -26,69 +28,72 @@ import { StatusCount } from '../../../../shared/models/status.model';
     MatPaginatorModule,
     MatSortModule,
     MatProgressSpinnerModule,
-    WorkflowDetailsPanelComponent,
     BadgeComponent,
     ProgressBarSegmentedComponent,
+    RouterOutlet,
   ],
   templateUrl: './workflow-list.component.html',
   styleUrls: ['./workflow-list.component.scss'],
 })
 export class WorkflowListComponent implements OnInit, AfterViewInit {
   private log = inject(LoggingService).forContext('WorkflowListComponent');
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private workflowService = inject(WorkflowService);
+  private router: Router = inject(Router);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private workflowService: WorkflowService = inject(WorkflowService);
 
-  protected readonly Math = Math;
+  protected readonly Math: Math = Math;
 
-  selectedWorkflow: WorkflowItem | null = null;
   displayedColumns: string[] = ['workflow', 'status', 'steps', 'progress', 'created', 'duration'];
-  dataSource = new MatTableDataSource<WorkflowItem>();
-  totalCount = 0;
-  pageSize = 10;
-  pageIndex = 0;
-  isLoading = true;
-  currentSort = '-workflow_id';
-  isDrawerOpen = false;
+  dataSource: MatTableDataSource<WorkflowItem> = new MatTableDataSource<WorkflowItem>();
+  totalCount: number = 0;
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  isLoading: boolean = true;
+  currentSort: string = '-workflow_id';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer') drawer!: MatDrawer;
 
+  // Track router navigation events to drive drawer state reactivity
+  private currentUrl: Signal<RouterEvent | undefined> = toSignal(
+    this.router.events.pipe(filter((e: RouterEvent): e is NavigationEnd => e instanceof NavigationEnd)),
+  );
+
+  // Replace selectedWorkflow with activeWorkflowId signal
+  activeWorkflowId: Signal<number | null> = computed((): number | null => {
+    this.currentUrl();
+    const childRoute = this.route.firstChild;
+    const id = childRoute?.snapshot.paramMap.get('id');
+    return id ? +id : null;
+  });
+
+  // Drawer opens automatically when child route /workflows/:id is active
+  isDrawerOpen: Signal<boolean> = computed((): boolean => {
+    this.currentUrl(); // Trigger reactivity on navigation change
+    return this.route.firstChild !== null;
+  });
+
   ngOnInit(): void {
     this.loadWorkflows();
-
-    // Restore drawer state automatically when returning from Task page or on page load
-    this.route.queryParams.subscribe((params) => {
-      const workflowIdParam = params['workflow_id'];
-      const isDrawerParamOpen = params['drawer'] === 'true';
-
-      if (workflowIdParam && isDrawerParamOpen) {
-        this.restoreDrawerState(workflowIdParam);
-      } else if (!isDrawerParamOpen && this.selectedWorkflow) {
-        this.selectedWorkflow = null;
-        if (this.drawer?.opened) {
-          this.drawer.close();
-        }
-      }
-    });
   }
 
   ngAfterViewInit(): void {
-    // sort on client side if just one page, if more - reload presorted data from server
-    this.sort.sortChange.subscribe((sortState: Sort) => {
-      const totalPages = Math.ceil(this.totalCount / this.pageSize);
+    // Sort on client side if only 1 page, otherwise reload presorted data from server
+    this.sort.sortChange.subscribe((sortState: Sort): void => {
+      const totalPages: number = Math.ceil(this.totalCount / this.pageSize);
 
       if (totalPages > 1) {
-        this.pageIndex = 0; // reset to page 1 on sort change
+        this.pageIndex = 0; // Reset to page 1 on sort change
         if (this.paginator) {
           this.paginator.pageIndex = 0;
         }
+
         // Convert MatSort direction ('asc'/'desc') to Django DRF query string format
         if (!sortState.active || sortState.direction === '') {
           this.currentSort = '-workflow_id';
         } else {
-          const prefix = sortState.direction === 'desc' ? '-' : '';
+          const prefix: string = sortState.direction === 'desc' ? '-' : '';
           this.currentSort = `${prefix}${sortState.active}`;
         }
         this.loadWorkflows();
@@ -106,44 +111,21 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
       .getWorkflows({
         page: this.pageIndex + 1,
         page_size: this.pageSize,
-        days: 30,
+        days: 360,
         ordering: this.currentSort,
       })
       .subscribe({
-        next: (response) => {
+        next: (response): void => {
           this.dataSource.data = response.results;
           this.totalCount = response.count;
           this.isLoading = false;
           this.log.debug(`Loaded ${this.totalCount} workflows`);
-
-          // restoring selected workflow after data fetch if query params are present
-          const workflowIdParam = this.route.snapshot.queryParams['workflow_id'];
-          const isDrawerParamOpen = this.route.snapshot.queryParams['drawer'] === 'true';
-          if (workflowIdParam && isDrawerParamOpen) {
-            this.restoreDrawerState(workflowIdParam);
-          }
         },
-        error: (err) => {
-          console.error('Failed to load workflows', err);
+        error: (err: unknown): void => {
+          this.log.error('Failed to load workflows', err);
           this.isLoading = false;
         },
       });
-  }
-
-  private restoreDrawerState(workflowIdStr: string): void {
-    this.log.debug(`workflowIdStr: ${workflowIdStr}`);
-    if (!this.dataSource.data.length) return;
-    this.log.debug(`${this.dataSource.data.toString()}`);
-    const matchedWorkflow = this.dataSource.data.find(
-      (item) => item.workflow_id.toString() === workflowIdStr.toString(),
-    );
-
-    if (matchedWorkflow) {
-      this.selectedWorkflow = matchedWorkflow;
-      this.isDrawerOpen = true;
-      // Wait for ViewChild drawer initialization if needed
-      setTimeout(() => this.drawer?.open());
-    }
   }
 
   onPageChange(event: PageEvent): void {
@@ -152,34 +134,18 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
     this.loadWorkflows();
   }
 
-  // Row click opens drawer and updates URL params
+  // Row click navigates to child route /workflows/:id
   onRowClick(workflow: WorkflowItem): void {
-    this.selectedWorkflow = workflow;
-    this.isDrawerOpen = true;
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { workflow_id: workflow.workflow_id, drawer: 'true' },
-      queryParamsHandling: 'merge',
-    });
+    this.router.navigate([workflow.workflow_id], { relativeTo: this.route });
   }
 
-  // Closing drawer clears query params
+  // Closing drawer navigates back to base route /workflows
   closeDetails(): void {
-    this.isDrawerOpen = false;
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        workflow_id: null,
-        drawer: null,
-      },
-      queryParamsHandling: 'merge',
-    });
+    this.router.navigate(['/workflows']);
   }
 
-  protected onDrawerClosed(): void {
-    this.selectedWorkflow = null;
+  onDrawerClosed(): void {
+    this.closeDetails();
   }
 
   getStepStatusCounts(row: WorkflowItem): StatusCount[] {
@@ -198,7 +164,7 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
 
   getProgressPercentage(row: WorkflowItem): number {
     if (!row.total_steps) return 0;
-    const progress = ((row.completed_steps + row.active_steps * 0.5) / row.total_steps) * 100;
+    const progress: number = ((row.completed_steps + row.active_steps * 0.5) / row.total_steps) * 100;
     return Math.round(progress);
   }
 }

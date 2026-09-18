@@ -68,6 +68,13 @@ export interface WorkflowDetail extends WorkflowItem {
     files_missing: number;
     files_waiting: number;
   };
+  step_summary?: {
+    total_steps: number;
+    pending_steps: number;
+    active_steps: number;
+    completed_steps: number;
+    failed_steps: number;
+  };
 }
 
 export interface WorkflowQueryParams extends PaginationQueryParams {

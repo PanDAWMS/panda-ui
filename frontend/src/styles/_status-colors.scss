@@ -166,6 +166,7 @@ $status-colors: (
   sent: cyan,
   starting: cyan,
   running: teal,
+  active: teal,
   holding: amber,
   merging: violet,
   transferring: violet,
@@ -173,7 +174,6 @@ $status-colors: (
   failed: red,
   closed: gray,
   cancelled: orange,
-
   registered: gray,
   assigning: blue,
   ready: cyan,

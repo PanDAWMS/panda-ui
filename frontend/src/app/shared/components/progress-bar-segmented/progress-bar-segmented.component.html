@@ -4,7 +4,7 @@
   }
   <!-- Stacked Progress Bar -->
   <div class="progress-bar-container">
-    @if (total() > 0) { @for (item of counts(); track item.status) {
+    @if (total() > 0) { @for (item of countsToShow(); track item.status) {
     <div
       class="progress-segment"
       [style.width.%]="(item.count / total()) * 100"

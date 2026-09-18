@@ -40,7 +40,7 @@
 
     <!-- Menu Items -->
     @if (items && items.length) {
-    <nav class="hidden md:flex flex items-center gap-1">
+    <nav class="md:flex flex items-center">
       @for (item of items; track item.label) { @if (item.items && item.items.length) {
       <!-- Root item WITH dropdown menu -->
       <button mat-button [matMenuTriggerFor]="subMenu">

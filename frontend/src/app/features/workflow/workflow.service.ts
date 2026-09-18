@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { WorkflowItem, WorkflowDetail, WorkflowQueryParams } from './workflow.model';
 import { PaginatedResponse } from '../../shared/models/pagination.model';

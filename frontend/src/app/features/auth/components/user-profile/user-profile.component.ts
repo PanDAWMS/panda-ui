@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { concatMap, Observable, Subject, take } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { UserProfile } from '../../../../shared/models/user.model';
 import { CommonModule } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
@@ -8,7 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
-import { map } from 'rxjs/operators';
 import { OptionObject } from '../../../../shared/models/option.model';
 
 @Component({

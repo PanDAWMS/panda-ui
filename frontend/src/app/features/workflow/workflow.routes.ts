@@ -1,12 +1,23 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
-import { WorkflowListComponent } from './components/workflow-list/workflow-list.component';
 
 export const workflowRoutes: Routes = [
   {
     path: 'workflows',
-    component: WorkflowListComponent,
     title: 'Workflows',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/workflow-list/workflow-list.component').then((m) => m.WorkflowListComponent),
+    children: [
+      {
+        path: ':id',
+        title: 'Workflow Details',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./components/workflow-details-panel/workflow-details-panel.component').then(
+            (m) => m.WorkflowDetailsPanelComponent,
+          ),
+      },
+    ],
   },
 ];

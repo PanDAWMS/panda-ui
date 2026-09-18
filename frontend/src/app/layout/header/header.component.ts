@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +8,6 @@ import { LoginComponent } from '../../features/auth/components/login/login.compo
 import { AppConfigService } from '../../core/services/app-config.service';
 import { SearchOmniComponent } from '../../features/search/components/omni/omni.component';
 import { MenuItem } from '../../shared/models/menu-item';
-import { SidePanelComponent } from '../side-panel/side-panel.component';
 import { SidePanelService } from '../side-panel/side-panel.service';
 
 @Component({

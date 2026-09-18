@@ -65,9 +65,9 @@
       <tr
         mat-row
         *matRowDef="let row; columns: displayedColumns"
-        (click)="onRowClick(row)"
-        [class.bg-action-selected]="selectedWorkflow?.workflow_id === row.workflow_id"
-        class="cursor-pointer hover:bg-surface-variant transition-colors"></tr>
+        class="cursor-pointer hover:bg-surface-variant transition-colors"
+        [class.bg-action-selected]="activeWorkflowId() === row.workflow_id"
+        (click)="onRowClick(row)"></tr>
     </table>
 
     <mat-paginator
@@ -82,13 +82,11 @@
 
   <mat-drawer
     #drawer
-    [opened]="isDrawerOpen"
+    [opened]="isDrawerOpen()"
     (closed)="onDrawerClosed()"
     mode="over"
     position="end"
     class="workflow-details-drawer h-full border-l">
-    @if (selectedWorkflow) {
-    <app-workflow-details-panel class="block h-full" [workflow]="selectedWorkflow" (close)="closeDetails()" />
-    }
+    <router-outlet></router-outlet>
   </mat-drawer>
 </mat-drawer-container>

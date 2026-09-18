@@ -84,19 +84,39 @@ class WorkflowDetailView(RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
 
-        # extract all tasks and get files summary from datasets
-        task_ids = instance.steps.values_list("target_id", flat=True)
-        task_ids = [tid for tid in task_ids if tid != ""]
-        file_stats = JediDataset.objects.filter(jeditaskid__in=task_ids, type__in=("input", "pseudo_input"), masterid__isnull=True).aggregate(
-            datasets_count=Count("datasetid", distinct=True),
-            files_total=Sum("nfiles"),
-            files_finished=Sum("nfilesfinished"),
-            files_failed=Sum("nfilesfailed"),
-            files_waiting=Sum("nfileswaiting"),
-            files_missing=Sum("nfilesmissing"),
+        # make step summary
+        step_summary = instance.steps.aggregate(
+            total_steps=Count("step_id", distinct=True),
+            pending_steps=Count("step_id", filter=Q(status__in=PENDING_STATUSES), distinct=True),
+            active_steps=Count("step_id", filter=Q(status__in=ACTIVE_STATUSES), distinct=True),
+            completed_steps=Count("step_id", filter=Q(status="done"), distinct=True),
+            failed_steps=Count("step_id", filter=Q(status__in=FAILED_STATUSES), distinct=True),
         )
+
+        # extract all tasks and get files summary from datasets
+        target_ids = instance.steps.values_list("target_id", flat=True)
+        _logger.debug("Got task ids from workflow" + str(target_ids))
+        task_ids = []
+        for tid_str in target_ids:
+            try:
+                task_id = int(tid_str)
+                task_ids.append(task_id)
+            except ValueError:
+                _logger.exception("Got invalid task id from workflow" + str(tid_str))
+        if task_ids and len(task_ids) > 1:
+            file_stats = JediDataset.objects.filter(jeditaskid__in=task_ids, type__in=("input", "pseudo_input"), masterid__isnull=True).aggregate(
+                datasets_count=Count("datasetid", distinct=True),
+                files_total=Sum("nfiles"),
+                files_finished=Sum("nfilesfinished"),
+                files_failed=Sum("nfilesfailed"),
+                files_waiting=Sum("nfileswaiting"),
+                files_missing=Sum("nfilesmissing"),
+            )
+        else:
+            file_stats = {}
 
         serializer = self.get_serializer(instance)
         data = serializer.data
+        data["step_summary"] = step_summary
         data["file_summary"] = file_stats
         return Response(data)

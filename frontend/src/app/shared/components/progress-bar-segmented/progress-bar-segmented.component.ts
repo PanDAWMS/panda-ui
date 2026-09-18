@@ -17,4 +17,6 @@ export class ProgressBarSegmentedComponent {
 
   // Total steps for calculating percentage widths
   total: Signal<number> = computed(() => this.counts().reduce((sum, item: StatusCount): number => sum + item.count, 0));
+  // filter out 0 count
+  countsToShow: Signal<StatusCount[]> = computed(() => this.counts().filter(({ count }) => count > 0));
 }
