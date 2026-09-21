@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     # DRF
     "rest_framework",
     "rest_framework.authtoken",
+    # auth
+    "social_django",
     # apps
     "rest_api.job",
     "rest_api.oauth",
@@ -45,8 +47,6 @@ INSTALLED_APPS = [
     "rest_api.task",
     "rest_api.aide",
     "rest_api.workflow",
-    # socialauth,
-    "social_django",
 ]
 
 MIDDLEWARE = [
