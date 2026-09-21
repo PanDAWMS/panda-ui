@@ -96,6 +96,9 @@ for conn_name, cfg in db_configs.items():
                 if "=" in pair:
                     k, v = pair.split("=")
                     options[k.strip()] = v.strip()
+    elif "OPTIONS" not in cfg and vendor == "postgresql" and len(DB_SCHEMAS) > 0:
+        # add search path automatically for Postgres if schemas provided
+        options["options"] = f"-c search_path={','.join(DB_SCHEMAS.values())},public"
     if options:
         cfg["OPTIONS"] = options
 
