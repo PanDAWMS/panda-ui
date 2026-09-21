@@ -24,22 +24,52 @@ class ErrorDescription(models.Model):
 
 class JobBaseModel(models.Model):
     """
-    Base model for job-related models
+    Base model for job DB tables
     """
 
-    pandaid = models.BigIntegerField(db_column="pandaid", blank=False, null=False, primary_key=True)
-    creationtime = models.DateTimeField(db_column="creationtime", blank=False, null=False)
-    computingsite = models.CharField(max_length=32, db_column="computingsite", blank=True, null=True)
-    username = models.CharField(max_length=64, db_column="produsername", blank=True, null=True)
-    jobstatus = models.CharField(max_length=16, db_column="jobstatus", blank=True, null=True)
+    pandaid = models.BigIntegerField(db_column="pandaid", null=False, primary_key=True)
+    creationtime = models.DateTimeField(db_column="creationtime", null=False)
+    computingsite = models.CharField(max_length=32, db_column="computingsite", null=True)
+    produsername = models.CharField(max_length=64, db_column="produsername", null=True)
+    jobstatus = models.CharField(max_length=16, db_column="jobstatus", null=True)
+    starttime = models.DateTimeField(db_column="starttime", null=True)
+    endtime = models.DateTimeField(db_column="endtime", null=True)
+    statechangetime = models.DateTimeField(db_column="statechangetime", null=True)
+
+    jedi_task = models.ForeignKey(
+        "task.JediTask", on_delete=models.DO_NOTHING, db_column="jeditaskid", to_field="jeditaskid", db_constraint=False, related_name="%(class)s_jobs"
+    )
 
     class Meta:
         abstract = True
+        managed = False
+        indexes = [
+            models.Index(fields=["pandaid"]),
+            models.Index(fields=["jobname"]),
+            models.Index(fields=["jeditaskid", "pandaid"]),
+            models.Index(fields=["jobsetid"]),
+            models.Index(fields=["reqid"]),
+            models.Index(fields=["workqueue_id", "cloud", "jobstatus", "prodsourcelabel", "currentpriority"]),
+            models.Index(fields=["statechangetime"]),
+            models.Index(fields=["prodsourcelabel", "computingsite", "jobstatus"]),
+            models.Index(fields=["produsername"]),
+        ]
+
+
+class JobsDefined4(JobBaseModel):
+    """
+    JobsDefined4 model - jobs that have been defined but not yet actively running.
+    """
+
+    class Meta:
+        managed = False
+        app_label = "job"
+        db_table = f'"{settings.DB_SCHEMAS["panda"]}"."jobsdefined4"'
 
 
 class JobsActive4(JobBaseModel):
     """
-    JobsActive4 model
+    JobsActive4 model - jobs in the active state
     """
 
     class Meta:
@@ -50,7 +80,7 @@ class JobsActive4(JobBaseModel):
 
 class JobsArchived4(JobBaseModel):
     """
-    JobsArchived4 model - jobs that have been archived from the active table, typically younger than 4 days.
+    JobsArchived4 model - jobs in their final state that have been archived from the active table, typically younger than 4 days.
     """
 
     class Meta:

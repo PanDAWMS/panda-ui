@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, Observable, of, switchMap, throwError } from 'rxjs';
 import { AppConfigService } from './app-config.service';
-import { UserProfile } from '../models/user.model';
+import { UserProfile } from '../../shared/models/user.model';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggingService } from './logging.service';

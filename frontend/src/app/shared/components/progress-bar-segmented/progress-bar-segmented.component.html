@@ -1,0 +1,24 @@
+<div class="breakdown-row">
+  @if (title()) {
+  <span class="font-medium">{{ title() }}:</span>
+  }
+  <!-- Stacked Progress Bar -->
+  <div class="progress-bar-container">
+    @if (total() > 0) { @for (item of countsToShow(); track item.status) {
+    <div
+      class="progress-segment"
+      [style.width.%]="(item.count / total()) * 100"
+      [style.background-color]="`var(--status-${item.status}-color)`"
+      [title]="item.status + ': ' + item.count"></div>
+    } }
+  </div>
+
+  <!-- Status Badges Inline -->
+  @if (showLegend()) {
+  <div class="badges-container">
+    @for (item of counts(); track item.status) { @if (item.count > 0) {
+    <app-badge [label]="item.count + ' ' + item.status" [mode]="'soft'" [status]="item.status" />
+    } }
+  </div>
+  }
+</div>

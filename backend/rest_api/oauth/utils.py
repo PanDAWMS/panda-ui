@@ -23,7 +23,8 @@
 
 import logging
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.http import HttpRequest, HttpResponse
 from rest_api.oauth.constants import TOKEN_NAME
 
@@ -75,7 +76,8 @@ def update_user_groups(email: str, user_groups: list[str]) -> bool:
         bool: True if the user groups were successfully updated, False otherwise.
     """
     # get user objects by email
-    users = User.objects.filter(email=email)
+    user_model = get_user_model()
+    users = user_model.objects.filter(email=email)
     if not users.exists() or len(users) == 0:
         _logger.error(f"There is no user with this email {email}")
         return False

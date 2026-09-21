@@ -76,6 +76,17 @@ class JediTask(models.Model):
         verbose_name = "JediTask"
         verbose_name_plural = "JediTasks"
 
+        indexes = [
+            models.Index(fields=["jeditaskid"]),
+            models.Index(fields=["reqid", "username"]),
+            models.Index(fields=["creationdate"]),
+            models.Index(fields=["modificationtime"]),
+            models.Index(fields=["lockedby"]),
+            models.Index(fields=["taskname", "jeditaskid"]),
+            models.Index(fields=["parent_tid"]),
+            models.Index(fields=["status", "workqueue_id", "prodsourcelabel", "jeditaskid"]),
+        ]
+
 
 class JediDataset(models.Model):
 

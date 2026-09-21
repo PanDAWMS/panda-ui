@@ -19,7 +19,7 @@
 # Tatiana Korchuganova <tatiana.korchuganova@cern.ch>
 # Paul Nilsson <paul.nilsson@cern.ch>
 
-"""Apps.py for the OAuth application."""
+"""Apps.py for the Job application."""
 
 from django.apps import AppConfig
 
