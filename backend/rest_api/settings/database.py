@@ -2,7 +2,7 @@
 Database config for the Django application.
 
 Here we dynamically load database configurations from environment variables
-following the pattern DB_<CONNECTION>_<PROPERTY>. It supports multiple databases
+following the pattern DB_CONN_<CONNECTION>_<PROPERTY>. It supports multiple databases
 (PostgreSQL, Oracle) and enforces that PANDAUI is always present as the default.
 
 Features:
@@ -12,17 +12,20 @@ Features:
 - Supports additional connections with lowercase keys
 
 Environment variable examples:
-    DB_PANDAUI_VENDOR=oracle
-    DB_PANDAUI_NAME=pandaui
-    DB_PANDAUI_USER=pandaui_user
-    DB_PANDAUI_PASSWORD=secret
+    DB_CONN_PANDAUI_VENDOR=oracle
+    DB_CONN_PANDAUI_NAME=pandaui
+    DB_CONN_PANDAUI_USER=pandaui_user
+    DB_CONN_PANDAUI_PASSWORD=secret
 or
-    DB_PANDAUI_VENDOR=postgresql
-    DB_PANDAUI_NAME=panda
-    DB_PANDAUI_USER=panda_user
-    DB_PANDAUI_PASSWORD=secret
-    DB_PANDAUI_HOST=panda-host.example.com
-    DB_PANDAUI_PORT=5432
+    DB_CONN_PANDAUI_VENDOR=postgresql
+    DB_CONN_PANDAUI_NAME=panda
+    DB_CONN_PANDAUI_USER=panda_user
+    DB_CONN_PANDAUI_PASSWORD=secret
+    DB_CONN_PANDAUI_HOST=panda-host.example.com
+    DB_CONN_PANDAUI_PORT=5432
+
+and optional `OPTIONS` dictionary:
+    DB_CONN_PANDAUI_OPTIONS="-c search_path=schema1,schema2"
 """
 
 import os
@@ -81,6 +84,23 @@ for conn_name, cfg in db_configs.items():
     for field in REQUIRED_FIELDS.get(vendor, []):
         if field not in cfg or not cfg[field].strip():
             raise RuntimeError(f"Missing {field} for database connection {conn_name} (vendor={vendor})")
+
+    # handle custom connection options
+    options = {}
+    if "OPTIONS" in cfg and cfg["OPTIONS"].strip():
+        custom_opts = cfg["OPTIONS"].strip()
+        if vendor == "postgresql" and custom_opts.startswith("-c"):
+            options["options"] = custom_opts
+        else:
+            for pair in custom_opts.split(","):
+                if "=" in pair:
+                    k, v = pair.split("=")
+                    options[k.strip()] = v.strip()
+    elif "OPTIONS" not in cfg and vendor == "postgresql" and len(DB_SCHEMAS) > 0:
+        # add search path automatically for Postgres if schemas provided
+        options["options"] = f"-c search_path={','.join(DB_SCHEMAS.values())},public"
+    if options:
+        cfg["OPTIONS"] = options
 
     # Set default if this is the PANDAUI DB
     if conn_name == "PANDAUI":

@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     # DRF
     "rest_framework",
     "rest_framework.authtoken",
+    # auth
+    "social_django",
     # apps
     "rest_api.job",
     "rest_api.oauth",
