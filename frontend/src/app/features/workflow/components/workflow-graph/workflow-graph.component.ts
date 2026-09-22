@@ -42,11 +42,11 @@ export class WorkflowGraphComponent {
         id: def.id.toString(),
         label: `${def.name}`,
         data: {
-          type: def.type,
+          flavor: step.flavor,
           status: status,
           inputs: def.inputs,
           outputs: def.outputs,
-          task_id: def.type === 'task' ? step.target_id : null,
+          task_id: step.flavor === 'panda_task' ? step.target_id : null,
           dynamicColor: `var(--status-${status}-color)`,
         },
       };
@@ -87,13 +87,13 @@ export class WorkflowGraphComponent {
 
     return `
     Step #${node.id}
-    Type: ${data.type || '-'} #${node.data.task_id || '-'}
+    Flavor: ${data.flavor || '-'} #${node.data.task_id || '-'}
     Status: ${data.status || '-'}
   `.trim();
   }
 
   onNodeClick(node: Node): void {
-    if (node.data?.type === 'task' && node.data.task_id) {
+    if (node.data?.flavor === 'panda_task' && node.data.task_id) {
       // Navigate to task page
       this.router.navigate(['/task/', node.data.task_id], {
         queryParams: { returnToWorkflow: 'true' },
