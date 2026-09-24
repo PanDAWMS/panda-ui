@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { JobErrorDescriptionFormComponent } from './job-error-description-form.component';
 import { ErrorDescription } from '../../error-description.model';
-import { OptionObject } from '../../../../shared/models/option.model';
+import { Option } from '../../../../shared/models/option.model';
 import { LoggingService } from '../../../../core/services/logging.service';
 
 describe('JobErrorDescriptionFormComponent', () => {
@@ -12,12 +12,12 @@ describe('JobErrorDescriptionFormComponent', () => {
   let componentRef: ComponentRef<JobErrorDescriptionFormComponent>;
   let fixture: ComponentFixture<JobErrorDescriptionFormComponent>;
 
-  const mockCategories: OptionObject[] = [
+  const mockCategories: Option[] = [
     { value: 1, label: 'Category A' },
     { value: 2, label: 'Category B' },
   ];
 
-  const mockComponents: OptionObject[] = [
+  const mockComponents: Option[] = [
     { value: 'Core', label: 'Core' },
     { value: 'Network', label: 'Network' },
   ];

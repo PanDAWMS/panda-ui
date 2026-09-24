@@ -1,0 +1,104 @@
+@if (filterForm) {
+<div class="filter-toolbar flex flex-row gap-2 items-center" [formGroup]="filterForm">
+  <!-- Time Selection Single Menu Chip -->
+  <mat-chip-listbox aria-label="Time selection">
+    <mat-chip-option selected [matMenuTriggerFor]="timeMenu" #timeMenuTrigger="matMenuTrigger" class="time-chip">
+      <mat-icon matChipAvatar>schedule</mat-icon>
+      <span>{{ timeLabel() }}</span>
+      <mat-icon matChipTrailingIcon>arrow_drop_down</mat-icon>
+    </mat-chip-option>
+  </mat-chip-listbox>
+
+  <!-- Time Dropdown Menu -->
+  <mat-menu #timeMenu="matMenu" class="time-menu-panel">
+    <div class="menu-container grid grid-cols-1 md:grid-cols-3 gap-1" (click)="$event.stopPropagation()">
+      <div>
+        <div class="menu-section-title">Quick Presets</div>
+        <div class="flex flex-col md:col-span-1 preset-button-list">
+          @for (preset of quickPresets; track preset.value) {
+          <button
+            mat-button
+            class="w-full left"
+            [class.active]="activePreset === preset.value"
+            (click)="selectPreset(preset.value, timeMenuTrigger)">
+            {{ preset.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col md:col-span-2 gap-2">
+        <div class="menu-section-title">Custom duration</div>
+        <div class="flex items-center gap-1">
+          <mat-form-field appearance="outline" class="compact-field flex-1" subscriptSizing="dynamic">
+            <mat-label>Hours</mat-label>
+            <input
+              matInput
+              type="number"
+              [formControl]="customHoursControl"
+              placeholder="e.g. 3"
+              min="1"
+              [max]="config().time?.maxHoursAllowed ?? null"
+              (keydown.enter)="applyCustomHours(timeMenuTrigger)" />
+          </mat-form-field>
+          <button
+            mat-button
+            [disabled]="customHoursControl.invalid || !customHoursControl.value"
+            (click)="applyCustomHours(timeMenuTrigger)">
+            Apply
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <mat-form-field appearance="outline" class="compact-field flex-1" subscriptSizing="dynamic">
+            <mat-label>Days</mat-label>
+            <input
+              matInput
+              type="number"
+              [formControl]="customDaysControl"
+              placeholder="e.g. 2"
+              min="1"
+              [max]="config().time?.maxDaysAllowed ?? null"
+              (keydown.enter)="applyCustomDays(timeMenuTrigger)" />
+          </mat-form-field>
+          <button
+            mat-button
+            [disabled]="customDaysControl.invalid || !customDaysControl.value"
+            (click)="applyCustomDays(timeMenuTrigger)">
+            Apply
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <mat-form-field appearance="outline" class="date-range-field flex-1" subscriptSizing="dynamic">
+            <mat-label>Select date range</mat-label>
+            <mat-date-range-input
+              [rangePicker]="picker"
+              [min]="config().time?.minDate ?? null"
+              [max]="config().time?.maxDate ?? null">
+              <input
+                matStartDate
+                formControlName="dateFrom"
+                placeholder="Start date"
+                (keydown.enter)="applyCustomRange(timeMenuTrigger)" />
+              <input
+                matEndDate
+                formControlName="dateTo"
+                placeholder="End date"
+                (keydown.enter)="applyCustomRange(timeMenuTrigger)" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+          <button mat-button color="primary" (click)="applyCustomRange(timeMenuTrigger)">Apply</button>
+        </div>
+      </div>
+    </div>
+  </mat-menu>
+
+  <!-- Reset Button -->
+  <button mat-icon-button matTooltip="Reset Filters" (click)="resetFilters()">
+    <mat-icon>restart_alt</mat-icon>
+  </button>
+</div>
+}

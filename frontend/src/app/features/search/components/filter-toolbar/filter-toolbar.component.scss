@@ -1,0 +1,18 @@
+::ng-deep .mat-mdc-menu-panel.time-menu-panel {
+  min-width: 100px;
+  max-width: 400px;
+
+  .preset-button-list button.left {
+    justify-content: flex-start;
+  }
+
+  .mat-mdc-menu-content {
+    padding: 0.25rem;
+
+    font-size: var(--mat-sys-body-medium-size);
+
+    .mdc-button {
+      font-size: var(--mat-sys-body-medium-size);
+    }
+  }
+}
