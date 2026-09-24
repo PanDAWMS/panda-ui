@@ -14,9 +14,11 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
 import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
 import { StatusCount } from '../../../../shared/models/status.model';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs';
+import { filter, finalize } from 'rxjs';
 import { PageContext } from '../../../../shared/models/page-context.model';
 import { DocsService } from '../../../aide/components/docs/docs.service';
+import { FilterParams, FilterToolbarConfig } from '../../../search/search.model';
+import { FilterToolbarComponent } from '../../../search/components/filter-toolbar/filter-toolbar.component';
 
 const DOCS_WORKFLOW: PageContext = {
   pageTitle: 'PanDA Native Workflow',
@@ -61,6 +63,7 @@ const DOCS_WORKFLOW: PageContext = {
     MatSortModule,
     MatProgressSpinnerModule,
     BadgeComponent,
+    FilterToolbarComponent,
     ProgressBarSegmentedComponent,
     RouterOutlet,
   ],
@@ -81,8 +84,19 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
   totalCount: number = 0;
   pageSize: number = 10;
   pageIndex: number = 0;
-  isLoading: boolean = true;
+  isWorkflowsLoading: boolean = true;
   currentSort: string = '-workflow_id';
+
+  // Filter config
+  filterConfig: FilterToolbarConfig = {
+    time: {
+      enabled: true,
+      defaultPreset: '30d',
+      maxDaysAllowed: 10 * 360,
+    },
+    fields: [],
+  };
+  currentFilterParams: FilterParams = {};
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -108,57 +122,49 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
   });
 
   ngOnInit(): void {
-    this.loadWorkflows();
     this.docsService.setPageContext(DOCS_WORKFLOW);
   }
 
   ngAfterViewInit(): void {
-    // Sort on client side if only 1 page, otherwise reload presorted data from server
-    this.sort.sortChange.subscribe((sortState: Sort): void => {
-      const totalPages: number = Math.ceil(this.totalCount / this.pageSize);
+    if (this.sort) {
+      this.sort.sortChange.subscribe((sortState: Sort) => {
+        this.handleSortChange(sortState);
+      });
+    }
+  }
 
-      if (totalPages > 1) {
-        this.pageIndex = 0; // Reset to page 1 on sort change
-        if (this.paginator) {
-          this.paginator.pageIndex = 0;
-        }
-
-        // Convert MatSort direction ('asc'/'desc') to Django DRF query string format
-        if (!sortState.active || sortState.direction === '') {
-          this.currentSort = '-workflow_id';
-        } else {
-          const prefix: string = sortState.direction === 'desc' ? '-' : '';
-          this.currentSort = `${prefix}${sortState.active}`;
-        }
-        this.loadWorkflows();
-      } else {
-        this.dataSource.sort = this.sort;
+  private cleanParams(params: FilterParams): Record<string, any> {
+    const cleaned: Record<string, any> = {};
+    if (!params) return cleaned;
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        cleaned[key] = value;
       }
     });
+    return cleaned;
   }
 
   loadWorkflows(): void {
-    this.isLoading = true;
+    this.isWorkflowsLoading = true;
+
+    // build query params for an API call
+    const activeFilters = this.cleanParams(this.currentFilterParams);
+    const queryParams = {
+      page: this.pageIndex + 1,
+      page_size: this.pageSize,
+      ordering: this.currentSort,
+      ...activeFilters,
+    };
 
     // Call WorkflowService using 1-based page numbers for DRF
     this.workflowService
-      .getWorkflows({
-        page: this.pageIndex + 1,
-        page_size: this.pageSize,
-        days: 360,
-        ordering: this.currentSort,
-      })
-      .subscribe({
-        next: (response): void => {
-          this.dataSource.data = response.results;
-          this.totalCount = response.count;
-          this.isLoading = false;
-          this.log.debug(`Loaded ${this.totalCount} workflows`);
-        },
-        error: (err: unknown): void => {
-          this.log.error('Failed to load workflows', err);
-          this.isLoading = false;
-        },
+      .getWorkflows(queryParams)
+      .pipe(finalize(() => (this.isWorkflowsLoading = false)))
+      .subscribe((response) => {
+        this.dataSource.data = response.results ?? [];
+        this.totalCount = response.count ?? 0;
+        this.isWorkflowsLoading = false;
+        this.log.debug(`Loaded ${this.totalCount} workflows`);
       });
   }
 
@@ -170,12 +176,12 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
 
   // Row click navigates to child route /workflows/:id
   onRowClick(workflow: WorkflowItem): void {
-    this.router.navigate([workflow.workflow_id], { relativeTo: this.route });
+    this.router.navigate([workflow.workflow_id], { relativeTo: this.route, queryParamsHandling: 'preserve' });
   }
 
   // Closing drawer navigates back to base route /workflows
   closeDetails(): void {
-    this.router.navigate(['/workflows']);
+    this.router.navigate(['/workflows'], { queryParamsHandling: 'preserve' });
   }
 
   onDrawerClosed(): void {
@@ -192,13 +198,35 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
     ];
   }
 
-  getSegmentWidth(count: number, total: number): number {
-    return total > 0 ? (count / total) * 100 : 0;
+  onApplyFilters(params: FilterParams): void {
+    this.currentFilterParams = params;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = this.pageIndex;
+    }
+    this.loadWorkflows();
   }
 
-  getProgressPercentage(row: WorkflowItem): number {
-    if (!row.total_steps) return 0;
-    const progress: number = ((row.completed_steps + row.active_steps * 0.5) / row.total_steps) * 100;
-    return Math.round(progress);
+  private handleSortChange(sortState: Sort): void {
+    const totalPages: number = Math.ceil(this.totalCount / this.pageSize);
+
+    if (totalPages > 1) {
+      this.pageIndex = 0;
+      if (this.paginator) {
+        this.paginator.pageIndex = 0;
+      }
+
+      if (!sortState.active || sortState.direction === '') {
+        this.currentSort = '-workflow_id';
+      } else {
+        const prefix: string = sortState.direction === 'desc' ? '-' : '';
+        this.currentSort = `${prefix}${sortState.active}`;
+      }
+      this.loadWorkflows();
+    } else {
+      if (this.dataSource) {
+        this.dataSource.sort = this.sort;
+      }
+    }
   }
 }

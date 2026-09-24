@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ErrorDescription } from '../../error-description.model';
 import { ApiService } from '../../../../core/services/api.service';
-import { OptionObject } from '../../../../shared/models/option.model';
+import { Option } from '../../../../shared/models/option.model';
 import { JobErrorDescriptionFormComponent } from '../job-error-description-form/job-error-description-form.component';
 import { JobErrorCategoriesService } from '../../job-error-categories.service';
 import { JobErrorCategory } from '../../job-error-category.model';
@@ -56,8 +56,8 @@ export class JobErrorDescriptionListComponent implements OnInit {
   categoryFilterCtrl = new FormControl<(string | number)[]>([]);
 
   categories: JobErrorCategory[] | null = null;
-  categoryOptions: OptionObject[] | undefined = undefined;
-  componentOptions: OptionObject[] | undefined = undefined;
+  categoryOptions: Option[] | undefined = undefined;
+  componentOptions: Option[] | undefined = undefined;
   componentCodeMap: Map<string, Set<number>> = new Map<string, Set<number>>();
   isDialogOpen = false;
   selectedItem: ErrorDescription | null = null;

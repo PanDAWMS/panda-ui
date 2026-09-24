@@ -9,7 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
-import { OptionObject } from '../../../../shared/models/option.model';
+import { Option } from '../../../../shared/models/option.model';
 
 @Component({
   selector: 'app-user-profile',
@@ -30,7 +30,7 @@ export class UserProfileComponent {
   displayedColumns: string[] = ['label', 'value'];
 
   // Transform UserProfile object into key-value rows for mat-table
-  dataSource$: Observable<OptionObject[]> = this.user$.pipe(
+  dataSource$: Observable<Option[]> = this.user$.pipe(
     map((u) => {
       if (!u) return [];
 

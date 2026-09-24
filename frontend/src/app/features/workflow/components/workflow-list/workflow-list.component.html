@@ -1,6 +1,11 @@
 <mat-drawer-container class="h-full w-full" [hasBackdrop]="true" (backdropClick)="closeDetails()">
   <mat-drawer-content class="h-full p-2 min-h-0 overflow-auto">
-    @if (isLoading) {
+    <app-filter-toolbar
+      [config]="filterConfig"
+      [initialParams]="currentFilterParams"
+      (applyFilters)="onApplyFilters($event)"></app-filter-toolbar>
+
+    @if (isWorkflowsLoading) {
     <div class="loading-shade">
       <mat-spinner diameter="20"></mat-spinner>
     </div>
@@ -68,6 +73,11 @@
         class="cursor-pointer hover:bg-surface-variant transition-colors"
         [class.bg-action-selected]="activeWorkflowId() === row.workflow_id"
         (click)="onRowClick(row)"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell p-8 text-center" [attr.colspan]="displayedColumns.length">
+          No workflows found for the selected filter criteria.
+        </td>
+      </tr>
     </table>
 
     <mat-paginator

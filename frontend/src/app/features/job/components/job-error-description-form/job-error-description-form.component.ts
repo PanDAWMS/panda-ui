@@ -13,7 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ErrorDescription } from '../../error-description.model';
-import { OptionObject } from '../../../../shared/models/option.model';
+import { Option } from '../../../../shared/models/option.model';
 import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
@@ -23,8 +23,8 @@ import { LoggingService } from '../../../../core/services/logging.service';
   styleUrl: './job-error-description-form.component.scss',
 })
 export class JobErrorDescriptionFormComponent {
-  readonly categories = input<OptionObject[] | undefined>();
-  readonly components = input<OptionObject[] | undefined>();
+  readonly categories = input<Option[] | undefined>();
+  readonly components = input<Option[] | undefined>();
   readonly componentCodesMap = input<Map<string, Set<number>>>(new Map());
   readonly selectedItem = input<ErrorDescription | null>(null);
 

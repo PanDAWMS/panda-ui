@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 .omni-wrapper {
   width: 100%;
   display: flex;
@@ -6,6 +8,15 @@
 
 :host ::ng-deep .omni-form-field {
   width: 15rem;
+
+  @include mat.form-field-overrides(
+    (
+      container-height: 1.75rem,
+      filled-label-display: none,
+      filled-with-label-container-padding-top: 0.25rem,
+      filled-with-label-container-padding-bottom: 0.25rem,
+    )
+  );
 
   &.mat-focused,
   &:hover {
