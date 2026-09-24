@@ -1,0 +1,44 @@
+@if (workflow(); as data) {
+<div class="flex flex-col h-full p-2">
+  <div class="flex justify-between items-center pb-1 border-b mb-2">
+    <div>
+      <h2 class="text-lg font-bold">
+        Workflow #{{ data.workflow_id }} - <span [ngClass]="'status-' + data.status">{{ data.status || '—' }}</span>
+      </h2>
+      <p class="text-xs text-secondary">{{ data.name }}</p>
+    </div>
+    <button mat-icon-button type="button" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto space-y-1">
+    <div class="flex items-center gap-2">
+      <span class="font-medium text-sm">Created:</span>
+      <span>{{ data.creation_time | date: 'yyyy-MM-dd HH:mm' }}</span>
+
+      <span class="font-medium text-sm">Started:</span>
+      <span>{{ data.start_time | date: 'yyyy-MM-dd HH:mm' }}</span>
+
+      <span class="font-medium text-sm">Ended:</span>
+      <span>{{ data.end_time | date: 'yyyy-MM-dd HH:mm' }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-2">
+      <app-progress-bar-segmented [counts]="stepSummary()" title="Step Breakdown" [showLegend]="true" />
+
+      @if (details(); as data) {
+      <app-progress-bar-segmented [counts]="fileSummary()" title="File summary" [showLegend]="true" />
+      }
+    </div>
+
+    @if (isLoading()) {
+    <div class="flex justify-center items-center p-8">
+      <mat-spinner diameter="20"></mat-spinner>
+    </div>
+    } @else { @if (details(); as data) {
+    <app-workflow-graph [steps]="data.steps" />
+    } }
+  </div>
+</div>
+}

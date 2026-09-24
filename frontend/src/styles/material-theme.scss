@@ -36,6 +36,7 @@ body {
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  overflow: hidden;
 }
 
 :root {
@@ -100,6 +101,18 @@ body {
     )
   );
 
+  @include mat.chips-overrides(
+    (
+      container-height: 32px,
+      container-shape-radius: 0.25rem,
+      with-avatar-avatar-size: 20px,
+      with-avatar-avatar-shape-radius: 20px,
+      with-icon-icon-size: 16px,
+      label-text-size: var(--mat-sys-label-medium-size),
+      label-text-line-height: var(--mat-sys-label-medium-line-height),
+    )
+  );
+
   @include mat.expansion-overrides(
     (
       container-shape: 0,
@@ -123,9 +136,9 @@ body {
   @include mat.form-field-overrides(
     (
       outlined-container-shape: 0,
-      container-height: 1rem,
-      container-text-line-height: 1rem,
-      container-text-size: 0.875rem,
+      //container-height: 32px,
+      container-text-line-height: var(--mat-sys-label-medium-line-height),
+      container-text-size: var(--mat-sys-label-medium-size),
       container-vertical-padding: 0.5rem,
       filled-with-label-container-padding-top: 0.5rem,
       filled-with-label-container-padding-bottom: 0.25rem,
@@ -133,6 +146,7 @@ body {
       filled-label-text-size: 0.75rem,
       subscript-text-size: 0.75rem,
       outlined-label-text-populated-size: 1rem,
+      filled-label-display: block,
     )
   );
 
@@ -216,7 +230,7 @@ body {
     }
 
     .mat-mdc-card-content {
-      padding: 0 0.5rem;
+      padding: 0;
     }
   }
 

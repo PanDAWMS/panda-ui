@@ -1,0 +1,89 @@
+import { Component, inject, input, output, computed, Signal, InputSignal, OutputEmitterRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Observable, of } from 'rxjs';
+import { WorkflowDetail } from '../../workflow.model';
+import { WorkflowService } from '../../workflow.service';
+import { WorkflowGraphComponent } from '../workflow-graph/workflow-graph.component';
+import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
+import { StatusCount } from '../../../../shared/models/status.model';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-workflow-details-panel',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    WorkflowGraphComponent,
+    ProgressBarSegmentedComponent,
+  ],
+  templateUrl: './workflow-details-panel.component.html',
+  styleUrl: './workflow-details-panel.component.scss',
+})
+export class WorkflowDetailsPanelComponent {
+  private workflowService = inject(WorkflowService);
+  private router = inject(Router);
+
+  // receives path parameter :id automatically from /workflows/:id
+  id = input.required<string>();
+  close: OutputEmitterRef<void> = output<void>();
+
+  // fetch data automatically whenever the ID in the URL changes
+  effectiveWorkflowId = computed(() => Number(this.id()) || null);
+  detailsResource = rxResource<WorkflowDetail | null, { id: number | null }>({
+    params: () => ({ id: this.effectiveWorkflowId() }),
+    stream: ({ params }): Observable<WorkflowDetail | null> => {
+      if (params.id == null) return of(null);
+      return this.workflowService.getWorkflowById(params.id);
+    },
+  });
+
+  isLoading: Signal<boolean> = computed(() => this.detailsResource.isLoading());
+  error = computed(() => this.detailsResource.error() as Error | undefined);
+  details = computed(() => this.detailsResource.value());
+
+  stepSummary: Signal<StatusCount[]> = computed((): StatusCount[] => {
+    const d = this.details()?.step_summary;
+    if (!d) return [];
+
+    return [
+      { status: 'pending', count: d.pending_steps ?? 0 },
+      { status: 'active', count: d.active_steps ?? 0 },
+      { status: 'done', count: d.completed_steps ?? 0 },
+      { status: 'failed', count: d.failed_steps ?? 0 },
+    ];
+  });
+
+  fileSummary: Signal<StatusCount[]> = computed((): StatusCount[] => {
+    const d = this.details()?.file_summary;
+    if (!d) return [];
+
+    return [
+      {
+        status: 'pending',
+        count:
+          (d.files_total ?? 0) -
+          (d.files_failed ?? 0) -
+          (d.files_finished ?? 0) -
+          (d.files_missing ?? 0) -
+          (d.files_waiting ?? 0),
+      },
+      { status: 'finished', count: d.files_finished || 0 },
+      { status: 'failed', count: d.files_failed || 0 },
+      { status: 'missing', count: d.files_missing || 0 },
+      { status: 'waiting', count: d.files_waiting || 0 },
+    ];
+  });
+
+  workflow = this.detailsResource.value;
+
+  onClose(): void {
+    this.close.emit();
+    this.router.navigate(['/workflows']);
+  }
+}

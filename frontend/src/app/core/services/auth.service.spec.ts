@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AppConfigService } from './app-config.service';
 import { LoggingService } from './logging.service';
-import { UserProfile } from '../models/user.model';
+import { UserProfile } from '../../shared/models/user.model';
 
 describe('AuthService', () => {
   let service: AuthService;

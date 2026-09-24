@@ -1,0 +1,9 @@
+-r base.txt
+
+
+django-debug-toolbar
+django-extensions==3.2.3
+pylint
+pylint-django
+python-dotenv==1.2.2
+Werkzeug==3.1.3

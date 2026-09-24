@@ -1,3 +1,5 @@
+"""WebSocket Consumers"""
+
 import asyncio
 import logging
 
@@ -12,6 +14,8 @@ class ChatSimulatorConsumer(BaseAuthConsumer):
     """
 
     async def receive_json(self, content, **kwargs):
+        """Handle chat messages and streaming simulated responses"""
+        _ = kwargs
         action = content.get("action")
         if action == "send_message":
             # send initial status
