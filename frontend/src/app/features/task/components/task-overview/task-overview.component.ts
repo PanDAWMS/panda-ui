@@ -18,11 +18,6 @@ const DOCS_TASK: PageContext = {
         'but there are also other formats, such as a group of sequence numbers, metadata, notification, void, etc. ' +
         'Each task has a unique identifier JediTaskID in the system.',
     },
-    {
-      id: 'task-status',
-      title: 'Task Status',
-      content: 'TBF',
-    },
   ],
 };
 

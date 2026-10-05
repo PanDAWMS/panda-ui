@@ -3,6 +3,7 @@ from rest_api.common.utils.filter_engine import filter_single_queryset, filter_u
 from rest_api.job.models import JobsActive4, JobsArchived4, JobsDefined4
 from rest_api.oauth.permissions import GlobalPermission
 from rest_api.task.models import JediTask
+from rest_api.workflow.models import Workflow
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -78,6 +79,22 @@ class QuickSearchAPIView(FilterMetadataHeaderMixin, APIView):
                     }
                 )
                 self.filter_result = job_result
+
+            workflow_qs, workflow_result = filter_single_queryset(
+                queryset=Workflow.objects.all(),
+                request_params={"workflow_id": target_id},
+                model=Workflow,
+                time_field="creation_time",
+                default_hours=0,
+            )
+            if workflow_qs.exists():
+                results.append(
+                    {
+                        "title": f"Workflow #{target_id}",
+                        "type": "workflow",
+                        "id": target_id,
+                    }
+                )
 
         else:
             return Response({"error": "String search is not implemented yet."}, status=status.HTTP_501_NOT_IMPLEMENTED)

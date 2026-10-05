@@ -51,3 +51,9 @@ export interface FilterToolbarConfig {
 export interface FilterParams extends TimeFilterParams {
   [key: string]: string | number | null | undefined;
 }
+
+export interface OmniResult {
+  title: string;
+  type: 'task' | 'dataset' | 'job' | 'workflow';
+  id: string;
+}
