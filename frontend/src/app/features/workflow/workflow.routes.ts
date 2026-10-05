@@ -10,8 +10,9 @@ export const workflowRoutes: Routes = [
       import('./components/workflow-list/workflow-list.component').then((m) => m.WorkflowListComponent),
     children: [
       {
-        path: ':id',
+        path: 'panel/:id',
         title: 'Workflow Details',
+        data: { closable: true },
         canActivate: [authGuard],
         loadComponent: () =>
           import('./components/workflow-details-panel/workflow-details-panel.component').then(
@@ -19,5 +20,11 @@ export const workflowRoutes: Routes = [
           ),
       },
     ],
+  },
+  {
+    path: 'workflow/:id',
+    title: 'Workflow Overview',
+    loadComponent: () =>
+      import('./components/workflow-overview/workflow-overview.component').then((m) => m.WorkflowOverviewComponent),
   },
 ];
