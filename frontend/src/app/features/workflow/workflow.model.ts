@@ -1,4 +1,21 @@
 import { PaginationQueryParams } from '../../shared/models/pagination.model';
+import { MultiselectOption } from '../../shared/models/option.model';
+
+export const PENDING_STATUSES = [
+  'registered',
+  'checking',
+  'checked_true',
+  'checked_false',
+  'pending',
+  'ready',
+] as const;
+export const ACTIVE_STATUSES = ['starting', 'running'] as const;
+export const FAILED_STATUSES = ['failed', 'cancelled', 'closed'] as const;
+export const WORKFLOW_STATUSES = [...PENDING_STATUSES, ...ACTIVE_STATUSES, ...FAILED_STATUSES];
+export const WORKFLOW_STATUS_OPTIONS: MultiselectOption[] = WORKFLOW_STATUSES.map((status) => ({
+  label: status,
+  value: status,
+}));
 
 export interface WorkflowItem {
   workflow_id: number;

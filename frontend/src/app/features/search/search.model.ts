@@ -1,7 +1,7 @@
 import { MultiselectOption } from '../../shared/models/option.model';
 
-export type FilterType = 'multiselect' | 'text' | 'number';
-export type NumberOperator = 'eq' | 'gt' | 'gte' | 'lt' | 'lte';
+export type FilterType = 'select' | 'multiselect' | 'text' | 'number';
+export type ComparisonOperator = 'eq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'between' | 'wc';
 export type QuickTimePreset = '1h' | '6h' | '12h' | '24h' | '7d' | '30d' | '90d' | 'custom';
 
 export const QUICK_TIME_PRESETS: { label: string; value: QuickTimePreset }[] = [
@@ -14,6 +14,18 @@ export const QUICK_TIME_PRESETS: { label: string; value: QuickTimePreset }[] = [
   { label: 'Last 90 days', value: '90d' },
   { label: 'Custom range', value: 'custom' },
 ];
+
+export const COMPARISON_OPERATOR_LABELS: Record<ComparisonOperator, string> = {
+  eq: '=',
+  gt: '>',
+  gte: '>=',
+  lt: '<',
+  lte: '<=',
+  in: 'in',
+  nin: 'not in',
+  between: '',
+  wc: 'like',
+};
 
 export interface TimeFilterParams {
   hours?: number | null;
@@ -41,6 +53,7 @@ export interface FilterFieldConfig {
   min?: number;
   max?: number;
   maxLength?: number;
+  multiple?: boolean;
 }
 
 export interface FilterToolbarConfig {

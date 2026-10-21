@@ -1,4 +1,5 @@
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import Any
@@ -26,11 +27,15 @@ class QueryFilterEngine:
     """
 
     LOOKUP_MAP = {
+        "eq": "exact",
         "gt": "gt",
         "gte": "gte",
         "lt": "lt",
         "lte": "lte",
+        "in": "in",
+        "nin": "in",
     }
+    BRACKET_REGEX = re.compile(r"^([^\[]+)\[([^\]]+)\]$")
 
     @classmethod
     def build_q_filters(
@@ -76,7 +81,7 @@ class QueryFilterEngine:
         ignored.update(ignored_custom)
 
         # combine all Q objects
-        final_q = q_time | q_model | q_custom
+        final_q = q_time & q_model & q_custom
 
         return FilterResult(final_q, applied_params=applied, ignored_params=ignored)
 
@@ -84,10 +89,9 @@ class QueryFilterEngine:
     def _build_model_fields_q(cls, model: type[models.Model], request_params: dict) -> tuple[Q, dict, dict]:
         """
         Parses request parameters against the model and transforms them into Q objects.
-        Supports:
-          - Comparisons: field_gt, field_gte, field_lt, field_lte
-          - Wildcards: 'val*' -> icontains/istartswith, '*val' -> iendswith, '*val*' -> icontains
-          - Lists (OR/IN): 'val1,val2' -> IN query
+        Supports bracket syntax: param[op]=value
+            Where op can be: 'eq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'wc'
+        Also supports legacy wildcard handling (*val*) and comma-separated string values.
         """
         q = Q()
         applied = {}
@@ -96,41 +100,43 @@ class QueryFilterEngine:
         model_fields = cls._get_all_fields(model)
 
         for param, raw_value in list(params.items()):
-            if raw_value is None or raw_value == "":
+            if raw_value is None or raw_value == "" or raw_value == []:
                 continue
 
-            # parse suffixes (e.g., priority_gte -> field: priority, operation: gte)
             field_name = param
-            lookup = None
-            if "_" in param:
-                parts = param.rsplit("_", 1)
-                if parts[1] in cls.LOOKUP_MAP and parts[0] in model_fields:
-                    field_name = parts[0]
-                    lookup = cls.LOOKUP_MAP[parts[1]]
+            op = None
 
-            # skip if field is not on the model
+            # parse suffixes (e.g., status[in] -> field_name: status, op: in)
+            match = cls.BRACKET_REGEX.match(param)
+            if match:
+                field_name, op = match.groups()
+
+            # skip if field is not present on the model
             if field_name not in model_fields:
+                ignored[param] = raw_value
                 continue
 
             # remove consumed parameter from params dict
-            val_str = str(params.pop(param)).strip()
+            consumed_val = params.pop(param)
+            if isinstance(consumed_val, (list, tuple, set)):
+                values_list = [str(v).strip() for v in consumed_val if str(v).strip()]
+            elif isinstance(consumed_val, str) and "," in consumed_val:
+                values_list = [v.strip() for v in consumed_val.split(",") if v.strip()]
+            else:
+                values_list = [str(consumed_val).strip()]
+            lookup = cls.LOOKUP_MAP.get(op) if op else None
 
-            # comparison (_gt, _gte, _lt, _lte)
-            if lookup:
-                q &= Q(**{f"{field_name}__{lookup}": val_str})
-                applied[param] = val_str
-                continue
-
-            # comma-separated values -> IN (...)
-            if "," in val_str:
-                values_list = [v.strip() for v in val_str.split(",") if v.strip()]
+            # handle 'in' and 'nin' operators
+            if op in ("in", "nin"):
                 if values_list:
-                    q &= Q(**{f"{field_name}__in": values_list})
+                    condition = Q(**{f"{field_name}__in": values_list})
+                    q &= ~condition if op == "nin" else condition
                     applied[param] = values_list
                 continue
 
-            # wildcards using '*' -> LIKE queries
-            if "*" in val_str:
+            # handle wildcards: '*' -> LIKE queries
+            val_str = values_list[0] if values_list else ""
+            if op == "wc" and "*" in val_str:
                 if val_str.startswith("*") and val_str.endswith("*") and len(val_str) > 2:
                     clean_val = val_str[1:-1]
                     q &= Q(**{f"{field_name}__icontains": clean_val})
@@ -146,10 +152,23 @@ class QueryFilterEngine:
                 applied[param] = val_str
                 continue
 
+            # handle bracket operators (gt, gte, lt, lte, eq)
+            if op and lookup:
+                q &= Q(**{f"{field_name}__{lookup}": val_str})
+                applied[param] = val_str
+                continue
+
+            # implicit IN clause for multiple values without explicit operator
+            if len(values_list) > 1:
+                q &= Q(**{f"{field_name}__in": values_list})
+                applied[param] = values_list
+                continue
+
             # exact match
             q &= Q(**{field_name: val_str})
             applied[param] = val_str
 
+        _logger.debug(f"QuerySet: {q}, applied: {applied}, ignored: {ignored}")
         return q, applied, ignored
 
     @classmethod
@@ -268,8 +287,14 @@ class QueryFilterEngine:
         Returns:
             -
         """
-
-        provided_params = set(request_params)
+        provided_params = set()
+        provided_params_raw = set(request_params)
+        for param in provided_params_raw:
+            if "[" in param and "]" in param:
+                param = param.split("[")[0]
+                provided_params.add(param)
+            else:
+                provided_params.add(param)
         all_supported_params = TIME_RANGE_PARAMS | META_PARAMS | cls._get_all_fields(model) | cls._get_extra_supported_params()
 
         unknown_params = provided_params - all_supported_params

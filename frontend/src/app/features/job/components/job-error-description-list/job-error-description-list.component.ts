@@ -17,6 +17,9 @@ import { JobErrorCategoriesService } from '../../job-error-categories.service';
 import { JobErrorCategory } from '../../job-error-category.model';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FilterToolbarComponent } from '../../../search/components/filter-toolbar/filter-toolbar.component';
+import { FilterToolbarConfig } from '../../../search/search.model';
+import { WORKFLOW_STATUS_OPTIONS } from '../../../workflow/workflow.model';
 
 @Component({
   selector: 'app-job-error-description-list',
@@ -31,6 +34,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
+    FilterToolbarComponent,
   ],
   standalone: true,
   templateUrl: './job-error-description-list.component.html',
@@ -63,6 +67,35 @@ export class JobErrorDescriptionListComponent implements OnInit {
   selectedItem: ErrorDescription | null = null;
   endpoint: string = 'job/error-description';
 
+  filterConfig: FilterToolbarConfig = {
+    time: {
+      enabled: false,
+    },
+    fields: [
+      {
+        key: 'component',
+        label: 'Component',
+        type: 'select',
+        options: [],
+        multiple: true,
+      },
+      {
+        key: 'code',
+        label: 'Code',
+        type: 'number',
+        min: 0,
+        max: 9999,
+      },
+      {
+        key: 'category',
+        label: 'Category',
+        type: 'select',
+        options: [],
+        multiple: true,
+      },
+    ],
+  };
+
   ngOnInit(): void {
     this.dataSource.filterPredicate = (data: ErrorDescription, filterJson: string) => {
       const filters = JSON.parse(filterJson);
@@ -73,13 +106,9 @@ export class JobErrorDescriptionListComponent implements OnInit {
           const val = data[key as keyof ErrorDescription];
           return val !== null && val !== undefined && String(val).toLowerCase().includes(filters.global.toLowerCase());
         });
-
       const matchComponent = !filters.component?.length || filters.component.includes(data.component);
-
       const matchCode = !filters.code || String(data.code).toLowerCase().includes(filters.code.toLowerCase());
-
       const matchCategory = !filters.category?.length || filters.category.includes(data.category);
-
       return matchGlobal && matchComponent && matchCode && matchCategory;
     };
 
@@ -88,7 +117,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
       descriptions: this.getJobErrorDescriptions(),
     }).subscribe(({ categories, descriptions }) => {
       this.categories = categories;
-      this.categoryOptions = categories.map((cat: JobErrorCategory) => ({ label: cat.name, value: cat.id }));
+      this.categoryOptions = categories.map((cat: JobErrorCategory): Option => ({ label: cat.name, value: cat.id }));
 
       // add category names to descriptions
       descriptions.forEach((desc) => {
@@ -100,7 +129,7 @@ export class JobErrorDescriptionListComponent implements OnInit {
       // fetch unique component values for filtering
       const uniqueComponents = Array.from(new Set(descriptions.map((desc) => desc.component)));
       // map to {label, value} objects for MultiSelect
-      this.componentOptions = uniqueComponents.map((comp) => ({ label: comp, value: comp }));
+      this.componentOptions = uniqueComponents.map((comp): Option => ({ label: comp, value: comp }));
       // build component to codes map for validation in the form
       this.componentCodeMap = descriptions.reduce((map, { component, code }) => {
         if (!map.has(component)) {
