@@ -46,7 +46,7 @@ class JobDetailView(FilterMetadataHeaderMixin, RetrieveAPIView):
         request_params = self.request.query_params.dict()
         request_params["pandaid"] = pandaid
 
-        # 3. Execute Union Queryset
+        # execute Union Queryset
         queryset, self.filter_result = filter_union_queryset(
             models_list=self.JOB_MODELS,
             request_params=request_params,

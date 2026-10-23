@@ -7,9 +7,11 @@
       </h2>
       <p class="text-xs text-secondary">{{ data.name }}</p>
     </div>
+    @if (closable()) {
     <button mat-icon-button type="button" (click)="onClose()">
       <mat-icon>close</mat-icon>
     </button>
+    }
   </div>
 
   <div class="flex-1 overflow-y-auto space-y-1">

@@ -31,6 +31,7 @@ export class WorkflowDetailsPanelComponent {
 
   // receives path parameter :id automatically from /workflows/:id
   id = input.required<string>();
+  closable = input<boolean>(true);
   close: OutputEmitterRef<void> = output<void>();
 
   // fetch data automatically whenever the ID in the URL changes

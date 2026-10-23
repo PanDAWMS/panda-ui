@@ -174,9 +174,9 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
     this.loadWorkflows();
   }
 
-  // Row click navigates to child route /workflows/:id
+  // Row click navigates to child route /workflows/panel/:id
   onRowClick(workflow: WorkflowItem): void {
-    this.router.navigate([workflow.workflow_id], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+    this.router.navigate(['panel', workflow.workflow_id], { relativeTo: this.route, queryParamsHandling: 'preserve' });
   }
 
   // Closing drawer navigates back to base route /workflows
