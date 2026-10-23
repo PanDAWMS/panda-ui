@@ -7,9 +7,8 @@ import {
   signal,
   inject,
   computed,
-  ViewChildren,
-  QueryList,
   ElementRef,
+  viewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
@@ -35,6 +34,7 @@ import {
   QuickTimePreset,
 } from '../../search.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-filter-toolbar',
@@ -61,13 +61,14 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private log = inject(LoggingService).forContext('FilterToolbarComponent');
 
   config = input<FilterToolbarConfig>({ fields: [], time: { defaultPreset: '24h' } });
   initialParams = input<FilterParams>({});
   applyFilters = output<FilterParams>();
 
-  @ViewChildren('chipMenuTrigger') chipMenuTriggers!: QueryList<MatMenuTrigger>;
-  @ViewChildren('filterInput') filterInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  readonly chipMenuTriggers = viewChildren<MatMenuTrigger>('chipMenuTrigger');
+  readonly filterInputs = viewChildren<ElementRef<HTMLInputElement>>('filterInput');
 
   protected readonly quickPresets = QUICK_TIME_PRESETS.filter((p) => p.value !== 'custom');
   protected filterForm!: FormGroup;
@@ -76,6 +77,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
   protected timeLabel = signal<string>('');
   protected activeFieldKeys = signal<string[]>([]);
+  protected appliedFieldKeys = signal<string[]>([]);
 
   // Computes unselected dynamic fields for the '+' menu
   protected availableFieldConfigs = computed(() => {
@@ -139,6 +141,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
     // Form setup for Dynamic Fields
     const initialActiveKeys: string[] = [];
+    const initialAppliedKeys: string[] = [];
     (this.config().fields || []).forEach((field) => {
       if (field.type === 'select') {
         const isMulti = field.multiple ?? true;
@@ -169,6 +172,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
         if ((Array.isArray(val) && val.length > 0) || (!Array.isArray(val) && val != null)) {
           initialActiveKeys.push(field.key);
+          initialAppliedKeys.push(field.key);
         }
       } else if (field.type === 'number') {
         const ops: ComparisonOperator[] = ['eq', 'gt', 'gte', 'lt', 'lte'];
@@ -205,6 +209,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
         if (singleVal != null || minVal != null || maxVal != null) {
           initialActiveKeys.push(field.key);
+          initialAppliedKeys.push(field.key);
         }
       } else if (field.type === 'text') {
         const eqKey = `${field.key}[eq]`;
@@ -230,12 +235,14 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
         if (val) {
           initialActiveKeys.push(field.key);
+          initialAppliedKeys.push(field.key);
         }
       }
     });
 
     this.filterForm = this.fb.group(formGroupControls);
     this.activeFieldKeys.set(initialActiveKeys);
+    this.appliedFieldKeys.set(initialAppliedKeys);
 
     // Update time limit and emit filters to URL
     this.updateTimeLabel();
@@ -351,31 +358,34 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
   }
 
   addFilter(key: string): void {
-    if (!this.activeFieldKeys().includes(key)) {
-      this.activeFieldKeys.update((keys) => [...keys, key]);
+    if (this.activeFieldKeys().includes(key)) return;
 
-      // open menu automatically
-      setTimeout(() => {
-        const lastChipMenuTrigger = this.chipMenuTriggers.last;
-        if (lastChipMenuTrigger) {
-          lastChipMenuTrigger.openMenu();
+    this.activeFieldKeys.update((keys) => [...keys, key]);
 
-          const field = this.getFieldConfig(key);
-          if (field?.type === 'text' || field?.type === 'number') {
-            setTimeout(() => {
-              const lastInput = this.filterInputs.last;
-              lastInput?.nativeElement?.focus();
-            }, 50);
-          }
+    setTimeout(() => {
+      const triggers = this.chipMenuTriggers();
+      const lastTrigger = triggers[triggers.length - 1];
+
+      if (lastTrigger) {
+        lastTrigger.openMenu();
+
+        const field = this.getFieldConfig(key);
+        if (field?.type === 'text' || field?.type === 'number') {
+          setTimeout(() => {
+            const inputs = this.filterInputs();
+            const lastInput = inputs[inputs.length - 1];
+            lastInput?.nativeElement?.focus();
+          }, 50);
         }
-      });
-    }
+      }
+    }, 50);
   }
 
   removeFilter(key: string, event: Event): void {
     event.stopPropagation();
     event.preventDefault();
     this.activeFieldKeys.update((keys) => keys.filter((k) => k !== key));
+    this.appliedFieldKeys.update((keys) => keys.filter((k) => k !== key));
 
     const field = this.getFieldConfig(key);
     if (field?.type === 'select') {
@@ -408,7 +418,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
     this.emitFilters();
   }
 
-  clearSelectFilter(key: string, trigger?: MatMenuTrigger): void {
+  clearSelectFilter(key: string): void {
     const field = this.getFieldConfig(key);
     const isMulti = field?.multiple ?? true;
     this.filterForm.patchValue({
@@ -417,7 +427,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
     });
   }
 
-  clearNumericField(key: string, trigger?: MatMenuTrigger): void {
+  clearNumericField(key: string): void {
     this.filterForm.patchValue({
       [`${key}_op`]: 'eq',
       [`${key}_val`]: null,
@@ -426,7 +436,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
     });
   }
 
-  clearTextField(key: string, trigger?: MatMenuTrigger): void {
+  clearTextField(key: string): void {
     this.filterForm.patchValue({
       [`${key}_op`]: 'eq',
       [`${key}_val`]: null,
@@ -492,13 +502,8 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
     return field.label;
   }
 
-  isFilterActive(key: string): boolean {
-    const val = this.filterForm.get(`${key}_val`)?.value;
-    if (Array.isArray(val)) return val.length > 0;
-
-    const numMin = this.filterForm.get(`${key}_min`)?.value;
-    const numMax = this.filterForm.get(`${key}_max`)?.value;
-    return val != null || numMin != null || numMax != null;
+  isFilterApplied(key: string): boolean {
+    return this.appliedFieldKeys().includes(key);
   }
 
   resetFilters(): void {
@@ -528,6 +533,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
     });
 
     this.activeFieldKeys.set([]);
+    this.appliedFieldKeys.set([]);
     this.customHoursControl.reset(null, { emitEvent: false });
     this.customDaysControl.reset(null, { emitEvent: false });
     this.filterForm.reset(resetValues);
@@ -547,6 +553,7 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
     const activeKeys = new Set(this.activeFieldKeys());
     const supportedOps: ComparisonOperator[] = ['eq', 'gt', 'gte', 'lt', 'lte', 'in', 'nin'];
+    const newAppliedKeys: string[] = [];
 
     (this.config().fields || []).forEach((field) => {
       // Clear out suffix query params if field chip is inactive
@@ -565,8 +572,10 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
         if (Array.isArray(val) && val.length > 0) {
           queryParams[`${field.key}[${op}]`] = val.join(',');
+          newAppliedKeys.push(field.key);
         } else if (!Array.isArray(val) && val != null) {
           queryParams[`${field.key}[${op}]`] = val;
+          newAppliedKeys.push(field.key);
         }
       } else if (field.type === 'number') {
         const op: ComparisonOperator = formVal[`${field.key}_op`];
@@ -579,8 +588,10 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
         if (op === 'between') {
           if (min != null) queryParams[`${field.key}[gte]`] = min;
           if (max != null) queryParams[`${field.key}[lte]`] = max;
+          newAppliedKeys.push(field.key);
         } else if (val != null) {
           queryParams[`${field.key}[${op}]`] = val;
+          newAppliedKeys.push(field.key);
         }
       } else if (field.type === 'text') {
         const op: ComparisonOperator = formVal[`${field.key}_op`] || 'eq';
@@ -590,15 +601,18 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
 
         if (val) {
           queryParams[`${field.key}[${op}]`] = val;
+          newAppliedKeys.push(field.key);
         }
       }
     });
+
+    // Update applied keys signal
+    this.appliedFieldKeys.set(newAppliedKeys);
 
     // update URL and chip label
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      // queryParamsHandling: 'merge',
       replaceUrl: true,
     });
     this.updateTimeLabel();

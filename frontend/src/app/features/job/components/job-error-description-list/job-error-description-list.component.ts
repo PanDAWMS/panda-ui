@@ -34,7 +34,6 @@ import { WORKFLOW_STATUS_OPTIONS } from '../../../workflow/workflow.model';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    FilterToolbarComponent,
   ],
   standalone: true,
   templateUrl: './job-error-description-list.component.html',
