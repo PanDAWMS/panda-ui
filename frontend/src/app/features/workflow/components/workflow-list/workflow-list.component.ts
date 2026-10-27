@@ -8,7 +8,7 @@ import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { ActivatedRoute, NavigationEnd, Router, Event as RouterEvent, RouterOutlet } from '@angular/router';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { DurationPipe } from '../../../../shared/pipes/duration.pipe';
-import { WorkflowItem } from '../../workflow.model';
+import { WORKFLOW_STATUS_OPTIONS, WorkflowItem } from '../../workflow.model';
 import { WorkflowService } from '../../workflow.service';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
@@ -17,8 +17,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, finalize } from 'rxjs';
 import { PageContext } from '../../../../shared/models/page-context.model';
 import { DocsService } from '../../../aide/components/docs/docs.service';
-import { FilterParams, FilterToolbarConfig } from '../../../search/search.model';
+import { FilterParams, FilterToolbarConfig, FilterType } from '../../../search/search.model';
 import { FilterToolbarComponent } from '../../../search/components/filter-toolbar/filter-toolbar.component';
+import { MultiselectOption } from '../../../../shared/models/option.model';
 
 const DOCS_WORKFLOW: PageContext = {
   pageTitle: 'PanDA Native Workflow',
@@ -94,7 +95,21 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
       defaultPreset: '30d',
       maxDaysAllowed: 10 * 360,
     },
-    fields: [],
+    fields: [
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'select',
+        options: WORKFLOW_STATUS_OPTIONS,
+        multiple: true,
+      },
+      {
+        key: 'name',
+        label: 'Workflow name',
+        type: 'text',
+        maxLength: 256,
+      },
+    ],
   };
   currentFilterParams: FilterParams = {};
 
@@ -155,6 +170,7 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
       ordering: this.currentSort,
       ...activeFilters,
     };
+    this.log.debug(`Params: ${JSON.stringify(queryParams)}`);
 
     // Call WorkflowService using 1-based page numbers for DRF
     this.workflowService
@@ -174,9 +190,9 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
     this.loadWorkflows();
   }
 
-  // Row click navigates to child route /workflows/:id
+  // Row click navigates to child route /workflows/panel/:id
   onRowClick(workflow: WorkflowItem): void {
-    this.router.navigate([workflow.workflow_id], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+    this.router.navigate(['panel', workflow.workflow_id], { relativeTo: this.route, queryParamsHandling: 'preserve' });
   }
 
   // Closing drawer navigates back to base route /workflows

@@ -96,9 +96,199 @@
     </div>
   </mat-menu>
 
+  <!-- Dynamic filters -->
+  @for (fieldKey of activeFieldKeys(); track fieldKey) { @let field = getFieldConfig(fieldKey); @if (field) {
+
+  <!-- Dropdown Select Filter Chip -->
+  @if (field.type === 'select') {
+  <mat-chip-listbox [aria-label]="field.label">
+    <mat-chip-option
+      [selected]="isFilterApplied(field.key)"
+      [matMenuTriggerFor]="selectMenu"
+      #chipMenuTrigger="matMenuTrigger">
+      @if (isFilterApplied(field.key)) {
+      <mat-icon matChipAvatar>check</mat-icon>
+      }
+      <span>{{ getSelectChipLabel(field) }}</span>
+      <button matChipRemove (click)="removeFilter(field.key, $event)">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-option>
+  </mat-chip-listbox>
+
+  <mat-menu #selectMenu="matMenu" class="select-menu-panel">
+    <div class="flex flex-col gap-2 min-w-60" (click)="$event.stopPropagation()">
+      <div class="text-sm font-medium">{{ field.label }} Filter</div>
+
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Operator</mat-label>
+        <mat-select [formControlName]="field.key + '_op'">
+          @if (field.multiple ?? true) {
+          <mat-option value="in">in</mat-option>
+          <mat-option value="nin">not in</mat-option>
+          } @else {
+          <mat-option value="eq">equals</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Select Options</mat-label>
+        <mat-select [formControlName]="field.key + '_val'" [multiple]="field.multiple ?? true">
+          @for (opt of field.options || []; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="flex justify-end gap-2">
+        <button mat-button color="error" (click)="clearSelectFilter(field.key)">Clear</button>
+        <button mat-button color="primary" (click)="applyFieldFilter(chipMenuTrigger)">Apply</button>
+      </div>
+    </div>
+  </mat-menu>
+  }
+
+  <!-- Numeric Filter Chip -->
+  @if (field.type === 'number') {
+  <mat-chip-listbox [aria-label]="field.label">
+    <mat-chip-option
+      [selected]="isFilterApplied(field.key)"
+      [matMenuTriggerFor]="numericMenu"
+      #chipMenuTrigger="matMenuTrigger">
+      <span>{{ getNumericChipLabel(field) }}</span>
+      <button matChipRemove (click)="removeFilter(field.key, $event)">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-option>
+  </mat-chip-listbox>
+
+  <mat-menu #numericMenu="matMenu" class="number-menu-panel">
+    <div class="flex flex-col gap-2 min-w-60" (click)="$event.stopPropagation()">
+      <div class="text-sm font-medium">{{ field.label }} Condition</div>
+
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Operator</mat-label>
+        <mat-select [formControlName]="field.key + '_op'" (selectionChange)="onNumericOpChange(field.key)">
+          <mat-option value="eq">Equals (=)</mat-option>
+          <mat-option value="gt">Greater than (&gt;)</mat-option>
+          <mat-option value="gte">Greater or equal (&ge;)</mat-option>
+          <mat-option value="lt">Less than (&lt;)</mat-option>
+          <mat-option value="lte">Less or equal (&le;)</mat-option>
+          <mat-option value="between">Between (Range)</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      @if (filterForm.get(field.key + '_op')?.value !== 'between') {
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Value</mat-label>
+        <input
+          #filterInput
+          matInput
+          type="number"
+          [formControlName]="field.key + '_val'"
+          [placeholder]="field.placeholder || 'Enter value'"
+          [min]="field.min ?? null"
+          [max]="field.max ?? null" />
+      </mat-form-field>
+      } @if (filterForm.get(field.key + '_op')?.value === 'between') {
+      <div class="flex gap-2">
+        <mat-form-field appearance="outline" class="w-1/2" subscriptSizing="dynamic">
+          <mat-label>Min</mat-label>
+          <input
+            #filterInput
+            matInput
+            type="number"
+            [formControlName]="field.key + '_min'"
+            placeholder="Min"
+            [min]="field.min ?? null" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-1/2" subscriptSizing="dynamic">
+          <mat-label>Max</mat-label>
+          <input
+            #filterInput
+            matInput
+            type="number"
+            [formControlName]="field.key + '_max'"
+            placeholder="Max"
+            [max]="field.max ?? null" />
+        </mat-form-field>
+      </div>
+      }
+
+      <div class="flex justify-end gap-1">
+        <button mat-button (click)="clearNumericField(field.key)">Clear</button>
+        <button mat-raised-button color="primary" (click)="applyFieldFilter(chipMenuTrigger)">Apply</button>
+      </div>
+    </div>
+  </mat-menu>
+  }
+
+  <!-- Text Filter Chip -->
+  @if (field.type === 'text') {
+  <mat-chip-listbox [aria-label]="field.label">
+    <mat-chip-option
+      [selected]="isFilterApplied(field.key)"
+      [matMenuTriggerFor]="textMenu"
+      #chipMenuTrigger="matMenuTrigger">
+      <span>{{ getTextChipLabel(field) }}</span>
+      <button matChipRemove (click)="removeFilter(field.key, $event)">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-option>
+  </mat-chip-listbox>
+
+  <mat-menu #textMenu="matMenu" class="text-menu-panel">
+    <div class="flex flex-col gap-2 min-w-60" (click)="$event.stopPropagation()">
+      <div class="text-sm font-medium">{{ field.label }} Filter</div>
+
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Operator</mat-label>
+        <mat-select [formControlName]="field.key + '_op'">
+          <mat-option value="eq">equals</mat-option>
+          <mat-option value="in">in</mat-option>
+          <mat-option value="wc">wildcard</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Value</mat-label>
+        <input
+          #filterInput
+          matInput
+          type="text"
+          [formControlName]="field.key + '_val'"
+          [placeholder]="field.placeholder || 'Enter value'"
+          [attr.maxlength]="field.maxLength ?? null" />
+      </mat-form-field>
+
+      <div class="flex justify-end gap-1">
+        <button mat-button (click)="clearTextField(field.key)">Clear</button>
+        <button mat-button color="primary" (click)="applyFieldFilter(chipMenuTrigger)">Apply</button>
+      </div>
+    </div>
+  </mat-menu>
+  } } }
+
+  <!-- Add filter button -->
+  @if (availableFieldConfigs().length > 0) {
+  <button mat-icon-button matTooltip="Add filter" [matMenuTriggerFor]="addFilterMenu">
+    <mat-icon class="add">add_2</mat-icon>
+  </button>
+
+  <mat-menu #addFilterMenu="matMenu" class="add-dropdown-menu">
+    @for (field of availableFieldConfigs(); track field.key) {
+    <button mat-menu-item (click)="addFilter(field.key)">
+      <span>{{ field.label }}</span>
+    </button>
+    }
+  </mat-menu>
+  }
+
   <!-- Reset Button -->
   <button mat-icon-button matTooltip="Reset Filters" (click)="resetFilters()">
-    <mat-icon>restart_alt</mat-icon>
+    <mat-icon class="reset">filter_alt_off</mat-icon>
   </button>
 </div>
 }

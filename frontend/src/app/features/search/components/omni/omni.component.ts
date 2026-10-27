@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,12 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MessageBufferService } from '../../../../core/services/message-buffer.service';
-
-export interface OmniResult {
-  title: string;
-  type: 'task' | 'dataset';
-  id: string;
-}
+import { OmniResult } from '../../search.model';
 
 @Component({
   selector: 'app-search-omni',
