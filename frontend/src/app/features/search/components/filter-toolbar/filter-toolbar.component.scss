@@ -1,3 +1,19 @@
+.filter-toolbar > .mdc-icon-button {
+  border-radius: var(--mat-chip-container-shape-radius);
+  height: var(--mat-chip-container-height, 24px);
+
+  .mat-icon {
+    font-weight: 800;
+
+    &.add {
+      color: var(--mat-sys-tertiary);
+    }
+    &.reset {
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+}
+
 ::ng-deep .mat-mdc-menu-panel.time-menu-panel {
   min-width: 100px;
   max-width: 400px;
@@ -8,11 +24,47 @@
 
   .mat-mdc-menu-content {
     padding: 0.25rem;
-
     font-size: var(--mat-sys-body-medium-size);
 
     .mdc-button {
       font-size: var(--mat-sys-body-medium-size);
+    }
+  }
+}
+
+::ng-deep .mat-mdc-menu-panel.select-menu-panel,
+::ng-deep .mat-mdc-menu-panel.text-menu-panel,
+::ng-deep .mat-mdc-menu-panel.number-menu-panel {
+  .mat-mdc-menu-content {
+    padding: 0.25rem;
+    font-size: var(--mat-sys-body-medium-size);
+
+    .mdc-button {
+      font-size: var(--mat-sys-body-medium-size);
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 32px;
+      padding: 0.25rem 0;
+
+      input.mat-mdc-input-element {
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+::ng-deep .mat-mdc-menu-panel.add-dropdown-menu {
+  .mat-mdc-menu-content {
+    padding: 0;
+
+    .mat-mdc-menu-item {
+      min-height: var(--mat-mdc-menu-item-height);
+      padding: 0.25rem 0.5rem;
+
+      .mat-mdc-menu-item-text {
+        font-size: var(--mat-sys-body-medium-size);
+      }
     }
   }
 }
