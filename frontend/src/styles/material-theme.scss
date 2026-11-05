@@ -92,11 +92,11 @@ body {
     (
       elevated-container-shape: 0,
       filled-container-shape: 0,
-      outlined-container-shape: 0,
+      outlined-container-shape: 5px,
       outlined-container-color: var(--mat-sys-surface),
-      outlined-outline-color: var(--mat-sys-secondary),
+      outlined-outline-color: var(--mat-sys-outline),
       title-text-line-height: var(--mat-sys-title-medium-line-height),
-      title-text-size: var(--mat-sys-title-medium-size),
+      title-text-size: var(--mat-sys-title-large-size),
       title-text-weight: var(--mat-sys-title-medium-weight),
     )
   );
@@ -226,11 +226,31 @@ body {
   mat-card {
     .mat-mdc-card-header {
       padding: 0.5rem;
+    }
+    .mat-mdc-card-content {
+      padding: 0 0.5rem;
+    }
+  }
+  mat-card.mat-mdc-card-elevated {
+    .mat-mdc-card-header {
       background-color: var(--mat-sys-secondary-container, #ffffff);
     }
-
     .mat-mdc-card-content {
       padding: 0;
+    }
+  }
+
+  mat-drawer.details-drawer {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    @media (min-width: 1360px) {
+      width: 50%;
+    }
+
+    @media (min-width: 1920px) {
+      width: 75%;
     }
   }
 
@@ -249,9 +269,12 @@ body {
 
   .mat-mdc-form-field {
     .mat-mdc-text-field-wrapper {
-      padding: 0 0.5rem 0 0.5rem;
+      padding: 0 0.5rem;
     }
     .mat-mdc-form-field-error-wrapper {
+      padding: 0;
+    }
+    .mat-mdc-form-field-icon-prefix > .mat-icon {
       padding: 0;
     }
   }
@@ -284,12 +307,16 @@ body {
     }
   }
 
-  .mat-mdc-table {
+  .mat-mdc-table,
+  .mat-table {
     th.mat-mdc-header-cell {
       padding: 0.2rem 0.5rem;
     }
     td.mat-mdc-cell {
       padding: 0.2rem 0.5rem;
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
     }
     th.mat-mdc-footer-cell {
       padding: 0.2rem 0.5rem;
@@ -305,6 +332,15 @@ body {
 
       &:hover {
         background-color: var(--mat-sys-surface-container-high, #f3f4f6);
+      }
+    }
+    a {
+      text-decoration-line: none;
+
+      &:hover {
+        text-decoration-line: underline;
+        text-decoration-style: solid;
+        text-decoration-color: var(--mat-sys-primary);
       }
     }
   }

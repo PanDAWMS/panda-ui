@@ -136,3 +136,64 @@ class JediDataset(models.Model):
         db_table = f'"{settings.DB_SCHEMAS['panda']}"."jedi_datasets"'
         verbose_name = "JediDataset"
         verbose_name_plural = "JediDatasets"
+
+        indexes = [
+            models.Index(fields=["jeditaskid", "datasetid"]),
+            models.Index(fields=["datasetid"]),
+            models.Index(fields=["jeditaskid", "type"]),
+            models.Index(fields=["datasetname", "type", "jeditaskid"]),
+            models.Index(fields=["containername"]),
+        ]
+
+
+class JediDatasetContents(models.Model):
+    jeditaskid = models.ForeignKey(
+        JediTask,
+        on_delete=DO_NOTHING,
+        db_column="jeditaskid",
+        related_name="jedi_dataset_contents",
+    )
+    datasetid = models.ForeignKey(
+        JediDataset,
+        on_delete=DO_NOTHING,
+        db_column="datasetid",
+        related_name="contents",
+    )
+    fileid = models.BigIntegerField(db_column="fileid", primary_key=True)
+    creationdate = models.DateTimeField(db_column="creationdate")
+    lastattempttime = models.DateTimeField(null=True, db_column="lastattempttime", blank=True)
+    lfn = models.CharField(max_length=768, db_column="lfn")
+    guid = models.CharField(max_length=192, db_column="guid", blank=True)
+    type = models.CharField(max_length=60, db_column="type")
+    status = models.CharField(max_length=192, db_column="status")
+    fsize = models.BigIntegerField(null=True, db_column="fsize", blank=True)
+    checksum = models.CharField(max_length=108, db_column="checksum", blank=True)
+    scope = models.CharField(max_length=90, db_column="scope", blank=True)
+    attemptnr = models.IntegerField(null=True, db_column="attemptnr", blank=True)
+    maxattempt = models.IntegerField(null=True, db_column="maxattempt", blank=True)
+    nevents = models.IntegerField(null=True, db_column="nevents", blank=True)
+    keeptrack = models.IntegerField(null=True, db_column="keeptrack", blank=True)
+    startevent = models.IntegerField(null=True, db_column="startevent", blank=True)
+    endevent = models.IntegerField(null=True, db_column="endevent", blank=True)
+    firstevent = models.IntegerField(null=True, db_column="firstevent", blank=True)
+    boundaryid = models.BigIntegerField(null=True, db_column="boundaryid", blank=True)
+    pandaid = models.BigIntegerField(db_column="pandaid", blank=True)
+    jobsetid = models.BigIntegerField(db_column="jobsetid", blank=True)
+    maxfailure = models.IntegerField(null=True, db_column="maxfailure", blank=True)
+    failedattempt = models.IntegerField(null=True, db_column="failedattempt", blank=True)
+    lumiblocknr = models.IntegerField(null=True, db_column="lumiblocknr", blank=True)
+    procstatus = models.CharField(max_length=192, db_column="proc_status")
+    ramcount = models.IntegerField(null=True, db_column="ramcount", blank=True)
+
+    class Meta:
+        managed = False
+        db_table = f'"{settings.DB_SCHEMAS['panda']}"."jedi_dataset_contents"'
+        verbose_name = "JediDatasetContent"
+        verbose_name_plural = "JediDatasetContents"
+
+        indexes = [
+            models.Index(fields=["jeditaskid", "datasetid", "fileid"]),
+            models.Index(fields=["lfn"]),
+            models.Index(fields=["datasetid"]),
+            models.Index(fields=["pandaid"]),
+        ]

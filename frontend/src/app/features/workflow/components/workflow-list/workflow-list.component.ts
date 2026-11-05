@@ -1,4 +1,14 @@
-import { AfterViewInit, Component, computed, inject, OnInit, Signal, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  Signal,
+  ViewChild,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -83,9 +93,8 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['workflow', 'status', 'steps', 'progress', 'created', 'duration'];
   dataSource: MatTableDataSource<WorkflowItem> = new MatTableDataSource<WorkflowItem>();
   totalCount: number = 0;
-  pageSize: number = 10;
+  pageSize: number = 20;
   pageIndex: number = 0;
-  isWorkflowsLoading: boolean = true;
   currentSort: string = '-workflow_id';
 
   // Filter config
@@ -117,6 +126,8 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer') drawer!: MatDrawer;
 
+  isWorkflowsLoading: WritableSignal<boolean> = signal<boolean>(true);
+
   // Track router navigation events to drive drawer state reactivity
   private currentUrl: Signal<RouterEvent | undefined> = toSignal(
     this.router.events.pipe(filter((e: RouterEvent): e is NavigationEnd => e instanceof NavigationEnd)),
@@ -138,6 +149,8 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.docsService.setPageContext(DOCS_WORKFLOW);
+
+    this.loadWorkflows();
   }
 
   ngAfterViewInit(): void {
@@ -160,7 +173,7 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
   }
 
   loadWorkflows(): void {
-    this.isWorkflowsLoading = true;
+    this.isWorkflowsLoading.set(true);
 
     // build query params for an API call
     const activeFilters = this.cleanParams(this.currentFilterParams);
@@ -175,11 +188,11 @@ export class WorkflowListComponent implements OnInit, AfterViewInit {
     // Call WorkflowService using 1-based page numbers for DRF
     this.workflowService
       .getWorkflows(queryParams)
-      .pipe(finalize(() => (this.isWorkflowsLoading = false)))
+      .pipe(finalize(() => this.isWorkflowsLoading.set(false)))
       .subscribe((response) => {
         this.dataSource.data = response.results ?? [];
         this.totalCount = response.count ?? 0;
-        this.isWorkflowsLoading = false;
+        this.isWorkflowsLoading.set(false);
         this.log.debug(`Loaded ${this.totalCount} workflows`);
       });
   }

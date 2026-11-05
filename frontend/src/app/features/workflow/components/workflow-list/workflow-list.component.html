@@ -5,7 +5,7 @@
       [initialParams]="currentFilterParams"
       (applyFilters)="onApplyFilters($event)"></app-filter-toolbar>
 
-    @if (isWorkflowsLoading) {
+    @if (isWorkflowsLoading()) {
     <div class="loading-shade">
       <mat-spinner diameter="20"></mat-spinner>
     </div>
@@ -84,7 +84,7 @@
       [length]="totalCount"
       [pageSize]="pageSize"
       [pageIndex]="pageIndex"
-      [pageSizeOptions]="[10, 25, 50]"
+      [pageSizeOptions]="[10, 20, 50, 100]"
       (page)="onPageChange($event)"
       showFirstLastButtons>
     </mat-paginator>
@@ -96,7 +96,7 @@
     (closed)="onDrawerClosed()"
     mode="over"
     position="end"
-    class="workflow-details-drawer h-full border-l">
+    class="details-drawer h-full border-l">
     <router-outlet></router-outlet>
   </mat-drawer>
 </mat-drawer-container>

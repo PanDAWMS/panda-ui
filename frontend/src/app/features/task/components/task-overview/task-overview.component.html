@@ -1,1 +1,26 @@
-<app-task-params-list [jeditaskid]="jeditaskid" />
+@if (task(); as data) {
+
+<div class="flex justify-between items-center pb-1 mb-2">
+  <div>
+    <h2 class="text-lg font-bold">
+      Task <a [routerLink]="['/task/', data.jeditaskid]">#{{ data.jeditaskid }}</a> -
+      <span [ngClass]="'status-' + data.status">{{ data.status || '—' }}</span>
+    </h2>
+    <p class="text-sm">{{ data.taskname | breakAt: '.' }}</p>
+  </div>
+</div>
+
+<div class="flex-1 overflow-y-auto space-y-1">
+  <div class="flex items-center gap-2">
+    <span class="font-medium">Created:</span>
+    <span>{{ data.creationdate | date: 'yyyy-MM-dd HH:mm' }}</span>
+
+    <span class="font-medium">Started:</span>
+    <span>{{ data.starttime | date: 'yyyy-MM-dd HH:mm' }}</span>
+
+    <span class="font-medium">Ended:</span>
+    <span>{{ data.endtime | date: 'yyyy-MM-dd HH:mm' }}</span>
+  </div>
+</div>
+
+}

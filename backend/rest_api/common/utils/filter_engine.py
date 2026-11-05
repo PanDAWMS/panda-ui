@@ -137,18 +137,14 @@ class QueryFilterEngine:
             # handle wildcards: '*' -> LIKE queries
             val_str = values_list[0] if values_list else ""
             if op == "wc" and "*" in val_str:
-                if val_str.startswith("*") and val_str.endswith("*") and len(val_str) > 2:
-                    clean_val = val_str[1:-1]
-                    q &= Q(**{f"{field_name}__icontains": clean_val})
-                elif val_str.startswith("*") and len(val_str) > 1:
-                    clean_val = val_str[1:]
-                    q &= Q(**{f"{field_name}__iendswith": clean_val})
-                elif val_str.endswith("*") and len(val_str) > 1:
-                    clean_val = val_str[:-1]
-                    q &= Q(**{f"{field_name}__istartswith": clean_val})
-                else:
+                if val_str == "*":
                     # single '*' fallback -> match non-null / non-empty
-                    q &= Q(**{f"{field_name}__isnull": False})
+                    q &= Q(**{f"{field_name}__isnull": False}) & ~Q(**{field_name: ""})
+                else:
+                    # wildcard pattern -> regex
+                    regex_pattern = "^" + ".*".join(re.escape(part) for part in val_str.split("*")) + "$"
+                    q &= Q(**{f"{field_name}__iregex": regex_pattern})
+
                 applied[param] = val_str
                 continue
 
@@ -320,6 +316,7 @@ def filter_single_queryset(
     """Filter a standard single-table QuerySet."""
     result = engine_cls.build_q_filters(model=model, request_params=request_params, time_field=time_field, default_hours=default_hours)
     qs = queryset.filter(result.q_object).order_by(f"-{time_field}")
+    _logger.debug("SQL: %s", qs.query)
     return qs, result
 
 

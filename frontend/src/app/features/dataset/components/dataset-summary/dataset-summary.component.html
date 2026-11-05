@@ -1,0 +1,50 @@
+<mat-card appearance="outlined">
+  <!--  <mat-card-header>-->
+  <!--    <mat-card-title>Input/Output summary</mat-card-title>-->
+  <!--  </mat-card-header>-->
+  <mat-card-content>
+    <!-- Input -->
+    <section>
+      <h3 class="font-semibold">Inputs:</h3>
+      @for (group of inputGroups(); track group.name ?? 'total') {
+      <div class="mb-1">
+        @if (group.name) {
+        <div class="text-sm">
+          {{ group.name | breakAt: '.' }} -
+          <span class="font-semibold">{{ group.summary.progress | number: '1.0-1' }}%</span>
+        </div>
+        }
+        <app-progress-bar-segmented
+          [counts]="group.summary.counts"
+          title="{{ group.summary.total }} files"
+          [showLegend]="true" />
+      </div>
+      } @empty {
+      <p class="text-sm">No input datasets</p>
+      }
+    </section>
+
+    <!-- Output -->
+    <section>
+      <h3 class="font-semibold">Outputs:</h3>
+      @for (group of outputGroups(); track group.name ?? 'total') {
+      <div class="flex justify-between items-center text-sm py-1">
+        <div class="min-w-0 flex-1">
+          @if (group.name) {
+          <div>{{ group.name | breakAt: '.' }}</div>
+          } @else {
+          <span class="font-medium">Total</span>
+          }
+        </div>
+
+        <div class="flex gap-4 shrink-0">
+          <span>{{ group.datasets }} datasets</span>
+          <span>{{ group.files }} files</span>
+        </div>
+      </div>
+      } @empty {
+      <p class="text-sm">No output datasets</p>
+      }
+    </section>
+  </mat-card-content>
+</mat-card>

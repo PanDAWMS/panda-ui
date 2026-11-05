@@ -51,7 +51,7 @@
       <!-- Dropdown Submenu -->
       <mat-menu #subMenu="matMenu" class="header-dark-menu">
         @for (subItem of item.items; track subItem.label) {
-        <a mat-menu-item [routerLink]="subItem.routerLink">
+        <a mat-menu-item [routerLink]="subItem.routerLink" [queryParams]="subItem.queryParams">
           @if (subItem.icon) {
           <mat-icon>{{ subItem.icon }}</mat-icon>
           }
@@ -67,7 +67,7 @@
       </mat-menu>
       } @else {
       <!-- Direct Root item link WITHOUT dropdown -->
-      <a mat-button [routerLink]="item.routerLink">
+      <a mat-button [routerLink]="item.routerLink" [queryParams]="item.queryParams">
         <span>{{ item.label }}</span>
         @if (item.badge) {
         <span class="ml-2 text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">

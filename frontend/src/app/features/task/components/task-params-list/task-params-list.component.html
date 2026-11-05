@@ -1,29 +1,46 @@
-@let task = taskDetail(); @if (task) {
-<mat-card class="mx-2 my-1">
-  <mat-card-header>
-    <mat-card-title>Task parameters</mat-card-title>
-  </mat-card-header>
-
+@if (task(); as currentTask) {
+<mat-card appearance="outlined">
+  <mat-card-header><mat-card-title>All task parameters</mat-card-title></mat-card-header>
   <mat-card-content>
-    <table class="mat-elevation-z0" mat-table [dataSource]="toKeyValueList(task)">
-      <ng-container matColumnDef="key">
-        <td *matCellDef="let row" mat-cell>{{ row.key }}</td>
-      </ng-container>
+    <mat-form-field appearance="outline" class="w-full task-param-search">
+      <mat-label>Search task details</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+        placeholder="Search by parameter name or value" />
 
-      <ng-container matColumnDef="value">
-        <td *matCellDef="let row" mat-cell>
-          @if (row.value) {
-          {{ row.value }}
-          } @else { - }
-        </td>
-      </ng-container>
+      @if (search()) {
+      <button matSuffix mat-icon-button aria-label="Clear search" (click)="search.set('')">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
 
-      <tr *matRowDef="let row; columns: ['key', 'value']" mat-row></tr>
-    </table>
+    @for (section of filteredSections(); track section.title) {
+    <section class="task-param-section py-2 first:pt-2 last:pb-1">
+      <h3 class="mb-1">{{ section.title }}</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-y-2 gap-x-4">
+        @for (field of section.fields; track field.key) {
+        <app-detail-field
+          [label]="field.label"
+          [value]="field.value == null ? '—' : String(field.value)"
+          [className]="field.class"
+          [link]="field.url">
+        </app-detail-field>
+        }
+      </div>
+    </section>
+    <mat-divider></mat-divider>
+    } @empty {
+    <div class="text-center text-sm py-8">No matching task fields found.</div>
+    }
   </mat-card-content>
 </mat-card>
+
 } @else {
-<div class="p-2 text-gray-500">
+<div class="p-2">
   <p>Loading task parameters...</p>
 </div>
 }
