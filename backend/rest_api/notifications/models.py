@@ -5,17 +5,26 @@ from django.db import models
 class Subscription(models.Model):
     """
     A user's subscription to lifecycle notifications for a single JEDI task.
+
+    managed = False: like every other business-data model in this repo
+    (task/job/workflow), this table is created/altered by hand against the
+    real DB rather than via Django migrations - schema changes here go
+    through the DBA-managed process, not `manage.py migrate`. See the DDL
+    reference in this app's pull request description.
     """
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        db_constraint=False,
         related_name="task_subscriptions",
     )
     jeditaskid = models.BigIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        managed = False
+        db_table = f'"{settings.DB_SCHEMAS["pandaui"]}"."notifications_subscription"'
         unique_together = ("user", "jeditaskid")
         indexes = [models.Index(fields=["jeditaskid"])]
 
@@ -27,6 +36,8 @@ class NotificationLog(models.Model):
     """
     Records that a given lifecycle event has already been sent for a task,
     so the evaluator never sends the same event twice.
+
+    managed = False - see Subscription's docstring.
     """
 
     EVENT_JOBS_STARTING = "jobs_starting"
@@ -41,6 +52,8 @@ class NotificationLog(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        managed = False
+        db_table = f'"{settings.DB_SCHEMAS["pandaui"]}"."notifications_notificationlog"'
         # unique_together already creates an index on exactly these columns;
         # a second explicit index on the same column list is redundant and
         # Oracle rejects it outright (ORA-01408), unlike Postgres which
