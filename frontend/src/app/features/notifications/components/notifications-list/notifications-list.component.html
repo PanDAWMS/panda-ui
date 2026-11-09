@@ -1,0 +1,44 @@
+@let subs = subscriptions();
+@if (subs) {
+  <mat-card class="mx-2 my-1">
+    <mat-card-header>
+      <mat-card-title>My Notifications</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (subs.length) {
+        <table class="mat-elevation-z0" mat-table [dataSource]="subs">
+          <ng-container matColumnDef="jeditaskid">
+            <th *matHeaderCellDef mat-header-cell>Task</th>
+            <td *matCellDef="let row" mat-cell>
+              <a [routerLink]="['/task', row.jeditaskid]">{{ row.jeditaskid }}</a>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="created_at">
+            <th *matHeaderCellDef mat-header-cell>Subscribed since</th>
+            <td *matCellDef="let row" mat-cell>{{ row.created_at }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th *matHeaderCellDef mat-header-cell></th>
+            <td *matCellDef="let row" mat-cell>
+              <button mat-icon-button matTooltip="Unsubscribe" (click)="unsubscribe(row.jeditaskid)">
+                <mat-icon>notifications_off</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+          <tr *matRowDef="let row; columns: displayedColumns" mat-row></tr>
+        </table>
+      } @else {
+        <p class="p-2 text-gray-500">You are not subscribed to any tasks yet.</p>
+      }
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <div class="p-2 text-gray-500">
+    <p>Loading your notifications...</p>
+  </div>
+}

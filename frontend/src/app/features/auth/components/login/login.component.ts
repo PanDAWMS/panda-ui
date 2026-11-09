@@ -36,6 +36,7 @@ export class LoginComponent {
   buildUserMenu(): MenuItem[] {
     return [
       { label: 'Profile', icon: 'person', routerLink: 'user/profile' },
+      { label: 'My Notifications', icon: 'notifications', routerLink: 'notifications' },
       { label: 'Logout', icon: 'logout', command: () => this.logout() },
     ];
   }
