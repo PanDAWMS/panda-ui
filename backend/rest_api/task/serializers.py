@@ -1,8 +1,11 @@
+from rest_api.common.serializers.fields import ParsedJsonField
 from rest_api.task.models import JediDataset, JediTask
 from rest_framework.serializers import IntegerField, ModelSerializer
 
 
 class TaskFullSerializer(ModelSerializer):
+    params_json = ParsedJsonField(source="params.taskparams", read_only=True)
+
     class Meta:
         model = JediTask
         fields = "__all__"

@@ -111,6 +111,9 @@ export type TaskItemDetail = {
   files_finished: number;
   files_failed: number;
   files_missing: number;
+
+  // definition JSON (value type is unknown: can be string, number, array or object)
+  params_json: Record<string, unknown> | null;
 };
 
 export type TaskFieldsLight =

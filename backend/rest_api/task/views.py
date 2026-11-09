@@ -60,9 +60,11 @@ class TaskDetailView(RetrieveAPIView):
         SessionAuthentication,
     ]
     permission_classes = [IsAuthenticated, GlobalPermission]
-    queryset = JediTask.objects.all()
     serializer_class = TaskFullSerializer
     lookup_field = "jeditaskid"
+
+    def get_queryset(self):
+        return JediTask.objects.all().select_related("params")
 
 
 class TaskDatasetListView(FilterMetadataHeaderMixin, ListAPIView):

@@ -12,6 +12,6 @@
   </div>
   <app-task-overview [task]="currentTaskDetails" />
   } @if ( !isDatasetsLoading() && datasets(); as currentTaskDatasetList) {
-  <app-dataset-summary [datasets]="currentTaskDatasetList" />
+  <app-dataset-summary [datasets]="currentTaskDatasetList" [isTask]="true" [isInputContainer]="isInputContainer()" />
   }
 </div>

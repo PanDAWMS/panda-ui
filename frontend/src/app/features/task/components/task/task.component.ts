@@ -32,6 +32,10 @@ export class TaskComponent {
     },
   });
   taskDetails = computed(() => this.detailsResource.value() ?? null);
+  isInputContainer = computed(() => {
+    const params = this.taskDetails()?.params_json;
+    return params != null && 'dsForIN' in params;
+  });
 
   // Fetch datasets whenever the task ID changes
   datasetsResource = rxResource<DatasetItem[], { id: number | null }>({

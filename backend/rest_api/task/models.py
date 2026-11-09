@@ -88,8 +88,18 @@ class JediTask(models.Model):
         ]
 
 
-class JediDataset(models.Model):
+class JediTaskParams(models.Model):
+    jeditaskid = models.OneToOneField(JediTask, on_delete=models.DO_NOTHING, primary_key=True, db_column="jeditaskid", related_name="params")
+    taskparams = models.TextField(db_column="taskparams", blank=True)
 
+    class Meta:
+        managed = False
+        db_table = f'"{settings.DB_SCHEMAS['panda']}"."jedi_taskparams"'
+        verbose_name = "JediTaskParam"
+        verbose_name_plural = "JediTasksParams"
+
+
+class JediDataset(models.Model):
     jeditaskid = models.ForeignKey(
         JediTask,
         on_delete=DO_NOTHING,

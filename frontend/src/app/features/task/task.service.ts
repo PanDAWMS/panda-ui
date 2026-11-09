@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { Observable } from 'rxjs';
-import { TaskItem, TaskQueryParams } from './task.model';
+import { TaskItem, TaskItemDetail, TaskQueryParams } from './task.model';
 import { PaginatedResponse } from '../../shared/models/pagination.model';
 import { DatasetItem } from '../dataset/dataset.model';
 
@@ -12,8 +12,8 @@ export class TaskService {
   private api = inject(ApiService);
   private readonly endpoint = 'task';
 
-  getTask(jeditaskid: number): Observable<TaskItem> {
-    return this.api.get<TaskItem>(`${this.endpoint}/` + jeditaskid);
+  getTask(jeditaskid: number): Observable<TaskItemDetail> {
+    return this.api.get<TaskItemDetail>(`${this.endpoint}/` + jeditaskid);
   }
 
   getTasks(params?: TaskQueryParams): Observable<PaginatedResponse<TaskItem>> {

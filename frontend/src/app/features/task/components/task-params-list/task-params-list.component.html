@@ -2,15 +2,10 @@
 <mat-card appearance="outlined">
   <mat-card-header><mat-card-title>All task parameters</mat-card-title></mat-card-header>
   <mat-card-content>
-    <mat-form-field appearance="outline" class="w-full task-param-search">
+    <mat-form-field appearance="fill" class="w-full task-param-search">
       <mat-label>Search task details</mat-label>
       <mat-icon matPrefix>search</mat-icon>
-      <input
-        matInput
-        [value]="search()"
-        (input)="search.set($any($event.target).value)"
-        placeholder="Search by parameter name or value" />
-
+      <input matInput [value]="search()" (input)="search.set($any($event.target).value)" />
       @if (search()) {
       <button matSuffix mat-icon-button aria-label="Clear search" (click)="search.set('')">
         <mat-icon>close</mat-icon>

@@ -51,6 +51,10 @@ export class TaskDetailsPanelComponent {
   isTaskLoading: Signal<boolean> = computed(() => this.taskResource.isLoading());
   taskLoadingError = computed(() => this.taskResource.error() as Error | undefined);
   taskDetails = computed(() => this.taskResource.value() ?? null);
+  isInputContainer = computed(() => {
+    const params = this.taskDetails()?.params_json;
+    return params != null && 'dsForIN' in params;
+  });
 
   // Fetch datasets whenever the task ID changes
   datasetsResource = rxResource<DatasetItem[], { id: number | null }>({
@@ -60,9 +64,9 @@ export class TaskDetailsPanelComponent {
       return this.taskService.getTaskDatasets(params.id);
     },
   });
-  datasets = computed(() => this.datasetsResource.value() ?? []);
-  isDatasetsLoading = computed(() => this.datasetsResource.isLoading());
-  datasetsLoadingError = computed(() => this.datasetsResource.error() as Error | undefined);
+  datasets: Signal<DatasetItem[]> = computed(() => this.datasetsResource.value() ?? []);
+  isDatasetsLoading: Signal<boolean> = computed(() => this.datasetsResource.isLoading());
+  datasetsLoadingError: Signal<Error | undefined> = computed(() => this.datasetsResource.error() as Error | undefined);
 
   onClose(): void {
     this.close.emit();

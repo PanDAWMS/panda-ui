@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 })
 export class BadgeComponent {
   label: InputSignal<string> = input.required<string>();
-  // either soft or solid
+  // either soft or solid or plain text
   mode: InputSignal<'solid' | 'soft' | 'text'> = input<'solid' | 'soft' | 'text'>('solid');
   // status-based colors
   status: InputSignal<string | null> = input<string | null>(null);
@@ -18,7 +18,7 @@ export class BadgeComponent {
   textColor: InputSignal<string | null> = input<string | null>(null);
 
   statusClass: Signal<string> = computed(() => {
-    const st: string | null = this.status();
+    const st: string | null = this.status() ? this.status() : 'neutral';
     const md = this.mode();
     return st ? `status-${st.toLowerCase()}-${md.toLowerCase()}` : '';
   });

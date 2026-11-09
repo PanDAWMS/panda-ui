@@ -24,19 +24,22 @@ export type DatasetItem = {
   neventsused: number | null;
 };
 
-export type InputSummary = {
-  counts: StatusCount[];
-  total: number;
-  progress: number;
-};
-
-export type InputGroup = {
-  name: string | null;
-  summary: InputSummary;
-};
-
-export type OutputGroup = {
-  name: string | null;
+export type BaseSummary = {
+  containers: number;
   datasets: number;
   files: number;
 };
+
+export type OutputSummary = BaseSummary;
+
+export type InputSummary = BaseSummary & {
+  progress: number;
+  counts: StatusCount[];
+};
+
+export interface DatasetGroup {
+  name: string;
+  type: 'container' | 'dataset' | 'collection';
+  children: DatasetGroup[];
+  summary: InputSummary | OutputSummary;
+}
