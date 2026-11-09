@@ -41,8 +41,11 @@ class NotificationLog(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        # unique_together already creates an index on exactly these columns;
+        # a second explicit index on the same column list is redundant and
+        # Oracle rejects it outright (ORA-01408), unlike Postgres which
+        # silently tolerates the duplicate.
         unique_together = ("jeditaskid", "event_type")
-        indexes = [models.Index(fields=["jeditaskid", "event_type"])]
 
     def __str__(self):
         return f"task {self.jeditaskid}: {self.event_type}"
