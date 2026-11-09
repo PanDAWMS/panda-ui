@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_api.task",
     "rest_api.aide",
     "rest_api.workflow",
+    "rest_api.notifications",
 ]
 
 MIDDLEWARE = [
