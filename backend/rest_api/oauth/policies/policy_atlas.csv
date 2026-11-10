@@ -2,8 +2,10 @@ p,atlas-adc-pandamon,error_description,read,{},{},allow
 p,atlas-adc-pandamon,error_description,write,{},{},allow
 p,atlas-adc-pandamon,error_description,delete,{},{},allow
 # NOTE (ATLASPANDA-1401 phase 1): any ATLAS member can subscribe to task notifications.
-# 'atlas' is the base VOMS/IAM membership group every ATLAS user's wlcg.groups
-# claim includes (confirmed from a real IAM token's groups claim).
-p,atlas,notification,read,{},{},allow
-p,atlas,notification,write,{},{},allow
-p,atlas,notification,delete,{},{},allow
+# 'default-role' is the group every ATLAS-IAM-authenticated panda-ui user gets
+# synced into Django Groups with (confirmed via a real end-to-end OIDC login against
+# testbed - a pasted token's raw groups claim earlier suggested a bare 'atlas' group,
+# but that wasn't what panda-ui's own login flow actually produces).
+p,default-role,notification,read,{},{},allow
+p,default-role,notification,write,{},{},allow
+p,default-role,notification,delete,{},{},allow
