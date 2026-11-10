@@ -34,8 +34,11 @@ class Subscription(models.Model):
 
 class NotificationLog(models.Model):
     """
-    Records that a given lifecycle event has already been sent for a task,
-    so the evaluator never sends the same event twice.
+    Records that a given lifecycle event has already been sent to a given
+    subscriber for a task, so the evaluator never sends the same event to the
+    same subscriber twice. Scoped per subscriber (not just per task) so that a
+    subscriber who joins after an event already fired for an earlier
+    subscriber still gets notified themselves.
 
     managed = False - see Subscription's docstring.
     """
@@ -47,6 +50,12 @@ class NotificationLog(models.Model):
         (EVENT_NO_RUNNING_JOBS, "No Running Jobs"),
     ]
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        db_constraint=False,
+        related_name="notification_logs",
+    )
     jeditaskid = models.BigIntegerField()
     event_type = models.CharField(max_length=32, choices=EVENT_CHOICES)
     sent_at = models.DateTimeField(auto_now_add=True)
@@ -58,7 +67,7 @@ class NotificationLog(models.Model):
         # a second explicit index on the same column list is redundant and
         # Oracle rejects it outright (ORA-01408), unlike Postgres which
         # silently tolerates the duplicate.
-        unique_together = ("jeditaskid", "event_type")
+        unique_together = ("user", "jeditaskid", "event_type")
 
     def __str__(self):
-        return f"task {self.jeditaskid}: {self.event_type}"
+        return f"{self.user} / task {self.jeditaskid}: {self.event_type}"
