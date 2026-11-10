@@ -2,10 +2,12 @@ p,atlas-adc-pandamon,error_description,read,{},{},allow
 p,atlas-adc-pandamon,error_description,write,{},{},allow
 p,atlas-adc-pandamon,error_description,delete,{},{},allow
 # NOTE (ATLASPANDA-1401 phase 1): any ATLAS member can subscribe to task notifications.
-# 'default-role' is the group every ATLAS-IAM-authenticated panda-ui user gets
-# synced into Django Groups with (confirmed via a real end-to-end OIDC login against
-# testbed - a pasted token's raw groups claim earlier suggested a bare 'atlas' group,
-# but that wasn't what panda-ui's own login flow actually produces).
-p,default-role,notification,read,{},{},allow
-p,default-role,notification,write,{},{},allow
-p,default-role,notification,delete,{},{},allow
+# 'atlas' is the base VOMS/IAM membership group every ATLAS user's wlcg.groups
+# claim includes. A real local login briefly showed 'default-role' instead -
+# turned out to be a side effect of a case-sensitivity bug in panda-ui's
+# email-based user lookup (Tatiana Korchuganova: the same person can get synced
+# as two different Django users depending on email case), not evidence that
+# 'atlas' is wrong. Keeping 'atlas' here; Tatiana is fixing the lookup itself.
+p,atlas,notification,read,{},{},allow
+p,atlas,notification,write,{},{},allow
+p,atlas,notification,delete,{},{},allow
