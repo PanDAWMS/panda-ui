@@ -58,11 +58,13 @@ class Command(BaseCommand):
         has_progressed = any(status not in PRE_RUN_STATUSES for status in status_counts)
         if not has_progressed:
             return
-        subject = "Jobs are starting for your subscribed task"
+        n_total = sum(status_counts.values())
+        n_started = sum(count for status, count in status_counts.items() if status not in PRE_RUN_STATUSES)
+        subject = f"panda-ui notification for TaskID:{jeditaskid} ({n_started}/{n_total} Started)"
         message = "Jobs are starting for the task you subscribed to."
         task_url = self._task_url(jeditaskid)
         body = f"{message}\n\nTaskID: {jeditaskid}\n{task_url}"
-        html_body = render_notification_email(jeditaskid, task_url, message)
+        html_body = render_notification_email(jeditaskid, task_url, message, status_counts)
         self._send_and_log(jeditaskid, NotificationLog.EVENT_JOBS_STARTING, subject, body, html_body)
 
     def _maybe_notify_no_running_jobs(self, jeditaskid: int, status_counts: Counter) -> None:
@@ -72,8 +74,11 @@ class Command(BaseCommand):
             return
         if status_counts.get("running", 0) > 0:
             return
+        n_total = sum(status_counts.values())
+        n_succeeded = status_counts.get("finished", 0)
+        msg_succeeded = "All Succeeded" if n_total and n_succeeded == n_total else "Succeeded"
+        subject = f"panda-ui notification for TaskID:{jeditaskid} ({n_succeeded}/{n_total} {msg_succeeded})"
         breakdown = ", ".join(f"{count} {status}" for status, count in sorted(status_counts.items()))
-        subject = "No jobs are running for your subscribed task"
         message = "No jobs are running for the task you subscribed to."
         task_url = self._task_url(jeditaskid)
         body = f"{message} Current state is: {breakdown}.\n\nTaskID: {jeditaskid}\n{task_url}"
