@@ -93,6 +93,16 @@ class IamBackend(OpenIdConnectAuth):
 
         return user_data
 
+    def get_user_details(self, response: dict[str, Any]) -> dict[str, Any]:
+        """
+        Override get_user_details to ensure the email is always lowercased
+        before being passed to the auth pipeline.
+        """
+        details = super().get_user_details(response)
+        if details.get("email"):
+            details["email"] = details["email"].lower()
+        return details
+
     def auth_html(self):
         """
         Abstract method implementation required by BaseAuth.
