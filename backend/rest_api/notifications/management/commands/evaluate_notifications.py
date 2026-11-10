@@ -23,6 +23,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from rest_api.job.models import JobsActive4, JobsArchived4, JobsDefined4
+from rest_api.notifications.mail_templates import render_notification_email
 from rest_api.notifications.models import NotificationLog, Subscription
 
 logger = logging.getLogger("notifications")
@@ -58,8 +59,11 @@ class Command(BaseCommand):
         if not has_progressed:
             return
         subject = "Jobs are starting for your subscribed task"
-        body = f"Jobs are starting for the task you subscribed to (jeditaskid={jeditaskid}).\n\n{self._task_url(jeditaskid)}"
-        self._send_and_log(jeditaskid, NotificationLog.EVENT_JOBS_STARTING, subject, body)
+        message = "Jobs are starting for the task you subscribed to."
+        task_url = self._task_url(jeditaskid)
+        body = f"{message}\n\nTaskID: {jeditaskid}\n{task_url}"
+        html_body = render_notification_email(jeditaskid, task_url, message)
+        self._send_and_log(jeditaskid, NotificationLog.EVENT_JOBS_STARTING, subject, body, html_body)
 
     def _maybe_notify_no_running_jobs(self, jeditaskid: int, status_counts: Counter) -> None:
         if not NotificationLog.objects.filter(jeditaskid=jeditaskid, event_type=NotificationLog.EVENT_JOBS_STARTING).exists():
@@ -70,22 +74,27 @@ class Command(BaseCommand):
             return
         breakdown = ", ".join(f"{count} {status}" for status, count in sorted(status_counts.items()))
         subject = "No jobs are running for your subscribed task"
-        body = (
-            f"No jobs are running for the task you subscribed to (jeditaskid={jeditaskid}). "
-            f"Current state is: {breakdown}.\n\n{self._task_url(jeditaskid)}"
-        )
-        self._send_and_log(jeditaskid, NotificationLog.EVENT_NO_RUNNING_JOBS, subject, body)
+        message = "No jobs are running for the task you subscribed to."
+        task_url = self._task_url(jeditaskid)
+        body = f"{message} Current state is: {breakdown}.\n\nTaskID: {jeditaskid}\n{task_url}"
+        html_body = render_notification_email(jeditaskid, task_url, message, status_counts)
+        self._send_and_log(jeditaskid, NotificationLog.EVENT_NO_RUNNING_JOBS, subject, body, html_body)
 
     @staticmethod
     def _task_url(jeditaskid: int) -> str:
         return f"{settings.FRONTEND_BASE_URL}/task/{jeditaskid}"
 
-    def _send_and_log(self, jeditaskid: int, event_type: str, subject: str, body: str) -> None:
-        recipients = list(
-            Subscription.objects.filter(jeditaskid=jeditaskid).exclude(user__email="").values_list("user__email", flat=True).distinct()
-        )
+    def _send_and_log(self, jeditaskid: int, event_type: str, subject: str, body: str, html_body: str) -> None:
+        recipients = list(Subscription.objects.filter(jeditaskid=jeditaskid).exclude(user__email="").values_list("user__email", flat=True).distinct())
         if recipients:
-            send_mail(subject=subject, message=body, from_email=None, recipient_list=recipients, fail_silently=False)
+            send_mail(
+                subject=subject,
+                message=body,
+                from_email=None,
+                recipient_list=recipients,
+                fail_silently=False,
+                html_message=html_body,
+            )
         else:
             logger.warning("No subscriber has an email address on file for task %s event %s", jeditaskid, event_type)
         NotificationLog.objects.create(jeditaskid=jeditaskid, event_type=event_type)
