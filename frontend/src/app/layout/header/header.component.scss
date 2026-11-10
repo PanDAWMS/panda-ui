@@ -27,6 +27,19 @@
 div.hamburger-wrapper {
   align-items: center;
   height: 100%;
+
+  .mat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+  }
+}
+
+div.sub-menu-title {
+  color: var(--mat-sys-outline-variant);
+  pointer-events: none;
+  cursor: default;
 }
 
 a[routerLink='/'] {
