@@ -2,8 +2,8 @@ p,atlas-adc-pandamon,error_description,read,{},{},allow
 p,atlas-adc-pandamon,error_description,write,{},{},allow
 p,atlas-adc-pandamon,error_description,delete,{},{},allow
 # NOTE (ATLASPANDA-1401 phase 1): any ATLAS member can subscribe to task notifications.
-# '/atlas' is a best-guess at the base VOMS membership group every ATLAS user's
-# wlcg.groups claim includes - please confirm the real group name before merging.
-p,/atlas,notification,read,{},{},allow
-p,/atlas,notification,write,{},{},allow
-p,/atlas,notification,delete,{},{},allow
+# 'atlas' is the base VOMS/IAM membership group every ATLAS user's wlcg.groups
+# claim includes (confirmed from a real IAM token's groups claim).
+p,atlas,notification,read,{},{},allow
+p,atlas,notification,write,{},{},allow
+p,atlas,notification,delete,{},{},allow
