@@ -11,3 +11,9 @@ p,atlas-adc-pandamon,error_description,delete,{},{},allow
 p,atlas,notification,read,{},{},allow
 p,atlas,notification,write,{},{},allow
 p,atlas,notification,delete,{},{},allow
+# TEMPORARY (remove once Tatiana's case-sensitivity fix above lands and is confirmed):
+# 'default-role' added so the team demo on Friday 2026-11-13 isn't blocked by the
+# duplicate-user bug for whoever's logged in presenting it.
+p,default-role,notification,read,{},{},allow
+p,default-role,notification,write,{},{},allow
+p,default-role,notification,delete,{},{},allow
