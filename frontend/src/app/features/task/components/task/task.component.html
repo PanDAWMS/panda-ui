@@ -1,0 +1,12 @@
+@if (taskDetails(); as currentTask) {
+<div class="flex flex-col p-2 gap-2">
+  <app-task-overview [task]="currentTask" />
+
+  @if ( !isDatasetsLoading() && datasets(); as currentTaskDatasetList) {
+  <app-dataset-summary [datasets]="currentTaskDatasetList" [isTask]="true" [isInputContainer]="isInputContainer()" />
+  <app-dataset-list [datasets]="currentTaskDatasetList" [isTask]="true" />
+  }
+
+  <app-task-params-list [task]="currentTask" />
+</div>
+}

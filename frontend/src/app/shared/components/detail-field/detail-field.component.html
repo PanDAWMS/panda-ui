@@ -1,0 +1,18 @@
+<div class="min-w-0 detail-container">
+  <div class="text-xs detail-label">
+    {{ label() }}
+  </div>
+  @if (link(); as url) {
+  <a [href]="url" [class]="className()">
+    {{ value() ?? '—' }}
+  </a>
+  } @else {
+  <span class="detail-value" [class]="className()">
+    @if (isNonEmptyString(value())) {
+    {{ value() | breakAt: '.,/-' }}
+    } @else {
+    {{ (value() ?? '') || '—' }}
+    }
+  </span>
+  }
+</div>

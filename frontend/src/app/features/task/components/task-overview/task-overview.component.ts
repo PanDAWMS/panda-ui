@@ -1,55 +1,34 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { TaskParamsListComponent } from '../task-params-list/task-params-list.component';
-import { DocsService } from '../../../aide/components/docs/docs.service';
-import { PageContext } from '../../../../shared/models/page-context.model';
-
-const DOCS_TASK: PageContext = {
-  pageTitle: 'Task Overview',
-  topics: [
-    {
-      id: 'task-definition',
-      title: 'Task Definition',
-      content:
-        'A task is a unit of workload to accomplish an indivisible scientific objective. ' +
-        'If an objective is done in multiple steps, each step is mapped to a task. A task takes input and produces output. ' +
-        'The goal of the task is to process the input entirely. Generally, input and output are collections of data files, ' +
-        'but there are also other formats, such as a group of sequence numbers, metadata, notification, void, etc. ' +
-        'Each task has a unique identifier JediTaskID in the system.',
-    },
-  ],
-};
+import { Component, computed, input, InputSignal, Signal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { TaskItemDetail } from '../../task.model';
+import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
+import { StatusCount } from '../../../../shared/models/status.model';
+import { RouterLink } from '@angular/router';
+import { BreakAtPipe } from '../../../../shared/pipes/breakAt.pipe';
 
 @Component({
   selector: 'app-task-overview',
-  imports: [TaskParamsListComponent],
+  imports: [CommonModule, DatePipe, MatIconModule, RouterLink, BreakAtPipe],
   templateUrl: './task-overview.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './task-overview.component.scss',
 })
-export class TaskOverviewComponent implements OnInit, OnDestroy {
-  private location = inject(Location);
-  private route = inject(ActivatedRoute);
-  private docsService = inject(DocsService);
+export class TaskOverviewComponent {
+  task: InputSignal<TaskItemDetail> = input.required<TaskItemDetail>();
+  closable: InputSignal<boolean> = input<boolean>(false);
 
-  jeditaskid!: number;
+  fileSummary: Signal<StatusCount[]> = computed((): StatusCount[] => {
+    const d: TaskItemDetail = this.task();
+    if (!d || d.files_total === 0) return [];
 
-  ngOnInit(): void {
-    this.jeditaskid = +this.route.snapshot.paramMap.get('jeditaskid')!;
-    this.docsService.setPageContext(DOCS_TASK);
-  }
-
-  ngOnDestroy(): void {
-    // Clear context when leaving the route
-    this.docsService.setPageContext(null);
-  }
-
-  openDocs(topic_id: string): void {
-    this.docsService.openDocs(topic_id);
-  }
-
-  goBack(): void {
-    this.location.back(); // Restores exact URL with query params
-  }
+    return [
+      {
+        status: 'pending',
+        count: (d.files_total ?? 0) - (d.files_failed ?? 0) - (d.files_finished ?? 0),
+      },
+      { status: 'finished', count: d.files_finished || 0 },
+      { status: 'failed', count: d.files_failed || 0 },
+      { status: 'missing', count: d.files_missing || 0 },
+    ];
+  });
 }

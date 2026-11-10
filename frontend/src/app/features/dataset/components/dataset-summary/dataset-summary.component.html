@@ -1,0 +1,52 @@
+<mat-card appearance="outlined">
+  <mat-card-content class="my-1">
+    @for (tree of [ { name: 'Input', data: inputTreeData(), icon: 'input' }, { name: 'Output', data: outputTreeData(),
+    icon: 'output' } ]; track tree.name) {
+    <mat-tree [dataSource]="tree.data" [childrenAccessor]="childrenAccessor">
+      <!-- Nodes with children -->
+      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChildren" #treeNode="matNestedTreeNode">
+        <div class="flex items-center">
+          <button mat-icon-button matTreeNodeToggle (click)="$event.stopPropagation()">
+            <mat-icon>{{ treeNode.isExpanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+          </button>
+          <mat-icon class="mr-1">
+            {{ node.type === 'collection' ? tree.icon : 'folder' }}
+          </mat-icon>
+          <span class="flex-1">
+            {{ node.name | breakAt: '.-' }}
+          </span>
+          @if (node.name === "Input" && node.summary.containers > 0) {
+          <app-badge [label]="node.summary.containers | pluralize: 'container'" mode="text" class="mr-1" />
+          }
+          <app-badge [label]="node.summary.datasets | pluralize: 'dataset'" mode="text" class="mr-1" />
+          @if (node.name === "Input") {
+          <app-progress-bar-segmented
+            [counts]="node.summary.counts"
+            [title]="node.summary.files | pluralize: 'file'"
+            [showLegend]="true" />
+          } @else {
+          <app-badge [label]="node.summary.files | pluralize: 'file'" mode="text" class="mr-1" />
+          }
+        </div>
+
+        @if (treeNode.isExpanded) {
+        <div class="ml-4 pl-2">
+          <ng-container matTreeNodeOutlet />
+        </div>
+        }
+      </mat-nested-tree-node>
+
+      <!-- Leaf nodes -->
+      <mat-nested-tree-node *matTreeNodeDef="let node">
+        <div class="flex items-center ml-4">
+          <mat-icon class="mr-1">file_copy</mat-icon>
+          <span class="flex-1 text-sm">
+            {{ node.name | breakAt: '.-' }}
+          </span>
+          <app-badge [label]="node.summary.files | pluralize: 'file'" mode="text"></app-badge>
+        </div>
+      </mat-nested-tree-node>
+    </mat-tree>
+    }
+  </mat-card-content>
+</mat-card>

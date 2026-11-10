@@ -14,6 +14,7 @@ export class ErrorHandlerService implements ErrorHandler {
     const loggingService = this.injector.get(LoggingService);
     const log = loggingService.forContext('GlobalErrorHandler');
     const errorMsg = this.extractErrorMessage(error);
+    const fullErrorStackTraceMsg = this.extractFullErrorStackTrace(error);
 
     // Chunk / Network Deployment Errors
     if (errorMsg.includes('ChunkLoadError') || errorMsg.includes('Loading chunk failed')) {
@@ -40,48 +41,57 @@ export class ErrorHandlerService implements ErrorHandler {
       return;
     }
 
-    // detect continuous template execution loops
-    if (errorMsg.includes('Template')) {
-      if (this.isRepeating(errorMsg)) {
-        return;
-      }
+    // prevent infinite loops from a repeating error
+    if (this.isRepeating(errorMsg)) {
+      return;
     }
 
     // Default Catch-All for Uncaught JS / Runtime Errors
-    log.error('Unhandled Application Error:', error);
+    log.error('Unhandled Application Error:', fullErrorStackTraceMsg);
     messageBuffer.add('An unexpected error occurred. If the problem persists, please try refreshing.', 'Dismiss', {
       duration: 5000,
     });
   }
 
   private extractErrorMessage(error: unknown): string {
-    if (!error) {
-      return '';
-    }
-
+    if (!error) return '';
     const actualError =
       (error as { reloadedError?: unknown; ngOriginalError?: unknown }).ngOriginalError ||
       (error as { promise?: { reason?: unknown } }).promise?.reason ||
       error;
 
     if (actualError instanceof Error) {
-      return `${actualError.name}: ${actualError.message}\n${actualError.stack || ''}`;
+      return `${actualError.name}: ${actualError.message}`;
     }
 
-    if (typeof error === 'object') {
+    if (typeof actualError === 'object') {
       try {
-        return JSON.stringify(error);
+        return JSON.stringify(actualError);
       } catch {
-        return String(error);
+        return String(actualError);
       }
     }
 
-    return String(error);
+    return String(actualError);
+  }
+
+  private extractFullErrorStackTrace(error: unknown): string {
+    const core = this.extractErrorMessage(error);
+    const actualError =
+      (error as { reloadedError?: unknown; ngOriginalError?: unknown }).ngOriginalError ||
+      (error as { promise?: { reason?: unknown } }).promise?.reason ||
+      error;
+
+    if (actualError instanceof Error && actualError.stack) {
+      return `${core}\n${actualError.stack}`;
+    }
+
+    return core;
   }
 
   private isRepeating(msg: string): boolean {
     const now = Date.now();
-    if (this.lastErrorMessage === msg && now - this.lastErrorTime < 5000) {
+    if (this.lastErrorMessage === msg && now - this.lastErrorTime < 10000) {
       return true;
     }
     this.lastErrorMessage = msg;

@@ -18,4 +18,29 @@
 table {
   width: 100%;
   border-collapse: collapse;
+
+  a {
+    text-decoration-line: none;
+
+    &:hover {
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-color: var(--mat-sys-primary);
+    }
+  }
+}
+
+// Global style for links
+a {
+  font-weight: 700;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: var(--mat-sys-primary);
+    text-decoration-style: solid;
+    text-decoration-color: var(--mat-sys-primary);
+  }
 }

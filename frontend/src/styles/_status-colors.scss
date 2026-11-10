@@ -148,10 +148,10 @@
   --status-rose-text: #fce7f3;
 
   // Gray
-  --status-gray-color: #cbd5e1;
-  --status-gray-bg: #1e293b;
-  --status-gray-border: #64748b;
-  --status-gray-text: #f1f5f9;
+  --status-gray-color: #a3a3a3;
+  --status-gray-bg: #262626;
+  --status-gray-border: #737373;
+  --status-gray-text: #f5f5f5;
 }
 
 // ============================================================
@@ -159,27 +159,29 @@
 // ============================================================
 
 $status-colors: (
-  pending: slate-blue,
   defined: gray,
+  registered: gray,
   assigned: blue,
   activated: blue,
   sent: cyan,
   starting: cyan,
+  ready: cyan,
   running: teal,
   active: teal,
+  scouting: teal,
+  scouted: teal,
+  prepared: teal,
   holding: amber,
+  pending: amber,
+  staging: violet,
+  staged: violet,
   merging: violet,
   transferring: violet,
   finished: green,
   failed: red,
   closed: gray,
   cancelled: orange,
-  registered: gray,
   assigning: blue,
-  ready: cyan,
-  scouting: teal,
-  scouted: teal,
-  prepared: teal,
   done: green,
   aborting: red,
   aborted: red,

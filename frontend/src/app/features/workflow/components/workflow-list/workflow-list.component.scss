@@ -7,17 +7,3 @@
     background-color: color-mix(in srgb, var(--mat-sys-neutral-variant20) 10%, transparent);
   }
 }
-
-mat-drawer.workflow-details-drawer {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-
-  @media (min-width: 1360px) {
-    width: 50%;
-  }
-
-  @media (min-width: 1920px) {
-    width: 75%;
-  }
-}

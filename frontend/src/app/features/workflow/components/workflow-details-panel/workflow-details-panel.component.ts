@@ -66,7 +66,7 @@ export class WorkflowDetailsPanelComponent {
 
     return [
       {
-        status: 'pending',
+        status: 'ready',
         count:
           (d.files_total ?? 0) -
           (d.files_failed ?? 0) -

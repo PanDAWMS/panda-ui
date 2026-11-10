@@ -9,6 +9,7 @@ import {
   computed,
   ElementRef,
   viewChildren,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
@@ -86,6 +87,15 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
   });
 
   private destroy$ = new Subject<void>();
+
+  constructor() {
+    effect(() => {
+      this.initialParams();
+      if (this.filterForm) {
+        this.initForm();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -244,9 +254,8 @@ export class FilterToolbarComponent implements OnInit, OnDestroy {
     this.activeFieldKeys.set(initialActiveKeys);
     this.appliedFieldKeys.set(initialAppliedKeys);
 
-    // Update time limit and emit filters to URL
+    // Update time limit
     this.updateTimeLabel();
-    this.emitFilters();
   }
 
   get activePreset(): string {

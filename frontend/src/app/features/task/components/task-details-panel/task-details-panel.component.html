@@ -1,0 +1,17 @@
+<div class="flex flex-col h-full p-2">
+  @if ( !isTaskLoading() && taskDetails(); as currentTaskDetails) {
+  <div class="flex justify-between items-center pb-1 border-b mb-2">
+    <div>
+      <h2 class="text-lg font-bold">Task Details:</h2>
+    </div>
+    @if (closable()) {
+    <button mat-icon-button type="button" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+    }
+  </div>
+  <app-task-overview [task]="currentTaskDetails" />
+  } @if ( !isDatasetsLoading() && datasets(); as currentTaskDatasetList) {
+  <app-dataset-summary [datasets]="currentTaskDatasetList" [isTask]="true" [isInputContainer]="isInputContainer()" />
+  }
+</div>

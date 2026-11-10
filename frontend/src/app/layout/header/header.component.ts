@@ -42,10 +42,14 @@ export class HeaderComponent implements OnInit {
         label: 'Workflows',
         items: [{ label: 'All', routerLink: '/workflows' }],
       },
-      // {
-      //   label: 'Tasks',
-      //   items: [{ label: 'All' }, { label: 'Analysis' }, { label: 'Production' }],
-      // },
+      {
+        label: 'Tasks',
+        items: [
+          { label: 'All', routerLink: '/tasks' },
+          { label: 'Analysis', routerLink: '/tasks', queryParams: { 'tasktype[in]': 'anal' } },
+          { label: 'Production', routerLink: '/tasks', queryParams: { 'tasktype[in]': 'prod' } },
+        ],
+      },
       {
         label: 'Jobs',
         items: [

@@ -1,0 +1,14 @@
+:host {
+  .detail-container {
+    line-height: var(--mat-sys-label-medium-line-height);
+
+    .detail-label {
+      color: var(--mat-sys-on-surface-variant, #dddddd);
+      line-height: var(--mat-sys-label-small-line-height);
+    }
+
+    .detail-value {
+      font-weight: var(--mat-sys-label-medium-weight);
+    }
+  }
+}

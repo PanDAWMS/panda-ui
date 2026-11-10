@@ -1,0 +1,95 @@
+<mat-drawer-container class="h-full w-full" [hasBackdrop]="true" (backdropClick)="closeDetails()">
+  <mat-drawer-content class="h-full p-2 min-h-0 overflow-auto">
+    <app-filter-toolbar
+      [config]="filterConfig"
+      [initialParams]="currentFilterParams"
+      (applyFilters)="onApplyFilters($event)">
+    </app-filter-toolbar>
+
+    @if (isLoading()) {
+    <div class="loading-shade">
+      <mat-spinner diameter="20"></mat-spinner>
+    </div>
+    }
+
+    <table mat-table [dataSource]="dataSource" matSort matSortActive="jeditaskid" matSortDirection="desc">
+      <ng-container matColumnDef="task">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="jeditaskid">Task</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="cell">
+            <a [routerLink]="['/task/', row.jeditaskid]">#{{ row.jeditaskid }}</a>
+            <span [class.untitled]="!row.taskname">
+              {{ row.taskname || '---' | breakAt: '._' }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="status">Status</th>
+        <td mat-cell *matCellDef="let row">
+          <app-badge [label]="row.status" [status]="row.status" />
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="files">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="completed_files">Files Breakdown</th>
+        <td mat-cell *matCellDef="let row">
+          <app-progress-bar-segmented [counts]="getFileStatusCounts(row)" [showLegend]="false" />
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="progress">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="total_files">Progress</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="pct">{{ row.files_total ? Math.round((row.files_finished / row.files_total) * 100) : 0 }}%</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="created">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="creationdate">Created</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.creationdate | date: 'yyyy MMM d, HH:mm' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="starttime">Duration</th>
+        <td mat-cell *matCellDef="let row">{{ row.starttime | duration: row.endtime }}</td>
+      </ng-container>
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="username">User</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.username }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="cursor-pointer hover:bg-surface-variant transition-colors"
+        [class.bg-action-selected]="activeTaskId() === row.jeditaskid"
+        (click)="onRowClick(row)"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell p-8 text-center" [attr.colspan]="displayedColumns.length">
+          No tasks found for the selected filter criteria.
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [length]="totalCount"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[10, 20, 50, 100]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-drawer-content>
+
+  <mat-drawer
+    #drawer
+    [opened]="isDrawerOpen()"
+    (closed)="onDrawerClosed()"
+    mode="over"
+    position="end"
+    class="details-drawer h-full border-l">
+    <router-outlet></router-outlet>
+  </mat-drawer>
+</mat-drawer-container>
