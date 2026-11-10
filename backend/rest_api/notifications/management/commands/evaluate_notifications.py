@@ -19,6 +19,7 @@ warnings from the original spec are phase 2+.
 import logging
 from collections import Counter
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from rest_api.job.models import JobsActive4, JobsArchived4, JobsDefined4
@@ -57,7 +58,7 @@ class Command(BaseCommand):
         if not has_progressed:
             return
         subject = "Jobs are starting for your subscribed task"
-        body = f"Jobs are starting for the task you subscribed to (jeditaskid={jeditaskid})."
+        body = f"Jobs are starting for the task you subscribed to (jeditaskid={jeditaskid}).\n\n{self._task_url(jeditaskid)}"
         self._send_and_log(jeditaskid, NotificationLog.EVENT_JOBS_STARTING, subject, body)
 
     def _maybe_notify_no_running_jobs(self, jeditaskid: int, status_counts: Counter) -> None:
@@ -69,8 +70,15 @@ class Command(BaseCommand):
             return
         breakdown = ", ".join(f"{count} {status}" for status, count in sorted(status_counts.items()))
         subject = "No jobs are running for your subscribed task"
-        body = f"No jobs are running for the task you subscribed to (jeditaskid={jeditaskid}). Current state is: {breakdown}."
+        body = (
+            f"No jobs are running for the task you subscribed to (jeditaskid={jeditaskid}). "
+            f"Current state is: {breakdown}.\n\n{self._task_url(jeditaskid)}"
+        )
         self._send_and_log(jeditaskid, NotificationLog.EVENT_NO_RUNNING_JOBS, subject, body)
+
+    @staticmethod
+    def _task_url(jeditaskid: int) -> str:
+        return f"{settings.FRONTEND_BASE_URL}/task/{jeditaskid}"
 
     def _send_and_log(self, jeditaskid: int, event_type: str, subject: str, body: str) -> None:
         recipients = list(
