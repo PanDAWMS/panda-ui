@@ -12,25 +12,25 @@
           <mat-icon class="mr-1">
             {{ node.type === 'collection' ? tree.icon : 'folder' }}
           </mat-icon>
-          <span class="flex-1 font-medium">
+          <span class="flex-1">
             {{ node.name | breakAt: '.-' }}
           </span>
-          @if (node.type === 'container' && node.summary.containers > 0) {
-          <app-badge [label]="node.summary.containers + ' containers'" mode="text" class="mr-1" />
+          @if (node.name === "Input" && node.summary.containers > 0) {
+          <app-badge [label]="node.summary.containers | pluralize: 'container'" mode="text" class="mr-1" />
           }
-          <app-badge [label]="node.summary.datasets + ' datasets'" mode="text" class="mr-1" />
+          <app-badge [label]="node.summary.datasets | pluralize: 'dataset'" mode="text" class="mr-1" />
           @if (node.name === "Input") {
           <app-progress-bar-segmented
             [counts]="node.summary.counts"
-            [title]="node.summary.files + ' files'"
+            [title]="node.summary.files | pluralize: 'file'"
             [showLegend]="true" />
           } @else {
-          <app-badge [label]="node.summary.files + ' files'" mode="text" class="mr-1" />
+          <app-badge [label]="node.summary.files | pluralize: 'file'" mode="text" class="mr-1" />
           }
         </div>
 
         @if (treeNode.isExpanded) {
-        <div class="ml-6 pl-3">
+        <div class="ml-4 pl-2">
           <ng-container matTreeNodeOutlet />
         </div>
         }
@@ -38,12 +38,12 @@
 
       <!-- Leaf nodes -->
       <mat-nested-tree-node *matTreeNodeDef="let node">
-        <div class="flex items-center">
+        <div class="flex items-center ml-4">
           <mat-icon class="mr-1">file_copy</mat-icon>
           <span class="flex-1 text-sm">
             {{ node.name | breakAt: '.-' }}
           </span>
-          <app-badge [label]="node.summary.files + ' files'" mode="text"></app-badge>
+          <app-badge [label]="node.summary.files | pluralize: 'file'" mode="text"></app-badge>
         </div>
       </mat-nested-tree-node>
     </mat-tree>

@@ -3,6 +3,7 @@ import { MatCardModule } from '@angular/material/card';
 import { DatasetGroup, DatasetItem, InputSummary, OutputSummary } from '../../dataset.model';
 import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
 import { BreakAtPipe } from '../../../../shared/pipes/breakAt.pipe';
+import { PluralizePipe } from '../../../../shared/pipes/pluralize';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
@@ -18,6 +19,7 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
     BreakAtPipe,
     BadgeComponent,
     ProgressBarSegmentedComponent,
+    PluralizePipe,
   ],
   templateUrl: './dataset-summary.component.html',
   styleUrl: './dataset-summary.component.scss',
@@ -77,7 +79,7 @@ export class DatasetSummaryComponent {
 
     let children: DatasetGroup[];
 
-    if (mode === 'input' && this.isInputContainer()) {
+    if (this.isInputContainer()) {
       // Group datasets by container
       const groups = new Map<string, DatasetItem[]>();
       const standalone: DatasetItem[] = [];
@@ -95,7 +97,7 @@ export class DatasetSummaryComponent {
       }
 
       const containerGroups: DatasetGroup[] = Array.from(groups, ([name, items]) => ({
-        name: `Container: ${name}`,
+        name: `${name}`,
         type: 'container',
         children: items.map((dataset) => this.createDatasetNode(dataset, mode)),
         summary: getSummary(items),
