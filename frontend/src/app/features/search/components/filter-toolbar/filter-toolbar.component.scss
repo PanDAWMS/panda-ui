@@ -4,12 +4,19 @@
 
   .mat-icon {
     font-weight: 800;
+    font-size: var(--mat-chip-container-font-size, 24px);
+    height: var(--mat-chip-container-height, 24px);
+    width: var(--mat-chip-container-height, 24px);
+    line-height: var(--mat-chip-container-height, 24px);
 
     &.add {
       color: var(--mat-sys-tertiary);
     }
     &.reset {
       color: var(--mat-sys-on-error-container);
+    }
+    &.refresh {
+      color: var(--mat-sys-primary);
     }
   }
 }
