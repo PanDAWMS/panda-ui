@@ -43,7 +43,9 @@ export class DatasetSummaryComponent {
     const total = datasets.reduce((sum, d) => sum + (d.nfiles ?? 0), 0);
     const finished = datasets.reduce((sum, d) => sum + (d.nfilesfinished ?? 0), 0);
     const failed = datasets.reduce((sum, d) => sum + (d.nfilesfailed ?? 0), 0);
-    const uniqueContainers = new Set(datasets.map((d) => d.containername).filter(Boolean));
+    const uniqueContainers = this.isInputContainer()
+      ? new Set(datasets.map((d) => d.containername).filter(Boolean))
+      : new Set([]);
 
     return {
       counts: [
@@ -59,7 +61,9 @@ export class DatasetSummaryComponent {
   }
 
   private getOutputSummary(datasets: DatasetItem[]) {
-    const uniqueContainers = new Set(datasets.map((d) => d.containername).filter(Boolean));
+    const uniqueContainers = this.isInputContainer()
+      ? new Set(datasets.map((d) => d.containername).filter(Boolean))
+      : new Set([]);
     return {
       containers: uniqueContainers.size,
       datasets: datasets.length,

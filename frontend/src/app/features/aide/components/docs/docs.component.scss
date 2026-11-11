@@ -1,7 +1,15 @@
+@use '@angular/material' as mat;
+
 :host {
+  @include mat.expansion-overrides(
+    (
+      container-shape: 0,
+      container-background-color: var(--mat-sys-secondary-container),
+    )
+  );
+
   .docs-topics-container {
     .docs-topic {
-      //border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 0.5rem;
       padding: 0.3rem;
       margin-bottom: 0.5rem;
@@ -16,6 +24,7 @@
         font-size: var(--mat-sys-body-medium-size);
         line-height: var(--mat-sys-body-small-line-height);
         color: var(--mat-sys-on-surface-variant);
+        white-space: pre-line;
       }
     }
   }

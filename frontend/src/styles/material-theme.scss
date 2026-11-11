@@ -115,10 +115,9 @@ body {
 
   @include mat.expansion-overrides(
     (
-      container-shape: 0,
+      container-shape: 5px,
       header-expanded-state-height: 48px,
       header-collapsed-state-height: 32px,
-      container-background-color: var(--mat-sys-secondary-container),
     )
   );
 
@@ -219,6 +218,11 @@ body {
       title-text-line-height: 1rem,
       standard-height: 2.5rem,
       mobile-height: 2.5rem,
+    )
+  );
+  @include mat.tooltip-overrides(
+    (
+      supporting-text-size: var(--mat-sys-label-small-size),
     )
   );
 

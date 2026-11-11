@@ -13,13 +13,13 @@
 <div class="flex-1 overflow-y-auto space-y-1">
   <div class="flex items-center gap-2">
     <span class="font-medium">Created:</span>
-    <span>{{ data.creationdate | date: 'yyyy-MM-dd HH:mm' }}</span>
+    <span>{{ (data.creationdate | date: 'yyyy-MM-dd HH:mm') ?? '---' }}</span>
 
     <span class="font-medium">Started:</span>
-    <span>{{ data.starttime | date: 'yyyy-MM-dd HH:mm' }}</span>
+    <span>{{ (data.starttime | date: 'yyyy-MM-dd HH:mm') ?? '---' }}</span>
 
     <span class="font-medium">Ended:</span>
-    <span>{{ data.endtime | date: 'yyyy-MM-dd HH:mm' }}</span>
+    <span>{{ (data.endtime | date: 'yyyy-MM-dd HH:mm') ?? '---' }}</span>
   </div>
 </div>
 

@@ -143,12 +143,13 @@ export type TaskQueryParams = PaginationQueryParams &
     [key: string]: unknown;
   };
 
-type TaskDetailField = {
+export type TaskDetailField = {
   key: keyof TaskItemDetail;
   label: string;
   value: unknown;
   url?: string;
   class?: string;
+  tooltip?: string;
 };
 
 export type TaskDetailSection = {

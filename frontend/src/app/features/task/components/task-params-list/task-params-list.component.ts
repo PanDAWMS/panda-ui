@@ -1,5 +1,5 @@
-import { Component, computed, inject, input, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
-import { TaskItemDetail, TaskDetailSection } from '../../task.model';
+import { Component, computed, input, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
+import { TaskItemDetail, TaskDetailSection, TaskDetailField } from '../../task.model';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -8,12 +8,15 @@ import { DetailFieldComponent } from '../../../../shared/components/detail-field
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDivider } from '@angular/material/list';
+import { SPLIT_RULE_DEFINITIONS } from '../../task-split-rule-definitions';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-task-params-list',
   imports: [
     CommonModule,
     MatCardModule,
+    MatExpansionModule,
     MatTableModule,
     MatIconModule,
     MatFormFieldModule,
@@ -96,16 +99,28 @@ export class TaskParamsListComponent {
           { key: 'corecount', label: 'Core count', value: d.corecount },
           { key: 'walltime', label: 'Walltime', value: `${d.walltime} ${d.walltimeunit}` },
           { key: 'basewalltime', label: 'Base walltime', value: `${d.basewalltime} s` },
-          { key: 'cputime', label: 'CPU time', value: `${d.cputime} ${d.cputimeunit}` },
+          { key: 'cputime', label: 'CPU time', value: d.cputime ? `${d.cputime} ${d.cputimeunit}` : '---' },
           { key: 'cpuefficiency', label: 'CPU efficiency', value: `${d.cpuefficiency}%` },
           { key: 'ramcount', label: 'RAM count', value: `${d.ramcount} ${d.ramunit}` },
           { key: 'outdiskcount', label: 'Out disk count', value: `${d.outdiskcount} ${d.outdiskunit}` },
           { key: 'workdiskcount', label: 'Work disk count', value: `${d.workdiskcount} ${d.workdiskunit}` },
-          { key: 'iointensity', label: 'I/O intensity', value: `${d.iointensity} ${d.iointensityunit}` },
-          { key: 'diskio', label: 'Disk I/O', value: `${d.diskio} ${d.diskiounit}` },
+          {
+            key: 'iointensity',
+            label: 'I/O intensity',
+            value: d.iointensity ? `${d.iointensity} ${d.iointensityunit}` : '---',
+          },
+          { key: 'diskio', label: 'Disk I/O', value: d.diskio ? `${d.diskio} ${d.diskiounit}` : '---' },
           { key: 'memoryleakcore', label: 'Memory leak core', value: d.memoryleakcore },
           { key: 'memoryleakx2', label: 'Memory leak x2', value: d.memoryleakx2 },
         ],
+      },
+      {
+        title: 'Definition',
+        fields: this.formatParamsJson(d.params_json),
+      },
+      {
+        title: 'Split rule details',
+        fields: this.formatSplitRule(d.splitrule),
       },
       {
         title: 'Timestamps',
@@ -175,5 +190,60 @@ export class TaskParamsListComponent {
     } catch {
       return value;
     }
+  }
+
+  private formatParamsJson(params_json: Record<string, unknown> | null): TaskDetailField[] {
+    if (!params_json) return [];
+
+    return Object.entries(params_json).map(([key, value]) => {
+      const isStructured = (value !== null && typeof value === 'object') || key === 'cliParams';
+
+      return {
+        key: key as keyof TaskItemDetail,
+        label: this.formatParamLabel(key),
+        value: this.formatParamValue(value),
+        ...(isStructured ? { class: 'font-mono whitespace-pre-wrap' } : {}),
+      };
+    });
+  }
+
+  private formatParamLabel(key: string): string {
+    return key.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/^./, (char) => char.toUpperCase());
+  }
+
+  private formatParamValue(value: unknown): string {
+    if (value === null || value === undefined) return '—';
+
+    if (typeof value === 'object') {
+      return JSON.stringify(value, null, 2);
+    }
+
+    return String(value);
+  }
+
+  private formatSplitRule(value: unknown): TaskDetailField[] {
+    if (typeof value !== 'string' || !value.trim()) return [];
+
+    return value
+      .split(',')
+      .map((part): TaskDetailField | null => {
+        const separatorIndex = part.indexOf('=');
+        if (separatorIndex === -1) return null;
+
+        const code = part.slice(0, separatorIndex).trim().toUpperCase();
+        const paramValue = part.slice(separatorIndex + 1).trim();
+
+        if (!code) return null;
+
+        const definition = SPLIT_RULE_DEFINITIONS[code];
+
+        return {
+          key: `splitrule_${code}` as keyof TaskItemDetail,
+          label: definition ? `${code} - ${definition.parameter}` : `${code} - Unknown parameter`,
+          value: paramValue || '—',
+          ...(definition ? { tooltip: definition.description } : {}),
+        };
+      })
+      .filter((field) => field !== null);
   }
 }

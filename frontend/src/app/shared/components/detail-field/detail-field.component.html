@@ -1,6 +1,8 @@
 <div class="min-w-0 detail-container">
   <div class="text-xs detail-label">
-    {{ label() }}
+    <span [matTooltip]="tooltip() ?? ''" [matTooltipDisabled]="!tooltip()" matTooltipPosition="above">{{
+      label()
+    }}</span>
   </div>
   @if (link(); as url) {
   <a [href]="url" [class]="className()">
