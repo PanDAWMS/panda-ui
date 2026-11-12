@@ -10,10 +10,20 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { NotificationsService } from '../../notifications.service';
 import { TaskSubscription } from '../../notification.model';
+import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 
 @Component({
   selector: 'app-notifications-list',
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    RouterLink,
+    BadgeComponent,
+  ],
   templateUrl: './notifications-list.component.html',
   styleUrl: './notifications-list.component.scss',
 })
@@ -26,7 +36,7 @@ export class NotificationsListComponent {
     { initialValue: null },
   );
 
-  readonly displayedColumns = ['jeditaskid', 'created_at', 'actions'];
+  readonly displayedColumns = ['jeditaskid', 'task_status', 'created_at', 'actions'];
 
   unsubscribe(jeditaskid: number): void {
     this.notificationsService.unsubscribe(jeditaskid).subscribe(() => this.refresh$.next());
