@@ -15,6 +15,17 @@
             </td>
           </ng-container>
 
+          <ng-container matColumnDef="task_status">
+            <th *matHeaderCellDef mat-header-cell>Status</th>
+            <td *matCellDef="let row" mat-cell>
+              @if (row.task_status) {
+                <app-badge [label]="row.task_status" [status]="row.task_status" />
+              } @else {
+                —
+              }
+            </td>
+          </ng-container>
+
           <ng-container matColumnDef="created_at">
             <th *matHeaderCellDef mat-header-cell>Subscribed since</th>
             <td *matCellDef="let row" mat-cell>{{ row.created_at }}</td>

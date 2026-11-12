@@ -1,10 +1,12 @@
 from django.db import IntegrityError
-from rest_api.notifications.models import Subscription
-from rest_api.notifications.serializers import SubscriptionSerializer
-from rest_api.oauth.permissions import GlobalPermission
 from rest_framework import authentication, mixins, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+
+from rest_api.notifications.models import Subscription
+from rest_api.notifications.serializers import SubscriptionSerializer
+from rest_api.oauth.permissions import GlobalPermission
+from rest_api.task.models import JediTask
 
 
 class SubscriptionViewSet(
@@ -32,6 +34,14 @@ class SubscriptionViewSet(
 
     def get_queryset(self):
         return Subscription.objects.filter(user=self.request.user)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        if self.action == "list":
+            # one bulk lookup for everyone's status instead of one query per row
+            jeditaskids = Subscription.objects.filter(user=self.request.user).values_list("jeditaskid", flat=True)
+            context["task_statuses"] = dict(JediTask.objects.filter(jeditaskid__in=jeditaskids).values_list("jeditaskid", "status"))
+        return context
 
     def perform_create(self, serializer):
         try:
