@@ -1,8 +1,8 @@
 export function formatDuration(start?: string | Date | null, end?: string | Date | null): string {
   if (!start) return '—';
 
-  const startTime = new Date(start).getTime();
-  const endTime = end ? new Date(end).getTime() : Date.now();
+  const startTime = new Date(`${start}Z`).getTime();
+  const endTime = end ? new Date(`${end}Z`).getTime() : Date.now();
   const diffMs = endTime - startTime;
 
   if (diffMs < 0) return '0s';

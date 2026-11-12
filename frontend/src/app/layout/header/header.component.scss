@@ -4,13 +4,14 @@
   @include mat.menu-overrides(
     (
       container-color: var(--mat-sys-inverse-surface),
+      item-icon-size: var(--mat-sys-label-medium-size),
+      item-spacing: 0.5rem,
       item-label-text-color: var(--mat-sys-on-primary),
       item-label-text-size: var(--mat-sys-label-medium-size),
+      item-label-text-line-height: var(--mat-sys-label-medium-line-height),
       item-label-text-weight: var(--mat-sys-label-medium-weight),
       item-hover-state-layer-color: var(--mat-sys-on-surface),
-      item-focus-state-layer-color: (
-        --mat-sys-on-surface,
-      ),
+      item-focus-state-layer-color: var(--mat-sys-on-surface),
     )
   );
 
@@ -26,6 +27,19 @@
 div.hamburger-wrapper {
   align-items: center;
   height: 100%;
+
+  .mat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+  }
+}
+
+div.sub-menu-title {
+  color: var(--mat-sys-outline-variant);
+  pointer-events: none;
+  cursor: default;
 }
 
 a[routerLink='/'] {
@@ -97,6 +111,10 @@ a[routerLink='/'] {
         align-items: center;
         justify-content: center;
         margin: 0;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 24px;
       }
     }
   }

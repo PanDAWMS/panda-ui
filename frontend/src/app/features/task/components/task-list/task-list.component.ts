@@ -197,6 +197,10 @@ export class TaskListComponent implements OnInit, AfterViewInit {
       });
   }
 
+  onRefresh(): void {
+    this.loadData();
+  }
+
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;

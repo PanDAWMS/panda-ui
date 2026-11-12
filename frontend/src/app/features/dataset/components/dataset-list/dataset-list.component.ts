@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
 import { ProgressBarSegmentedComponent } from '../../../../shared/components/progress-bar-segmented/progress-bar-segmented.component';
 import { StatusCount } from '../../../../shared/models/status.model';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
-import { MatCard, MatCardContent, MatCardHeader, MatCardModule, MatCardTitle } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-dataset-list',
@@ -23,7 +23,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardModule, MatCardTitle } f
     MatTableModule,
     MatSortModule,
     BadgeComponent,
-    MatCardModule,
+    MatExpansionModule,
   ],
   templateUrl: './dataset-list.component.html',
   styleUrl: './dataset-list.component.scss',

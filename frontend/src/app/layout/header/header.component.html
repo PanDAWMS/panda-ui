@@ -1,15 +1,21 @@
-<mat-toolbar class="app-toolbar justify-between">
+<mat-toolbar class="app-toolbar flex justify-between items-center">
   <!-- Start Section -->
-  <div class="flex items-center</> gap-2">
-    <div class="hamburger-wrapper md:hidden">
+  <div class="flex items-center gap-2 min-w-0">
+    <div class="hamburger-wrapper md:hidden shrink-0">
       <button aria-label="Toggle navigation menu" mat-icon-button [matMenuTriggerFor]="mobileNavMenu">
         <mat-icon>menu</mat-icon>
       </button>
     </div>
     <mat-menu #mobileNavMenu="matMenu" class="header-dark-menu">
+      <a mat-menu-item routerLink="/" class="mobile-menu-title">
+        <span class="font-semibold">{{ name }}</span>
+      </a>
       @for (item of items; track item.label) { @if (item.items && item.items.length) {
       <!-- Sub-header label for groups -->
-      <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider" mat-submenu-title>
+      <div
+        class="sub-menu-title px-4 py-1 text-xs font-semibold uppercase tracking-wider"
+        role="presentation"
+        aria-hidden="true">
         {{ item.label }}
       </div>
       @for (subItem of item.items; track subItem.label) {
@@ -19,7 +25,7 @@
         }
         <span>{{ subItem.label }}</span>
         @if (subItem.badge) {
-        <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+        <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full">
           {{ subItem.badge }}
         </span>
         }
@@ -28,7 +34,7 @@
       <a mat-menu-item [routerLink]="item.routerLink">
         <span>{{ item.label }}</span>
         @if (item.badge) {
-        <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+        <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full">
           {{ item.badge }}
         </span>
         }
@@ -36,11 +42,11 @@
       } }
     </mat-menu>
 
-    <a routerLink="/">{{ name }}</a>
+    <a routerLink="/" class="hidden md:inline-block shrink-0">{{ name }}</a>
 
     <!-- Menu Items -->
     @if (items && items.length) {
-    <nav class="md:flex flex items-center">
+    <nav class="hidden md:flex items-center">
       @for (item of items; track item.label) { @if (item.items && item.items.length) {
       <!-- Root item WITH dropdown menu -->
       <button mat-button [matMenuTriggerFor]="subMenu">
@@ -58,7 +64,7 @@
           <span>{{ subItem.label }}</span>
 
           @if (subItem.badge) {
-          <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+          <span class="ml-auto text-xs px-1.5 py-0.5 rounded-full">
             {{ subItem.badge }}
           </span>
           }
@@ -70,7 +76,7 @@
       <a mat-button [routerLink]="item.routerLink" [queryParams]="item.queryParams">
         <span>{{ item.label }}</span>
         @if (item.badge) {
-        <span class="ml-2 text-xs px-1.5 py-0.5 rounded-full bg-primary text-white">
+        <span class="ml-2 text-xs px-1.5 py-0.5 rounded-full">
           {{ item.badge }}
         </span>
         }
@@ -81,9 +87,9 @@
   </div>
 
   <!-- Right Section -->
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-1 sm:gap-2 shrink-0">
     <app-search-omni />
-    <div class="docs-wrapper">
+    <div class="docs-wrapper shrink-0">
       <button
         aria-label="Toggle Side Panel"
         mat-icon-button

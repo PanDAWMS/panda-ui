@@ -39,6 +39,7 @@ if ENVIRONMENT == "development":
 
 from .base import *  # noqa: F403, F401, E402
 from .database import *  # noqa: F403, F401, E402
+from .email import *  # noqa: F403, F401, E402
 from .logging import *  # noqa: F403, F401, E402
 from .oauth import *  # noqa: F403, F401, E402
 

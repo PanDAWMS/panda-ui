@@ -3,8 +3,27 @@ from rest_api.task.models import JediDataset, JediTask
 from rest_framework.serializers import IntegerField, ModelSerializer
 
 
+class TaskDefinitionParamsField(ParsedJsonField):
+    """
+    Filters out internal params to avoid propagating to the API
+    """
+
+    EXCLUDE_FIELDS = [
+        "jobParameters",
+        "buildSpec",
+        "mergeSpec",
+        "log",
+    ]
+
+    def to_representation(self, value):
+        data = super().to_representation(value)
+        if not isinstance(data, dict):
+            return data
+        return {key: val for key, val in data.items() if key not in self.EXCLUDE_FIELDS}
+
+
 class TaskFullSerializer(ModelSerializer):
-    params_json = ParsedJsonField(source="params.taskparams", read_only=True)
+    params_json = TaskDefinitionParamsField(source="params.taskparams", read_only=True)
 
     class Meta:
         model = JediTask
