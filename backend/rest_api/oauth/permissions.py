@@ -38,8 +38,18 @@ class GlobalPermission(BasePermission):
         return authz_service
 
     def get_user_roles(self, user) -> list[str]:
-        """Helper method to extract user roles from the request.user object."""
-        return list(user.groups.values_list("name", flat=True))
+        """
+        Helper method to extract user roles from the request.user object.
+
+        Strips a leading '/' from each group name: the raw wlcg.groups claim format
+        is inconsistent across logins/IAM configs (some carry '/atlas', others bare
+        'atlas'), and since group sync only ever adds groups and never removes them,
+        a single user can end up with both forms over time depending on when they
+        last logged in. Policy rows are written once, using the bare form - this
+        normalizes both forms to match them, rather than needing every rule
+        duplicated for the slash-prefixed variant too.
+        """
+        return [name.lstrip("/") for name in user.groups.values_list("name", flat=True)]
 
     def has_explicit_read_policy(self, obj_type: str) -> bool:
         """Returns True if any explicit policy rules exist for this object type on 'read'."""
