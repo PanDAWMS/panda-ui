@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, firstValueFrom, Observable, of, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable, of, switchMap, throwError } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { UserProfile } from '../../shared/models/user.model';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -46,38 +46,41 @@ export class AuthService {
     }
     this.initialized = true;
     this.log.debug('init: calling userinfo API to check auth status');
-    // check if the user is authenticated by calling the userinfo endpoint
-    return firstValueFrom(
-      this.http.get<UserProfile>(`${this.authUrl}userinfo/`).pipe(
-        map((response) => ({
-          username: response.username,
-          first_name: response.first_name,
-          last_name: response.last_name,
-          email: response.email,
-          initials: ((response.first_name?.[0] || '') + (response.last_name?.[0] || '')).toUpperCase(),
-          groups: response.groups,
-          permissions: response.permissions,
-        })),
-        tap((user) => {
-          this.log.debug('checkAuth: got user from userinfo API');
-          this.setUser(user);
+
+    // try to get user info and token simultaneously
+    const user$ = this.http.get<UserProfile>(`${this.authUrl}userinfo/`).pipe(
+      map(
+        (r): UserProfile => ({
+          username: r.username,
+          first_name: r.first_name,
+          last_name: r.last_name,
+          email: r.email,
+          initials: ((r.first_name?.[0] ?? '') + (r.last_name?.[0] ?? '')).toUpperCase(),
+          groups: r.groups,
+          permissions: r.permissions,
         }),
-        switchMap((user) =>
-          this.getUserToken().pipe(
-            map((token) => {
-              this.log.debug('checkAuth: got user token');
-              return user;
-            }),
-            catchError((err) => {
-              this.log.debug('checkAuth: error getting user token', err && err.status, err && err.message);
-              return of(user);
-            }),
-          ),
-        ),
-        catchError((err) => {
-          this.log.debug('checkAuth: error', err && err.status, err && err.message);
-          this.setUser(null);
-          return of(null);
+      ),
+      catchError((err: HttpErrorResponse) => {
+        this.log.debug('init: userinfo failed', err.status, err.message);
+        return of(null);
+      }),
+    );
+
+    const token$ = this.http.get<{ token: string }>(`${this.authUrl}usertoken/`).pipe(
+      map((r) => r.token),
+      catchError((err: HttpErrorResponse) => {
+        this.log.debug('init: usertoken failed', err.status, err.message);
+        return of(null);
+      }),
+    );
+
+    return firstValueFrom(
+      forkJoin([user$, token$]).pipe(
+        map(([user, token]) => {
+          this.userSubject.next(user);
+          // A token without a user is meaningless; keep state consistent
+          this.tokenSubject.next(user ? token : null);
+          return user;
         }),
       ),
     );
@@ -86,11 +89,6 @@ export class AuthService {
   login(): void {
     // redirect to IAM login page keeping session in the same tab
     window.open(`${this.authUrl}login/iam/`, '_self');
-  }
-
-  checkAuth(): Observable<UserProfile | null> {
-    this.log.debug('checkAuth: returning value from userSubject');
-    return of(this.userSubject.value);
   }
 
   setUser(user: UserProfile | null): void {
