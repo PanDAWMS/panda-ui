@@ -1,12 +1,11 @@
 from django.db import IntegrityError
-from rest_framework import authentication, mixins, viewsets
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
-
 from rest_api.notifications.models import Subscription
 from rest_api.notifications.serializers import SubscriptionSerializer
 from rest_api.oauth.permissions import GlobalPermission
 from rest_api.task.models import JediTask
+from rest_framework import authentication, mixins, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 
 
 class SubscriptionViewSet(
@@ -33,7 +32,7 @@ class SubscriptionViewSet(
     lookup_field = "jeditaskid"
 
     def get_queryset(self):
-        return Subscription.objects.filter(user=self.request.user)
+        return Subscription.objects.filter(user=self.request.user).order_by("-created_at")
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
