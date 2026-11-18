@@ -7,13 +7,7 @@
       </h2>
       <p class="text-sm">{{ data.taskname | breakAt: '.' }}</p>
     </div>
-    <button
-      mat-icon-button
-      [matTooltip]="subscribed() ? 'Unsubscribe from this task' : 'Subscribe to this task'"
-      [class.active]="subscribed()"
-      (click)="toggleSubscription()">
-      <mat-icon>{{ subscribed() ? 'notifications_active' : 'notifications_none' }}</mat-icon>
-    </button>
+    <app-notification-subscribe-toggle [jeditaskid]="data.jeditaskid" />
   </div>
 
   <div class="flex-1 overflow-y-auto space-y-1">

@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { AppConfigService } from '../../../../core/services/app-config.service';
 import { UserProfile } from '../../../../shared/models/user.model';
 import { MenuItem } from '../../../../shared/models/menu-item';
 
@@ -18,6 +19,7 @@ import { MenuItem } from '../../../../shared/models/menu-item';
 })
 export class LoginComponent {
   auth = inject(AuthService);
+  private configService = inject(AppConfigService);
 
   user$!: Observable<UserProfile | null>;
   userMenu: MenuItem[] = [];
@@ -34,11 +36,12 @@ export class LoginComponent {
   }
 
   buildUserMenu(): MenuItem[] {
-    return [
-      { label: 'Profile', icon: 'person', routerLink: 'user/profile' },
-      { label: 'My Notifications', icon: 'notifications', routerLink: 'notifications' },
-      { label: 'Logout', icon: 'logout', command: () => this.logout() },
-    ];
+    const items: MenuItem[] = [{ label: 'Profile', icon: 'person', routerLink: 'user/profile' }];
+    if (this.configService.hasApp('notification')) {
+      items.push({ label: 'My Notifications', icon: 'notifications', routerLink: 'notifications' });
+    }
+    items.push({ label: 'Logout', icon: 'logout', command: () => this.logout() });
+    return items;
   }
 
   login(): void {

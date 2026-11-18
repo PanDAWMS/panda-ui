@@ -6,7 +6,7 @@ import { TaskSubscription } from './notification.model';
 @Injectable({
   providedIn: 'root',
 })
-export class NotificationsService {
+export class NotificationService {
   private api = inject(ApiService);
 
   listSubscriptions(): Observable<TaskSubscription[]> {
