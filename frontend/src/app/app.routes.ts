@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authRoutes } from './features/auth/auth.routes';
 import { jobRoutes } from './features/job/job.routes';
 import { HomeComponent } from './features/home/home.component';
-import { notificationRoutes } from './features/notifications/notifications.routes';
+import { notificationRoutes } from './features/notification/notification.routes';
 import { taskRoutes } from './features/task/task.routes';
 import { workflowRoutes } from './features/workflow/workflow.routes';
 
