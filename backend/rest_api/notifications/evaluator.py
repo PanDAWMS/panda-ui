@@ -37,7 +37,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from rest_api.job.models import JobsActive4, JobsArchived4, JobsDefined4
 from rest_api.notifications.mail_templates import render_notification_email
-from rest_api.notifications.models import NotificationLog, Subscription
+from rest_api.notifications.models import JobStatusCache, NotificationLog, Subscription
 
 logger = logging.getLogger("notifications")
 
@@ -68,10 +68,18 @@ def evaluate_task(jeditaskid: int) -> None:
 
 
 def _job_status_counts(jeditaskid: int) -> Counter:
+    cached = Counter(JobStatusCache.objects.filter(jeditaskid=jeditaskid).values_list("status", flat=True))
+    if cached:
+        return cached
+    # nothing cached yet - either a fresh subscription to an already-in-flight task, or
+    # the consumer missed every job_status message for it while down (topic subscriptions
+    # aren't durable, see consume_task_status_events). Reseed once from the job tables so
+    # the next call doesn't need to fall back here again.
     counts: Counter = Counter()
     for model in JOB_MODELS:
-        qs = model.objects.filter(jedi_task_id=jeditaskid).values_list("jobstatus", flat=True)
-        counts.update(qs)
+        for pandaid, status in model.objects.filter(jedi_task_id=jeditaskid).values_list("pandaid", "jobstatus"):
+            JobStatusCache.objects.update_or_create(pandaid=pandaid, defaults={"jeditaskid": jeditaskid, "status": status})
+            counts[status] += 1
     return counts
 
 
