@@ -71,3 +71,33 @@ class NotificationLog(models.Model):
 
     def __str__(self):
         return f"{self.user} / task {self.jeditaskid}: {self.event_type}"
+
+
+class JobStatusCache(models.Model):
+    """
+    Local mirror of each job's last-known status, kept in sync from
+    panda-server's job_status messages on /topic/panda_idds instead of
+    querying JobsDefined4/JobsActive4/JobsArchived4 on every notification
+    check (see consume_task_status_events and project_panda_ui_event_driven_
+    notifications). Only ever holds rows for tasks someone is actually
+    subscribed to - the consumer filters on Subscription before writing, and
+    evaluator.py falls back to the job tables (and reseeds from them) only
+    when a task has no rows here yet, e.g. a fresh subscription to an
+    already-in-flight task, or a gap from the consumer being down - this is
+    not a general-purpose job mirror.
+
+    managed = False - see Subscription's docstring.
+    """
+
+    pandaid = models.BigIntegerField(primary_key=True)
+    jeditaskid = models.BigIntegerField()
+    status = models.CharField(max_length=32)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = False
+        db_table = f'"{settings.DB_SCHEMAS["pandaui"]}"."notifications_jobstatuscache"'
+        indexes = [models.Index(fields=["jeditaskid"])]
+
+    def __str__(self):
+        return f"job {self.pandaid} (task {self.jeditaskid}): {self.status}"
