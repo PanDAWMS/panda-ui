@@ -1,0 +1,9 @@
+@if (enabled) {
+  <button
+    mat-icon-button
+    [matTooltip]="subscribed() ? 'Unsubscribe from this task' : 'Subscribe to this task'"
+    [class.active]="subscribed()"
+    (click)="toggleSubscription()">
+    <mat-icon>{{ subscribed() ? 'notifications_active' : 'notifications_none' }}</mat-icon>
+  </button>
+}
