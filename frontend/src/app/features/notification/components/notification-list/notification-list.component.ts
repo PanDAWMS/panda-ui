@@ -8,12 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { NotificationsService } from '../../notifications.service';
+import { NotificationService } from '../../notification.service';
 import { TaskSubscription } from '../../notification.model';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 
 @Component({
-  selector: 'app-notifications-list',
+  selector: 'app-notification-list',
   imports: [
     CommonModule,
     MatCardModule,
@@ -24,21 +24,21 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
     RouterLink,
     BadgeComponent,
   ],
-  templateUrl: './notifications-list.component.html',
-  styleUrl: './notifications-list.component.scss',
+  templateUrl: './notification-list.component.html',
+  styleUrl: './notification-list.component.scss',
 })
-export class NotificationsListComponent {
-  private notificationsService = inject(NotificationsService);
+export class NotificationListComponent {
+  private notificationService = inject(NotificationService);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
   readonly subscriptions: Signal<TaskSubscription[] | null> = toSignal(
-    this.refresh$.pipe(switchMap(() => this.notificationsService.listSubscriptions())),
+    this.refresh$.pipe(switchMap(() => this.notificationService.listSubscriptions())),
     { initialValue: null },
   );
 
   readonly displayedColumns = ['jeditaskid', 'task_status', 'created_at', 'actions'];
 
   unsubscribe(jeditaskid: number): void {
-    this.notificationsService.unsubscribe(jeditaskid).subscribe(() => this.refresh$.next());
+    this.notificationService.unsubscribe(jeditaskid).subscribe(() => this.refresh$.next());
   }
 }
